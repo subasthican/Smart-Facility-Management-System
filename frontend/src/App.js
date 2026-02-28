@@ -1,19 +1,28 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <Router>
-      {/* Navigation Bar */}
-      <Navbar />
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-      {/* Routes */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* You can add more routes later, e.g., Dashboard, Booking, etc. */}
-      </Routes>
+          {/* Protected Route Example */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MainLayout>
     </Router>
   );
 }
