@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Bookings from "./pages/Bookings";
+import CreateBooking from "./pages/CreateBooking";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -24,6 +26,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/bookings"
+              element={
+                <ProtectedRoute>
+                  <Bookings />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/create-booking"
+              element={
+                <ProtectedRoute>
+                  <CreateBooking />
                 </ProtectedRoute>
               }
             />
