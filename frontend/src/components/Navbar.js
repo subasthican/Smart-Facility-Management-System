@@ -17,6 +17,7 @@ const Navbar = () => {
       <div style={styles.links}>
         <Link to="/" style={styles.link}>Home</Link>
         {user && <Link to="/dashboard" style={styles.link}>Dashboard</Link>}
+        {user && <Link to="/bookings" style={styles.link}>Bookings</Link>}
         {user ? (
           <>
             <span style={styles.role}>{user.role}</span>
