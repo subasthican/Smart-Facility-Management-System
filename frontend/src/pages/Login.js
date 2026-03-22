@@ -6,18 +6,22 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
 
     try {
       await login(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Login failed. Try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -43,7 +47,9 @@ const Login = () => {
             style={styles.input}
             required
           />
-          <button type="submit" style={styles.button}>Login</button>
+          <button type="submit" style={styles.button} disabled={submitting}>
+            {submitting ? "Signing in..." : "Login"}
+          </button>
         </form>
         <p style={styles.link}>
           Don't have an account? <Link to="/register">Register</Link>

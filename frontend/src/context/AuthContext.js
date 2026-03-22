@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext();
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -9,12 +10,24 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
 
+  const decodeToken = (jwt) => {
+    const payload = JSON.parse(atob(jwt.split(".")[1]));
+    return { email: payload.sub, role: payload.role };
+  };
+
+  const parseResponse = async (response) => {
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      return response.json();
+    }
+    return { error: "Unexpected server response format" };
+  };
+
   // On mount, check if token exists and decode user info
   useEffect(() => {
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUser({ email: payload.sub, role: payload.role });
+        setUser(decodeToken(token));
       } catch (e) {
         logout();
       }
@@ -24,42 +37,54 @@ export const AuthProvider = ({ children }) => {
 
   // Register
   const register = async (fullName, email, password, role) => {
-    const response = await fetch("http://localhost:8080/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password, role }),
-    });
+    try {
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, password, role }),
+      });
 
-    const data = await response.json();
+      const data = await parseResponse(response);
 
-    if (!response.ok) {
-      throw new Error(data.error || "Registration failed");
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
+
+      return data;
+    } catch (error) {
+      if (error.name === "TypeError") {
+        throw new Error("Cannot connect to server. Check backend is running.");
+      }
+      throw error;
     }
-
-    return data;
   };
 
   // Login
   const login = async (email, password) => {
-    const response = await fetch("http://localhost:8080/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
+      const data = await parseResponse(response);
 
-    if (!response.ok) {
-      throw new Error(data.error || "Login failed");
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      setUser(decodeToken(data.token));
+
+      return data;
+    } catch (error) {
+      if (error.name === "TypeError") {
+        throw new Error("Cannot connect to server. Check backend is running.");
+      }
+      throw error;
     }
-
-    localStorage.setItem("token", data.token);
-    setToken(data.token);
-
-    const payload = JSON.parse(atob(data.token.split(".")[1]));
-    setUser({ email: payload.sub, role: payload.role });
-
-    return data;
   };
 
   // Logout
