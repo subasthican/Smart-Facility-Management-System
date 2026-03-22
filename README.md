@@ -7,7 +7,7 @@ A web platform to manage a university's facilities, bookings, and incidents with
 ## Tech Stack
 - **Frontend:** React.js (React Router)
 - **Backend:** Java Spring Boot REST API
-- **Database:** MySQL
+- **Database:** PostgreSQL
 - **Version Control:** Git + GitHub
 
 ## Project Structure
@@ -42,11 +42,43 @@ npm start
 ### Backend
 ```bash
 cd backend
-mvn clean install
+/opt/homebrew/bin/mvn clean install
+/opt/homebrew/bin/mvn spring-boot:run
+```
+
+### Backend Tests
+```bash
+cd backend
+/opt/homebrew/bin/mvn test
+```
+
+### PostgreSQL Database
+```bash
+brew services start postgresql@15
+createdb smart_facility
+```
+
+Connection defaults are configured in `backend/src/main/resources/application.properties`.
+You can override credentials with environment variables:
+
+```bash
+export DB_USERNAME=your_pg_user
+export DB_PASSWORD=your_pg_password
 mvn spring-boot:run
 ```
 
-### Database
-```sql
-CREATE DATABASE smart_facility CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+## API Quick Reference
+
+Authentication:
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+Bookings:
+- `GET /api/bookings`
+- `GET /api/bookings/my`
+- `GET /api/bookings/{id}`
+- `GET /api/bookings/facility/{name}`
+- `POST /api/bookings`
+- `PUT /api/bookings/{id}/confirm`
+- `PUT /api/bookings/{id}/cancel`
+- `DELETE /api/bookings/{id}`
