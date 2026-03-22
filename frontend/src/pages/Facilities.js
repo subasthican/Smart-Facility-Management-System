@@ -1,7 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+
+const emptyForm = {
+  name: "",
+  type: "LAB",
+  location: "",
+  capacity: "",
+  status: "AVAILABLE",
+  description: "",
+};
+
+const parseJsonSafely = async (response) => {
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+};
 
 const getFacilityStatusStyle = (status) => ({
   ...styles.pill,
@@ -22,53 +44,100 @@ const getFacilityStatusStyle = (status) => ({
 const Facilities = () => {
   const { token, user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
+
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: "",
-    type: "LAB",
-    location: "",
-    capacity: "",
-    status: "AVAILABLE",
-    description: "",
-  });
+  const [message, setMessage] = useState("");
 
-  const fetchFacilities = async () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("create");
+  const [selectedId, setSelectedId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+
+  const loadFacilities = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch(`${API_BASE}/facilities`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data = await parseJsonSafely(res);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to load facilities");
+        throw new Error(data?.error || `Failed to load facilities (HTTP ${res.status})`);
       }
-      setFacilities(data);
+      setFacilities(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message || "Failed to load facilities");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchFacilities();
   }, [token]);
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    loadFacilities();
+  }, [loadFacilities]);
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setModalMode("create");
+    setSelectedId(null);
+    setForm(emptyForm);
+  };
+
+  const openAddModal = () => {
     setError("");
+    setMessage("");
+    setModalMode("create");
+    setSelectedId(null);
+    setForm(emptyForm);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (facility) => {
+    setError("");
+    setMessage("");
+    setModalMode("edit");
+    setSelectedId(facility.id);
+    setForm({
+      name: facility.name || "",
+      type: facility.type || "LAB",
+      location: facility.location || "",
+      capacity: String(facility.capacity || ""),
+      status: facility.status || "AVAILABLE",
+      description: facility.description || "",
+    });
+    setIsModalOpen(true);
+  };
+
+  const submitModal = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    setMessage("");
 
     try {
+      if (!form.name.trim() || !form.location.trim() || !form.capacity) {
+        throw new Error("Name, location, and capacity are required");
+      }
+
       const payload = {
         ...form,
+        name: form.name.trim(),
+        location: form.location.trim(),
+        description: form.description.trim(),
         capacity: Number(form.capacity),
       };
 
-      const res = await fetch(`${API_BASE}/facilities`, {
-        method: "POST",
+      const url = modalMode === "create"
+        ? `${API_BASE}/facilities`
+        : `${API_BASE}/facilities/${selectedId}`;
+
+      const method = modalMode === "create" ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -76,31 +145,37 @@ const Facilities = () => {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await parseJsonSafely(res);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to create facility");
+        throw new Error(data?.error || `Failed to ${modalMode} facility (HTTP ${res.status})`);
       }
 
-      setForm({ name: "", type: "LAB", location: "", capacity: "", status: "AVAILABLE", description: "" });
-      fetchFacilities();
+      setMessage(modalMode === "create" ? "Facility added successfully" : "Facility updated successfully");
+      resetModal();
+      await loadFacilities();
     } catch (e) {
-      setError(e.message || "Failed to create facility");
+      setError(e.message || "Operation failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this facility?")) return;
 
+    setError("");
+    setMessage("");
     try {
       const res = await fetch(`${API_BASE}/facilities/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data = await parseJsonSafely(res);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to delete facility");
+        throw new Error(data?.error || `Failed to delete facility (HTTP ${res.status})`);
       }
-      fetchFacilities();
+      setMessage("Facility deleted successfully");
+      await loadFacilities();
     } catch (e) {
       setError(e.message || "Failed to delete facility");
     }
@@ -108,63 +183,20 @@ const Facilities = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Facilities Catalogue</h2>
-      <p style={styles.subtitle}>Manage facility inventory, availability, and capacity.</p>
+      <div style={styles.headerRow}>
+        <div>
+          <h2 style={styles.title}>Facilities Catalogue</h2>
+          <p style={styles.subtitle}>Manage facility inventory, availability, and capacity.</p>
+        </div>
+        {isAdmin && (
+          <button style={styles.button} type="button" onClick={openAddModal}>
+            Add Facility
+          </button>
+        )}
+      </div>
 
+      {message && <p style={styles.success}>{message}</p>}
       {error && <p style={styles.error}>{error}</p>}
-
-      {isAdmin && (
-        <form onSubmit={handleCreate} style={styles.form}>
-          <input
-            style={styles.input}
-            placeholder="Facility Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <input
-            style={styles.input}
-            placeholder="Location"
-            value={form.location}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-            required
-          />
-          <input
-            style={styles.input}
-            type="number"
-            placeholder="Capacity"
-            value={form.capacity}
-            onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-            required
-          />
-          <select
-            style={styles.input}
-            value={form.type}
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
-          >
-            <option value="LAB">LAB</option>
-            <option value="HALL">HALL</option>
-            <option value="CLASSROOM">CLASSROOM</option>
-            <option value="MEETING_ROOM">MEETING_ROOM</option>
-          </select>
-          <select
-            style={styles.input}
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value })}
-          >
-            <option value="AVAILABLE">AVAILABLE</option>
-            <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
-            <option value="UNAVAILABLE">UNAVAILABLE</option>
-          </select>
-          <input
-            style={styles.input}
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
-          <button style={styles.button} type="submit">Add Facility</button>
-        </form>
-      )}
 
       {loading ? (
         <p style={styles.loading}>Loading...</p>
@@ -191,9 +223,12 @@ const Facilities = () => {
                   <td style={styles.td}>{f.location}</td>
                   <td style={styles.td}>{f.capacity}</td>
                   <td style={styles.td}><span style={getFacilityStatusStyle(f.status)}>{f.status}</span></td>
-                  <td style={styles.td}>
+                  <td style={styles.tdActions}>
                     {isAdmin ? (
-                      <button style={styles.deleteBtn} onClick={() => handleDelete(f.id)}>Delete</button>
+                      <>
+                        <button style={styles.editBtn} type="button" onClick={() => openEditModal(f)}>Update</button>
+                        <button style={styles.deleteBtn} type="button" onClick={() => handleDelete(f.id)}>Delete</button>
+                      </>
                     ) : (
                       <span style={styles.readOnly}>Read-only</span>
                     )}
@@ -202,6 +237,69 @@ const Facilities = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div style={styles.modalBackdrop}>
+          <div style={styles.modal}>
+            <h3 style={styles.modalTitle}>{modalMode === "create" ? "Add Facility" : "Update Facility"}</h3>
+            <form onSubmit={submitModal} style={styles.form}>
+              <input
+                style={styles.input}
+                placeholder="Facility Name"
+                value={form.name}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                required
+              />
+              <input
+                style={styles.input}
+                placeholder="Location"
+                value={form.location}
+                onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
+                required
+              />
+              <input
+                style={styles.input}
+                type="number"
+                placeholder="Capacity"
+                value={form.capacity}
+                onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))}
+                required
+              />
+              <select
+                style={styles.input}
+                value={form.type}
+                onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
+              >
+                <option value="LAB">LAB</option>
+                <option value="HALL">HALL</option>
+                <option value="CLASSROOM">CLASSROOM</option>
+                <option value="MEETING_ROOM">MEETING_ROOM</option>
+              </select>
+              <select
+                style={styles.input}
+                value={form.status}
+                onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}
+              >
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
+                <option value="UNAVAILABLE">UNAVAILABLE</option>
+              </select>
+              <input
+                style={styles.input}
+                placeholder="Description"
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
+              <div style={styles.modalActions}>
+                <button type="button" style={styles.cancelBtn} onClick={resetModal} disabled={submitting}>Cancel</button>
+                <button type="submit" style={styles.button} disabled={submitting}>
+                  {submitting ? "Saving..." : modalMode === "create" ? "Add Facility" : "Update Facility"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
@@ -215,6 +313,13 @@ const styles = {
     border: "1px solid rgba(15, 23, 42, 0.08)",
     borderRadius: "18px",
     boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
+  },
+  headerRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
   },
   title: {
     fontSize: "30px",
@@ -232,11 +337,6 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: "10px",
-    marginBottom: "20px",
-    background: "rgba(255,255,255,0.72)",
-    border: "1px solid rgba(15, 23, 42, 0.08)",
-    borderRadius: "14px",
-    padding: "12px",
   },
   input: {
     padding: "10px",
@@ -250,7 +350,7 @@ const styles = {
     border: "none",
     borderRadius: "10px",
     cursor: "pointer",
-    padding: "10px",
+    padding: "10px 12px",
     fontWeight: "600",
   },
   table: {
@@ -280,6 +380,13 @@ const styles = {
     borderBottom: "1px solid rgba(148,163,184,0.2)",
     verticalAlign: "middle",
   },
+  tdActions: {
+    padding: "10px 14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    display: "flex",
+    gap: "8px",
+    flexWrap: "wrap",
+  },
   row: {
     backgroundColor: "rgba(255,255,255,0.85)",
   },
@@ -290,6 +397,15 @@ const styles = {
     fontSize: "12px",
     fontWeight: "700",
   },
+  editBtn: {
+    border: "1px solid #93c5fd",
+    background: "#eff6ff",
+    color: "#1d4ed8",
+    fontWeight: "700",
+    borderRadius: "8px",
+    padding: "7px 10px",
+    cursor: "pointer",
+  },
   deleteBtn: {
     backgroundColor: "#dc2626",
     color: "#fff",
@@ -297,6 +413,15 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer",
     padding: "6px 10px",
+    fontWeight: "600",
+  },
+  success: {
+    color: "#166534",
+    backgroundColor: "#dcfce7",
+    border: "1px solid #bbf7d0",
+    borderRadius: "10px",
+    padding: "10px",
+    marginBottom: "10px",
     fontWeight: "600",
   },
   error: {
@@ -325,6 +450,44 @@ const styles = {
     padding: "16px",
     textAlign: "center",
     fontWeight: "600",
+  },
+  modalBackdrop: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(15, 23, 42, 0.48)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 999,
+    padding: "18px",
+  },
+  modal: {
+    width: "100%",
+    maxWidth: "720px",
+    background: "#ffffff",
+    borderRadius: "12px",
+    boxShadow: "0 20px 45px rgba(2, 6, 23, 0.3)",
+    padding: "20px",
+  },
+  modalTitle: {
+    marginTop: 0,
+    marginBottom: "14px",
+    color: "#0f172a",
+  },
+  modalActions: {
+    marginTop: "10px",
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "8px",
+  },
+  cancelBtn: {
+    border: "1px solid #cbd5e1",
+    background: "#ffffff",
+    color: "#334155",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    cursor: "pointer",
+    fontWeight: "700",
   },
 };
 

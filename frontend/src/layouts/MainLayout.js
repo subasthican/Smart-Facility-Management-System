@@ -27,7 +27,6 @@ const MainLayout = ({ children }) => {
             {user ? (
               <>
                 <Link to="/dashboard" style={styles.headerButtonPrimary}>Dashboard</Link>
-                {user.role === "ADMIN" && <Link to="/admin/users" style={styles.headerButtonGhost}>User Management</Link>}
                 <span style={styles.userBadge}>{user.role}</span>
                 <button type="button" onClick={handleLogout} style={styles.logoutButton}>Logout</button>
               </>

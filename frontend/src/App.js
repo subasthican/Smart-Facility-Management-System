@@ -70,10 +70,19 @@ function App() {
             />
 
             <Route
-              path="/admin/users"
+              path="/admin/students"
               element={
                 <ProtectedRoute allowedRoles={["ADMIN"]}>
-                  <AdminUsers />
+                  <AdminUsers managedRole="STUDENT" />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/staff"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminUsers managedRole="STAFF" />
                 </ProtectedRoute>
               }
             />
