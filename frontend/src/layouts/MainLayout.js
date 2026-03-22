@@ -1,9 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const MainLayout = ({ children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div style={styles.pageShell}>
@@ -21,6 +28,8 @@ const MainLayout = ({ children }) => {
               <>
                 <Link to="/dashboard" style={styles.headerButtonPrimary}>Dashboard</Link>
                 {user.role === "ADMIN" && <Link to="/admin/users" style={styles.headerButtonGhost}>Admin</Link>}
+                <span style={styles.userBadge}>{user.role}</span>
+                <button type="button" onClick={handleLogout} style={styles.logoutButton}>Logout</button>
               </>
             ) : (
               <>
@@ -123,6 +132,26 @@ const styles = {
     borderRadius: "999px",
     background: "linear-gradient(140deg, #1f2937 0%, #111827 100%)",
     boxShadow: "0 8px 20px rgba(17, 24, 39, 0.25)",
+  },
+  userBadge: {
+    fontSize: "12px",
+    color: "#334155",
+    backgroundColor: "rgba(255,255,255,0.8)",
+    border: "1px solid rgba(36, 47, 67, 0.2)",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    fontWeight: "600",
+  },
+  logoutButton: {
+    fontSize: "14px",
+    color: "#ffffff",
+    background: "linear-gradient(140deg, #be123c 0%, #9f1239 100%)",
+    border: "none",
+    padding: "9px 14px",
+    borderRadius: "999px",
+    cursor: "pointer",
+    fontWeight: "600",
+    boxShadow: "0 8px 16px rgba(190, 18, 60, 0.25)",
   },
   mainContent: {
     flex: 1,
