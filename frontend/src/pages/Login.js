@@ -27,38 +27,61 @@ const Login = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Login</h2>
-        {error && <p style={styles.error}>{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <button type="submit" style={styles.button} disabled={submitting}>
-            {submitting ? "Signing in..." : "Login"}
-          </button>
-        </form>
-        <div style={styles.demoBox}>
-          <p style={styles.demoTitle}>Default Admin Login</p>
-          <p style={styles.demoText}>Email: admin@gmail.com</p>
-          <p style={styles.demoText}>Password: admin123</p>
+      <div style={styles.wrapper}>
+        <div style={styles.card}>
+          <h2 style={styles.title}>Welcome Back</h2>
+          <p style={styles.subtitle}>Sign in to your account to continue</p>
+          
+          {error && <div style={styles.error}>{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Email Address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+            
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+            
+            <button type="submit" style={styles.button} disabled={submitting}>
+              {submitting ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <div style={styles.divider}>OR</div>
+
+          <div style={styles.demoBox}>
+            <p style={styles.demoTitle}>📌 Demo Credentials</p>
+            <div style={styles.demoItem}>
+              <span>Email:</span>
+              <code>admin@gmail.com</code>
+            </div>
+            <div style={styles.demoItem}>
+              <span>Password:</span>
+              <code>admin123</code>
+            </div>
+          </div>
+          
+          <p style={styles.link}>
+            Don't have an account? <Link to="/register" style={styles.linkText}>Create one</Link>
+          </p>
         </div>
-        <p style={styles.link}>
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
       </div>
     </div>
   );
@@ -69,65 +92,114 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "80vh",
+    minHeight: "calc(100vh - 80px)",
+    padding: "40px 20px",
+  },
+  wrapper: {
+    width: "100%",
+    maxWidth: "450px",
   },
   card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    width: "400px",
+    backgroundColor: "white",
+    padding: "48px",
+    borderRadius: "16px",
+    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.1)",
   },
   title: {
     textAlign: "center",
+    marginBottom: "8px",
+    color: "#1f2937",
+    fontSize: "28px",
+    fontWeight: "700",
+  },
+  subtitle: {
+    textAlign: "center",
+    marginBottom: "32px",
+    color: "#6b7280",
+    fontSize: "14px",
+  },
+  error: {
+    backgroundColor: "#fee2e2",
+    color: "#991b1b",
+    padding: "12px 16px",
+    borderRadius: "8px",
     marginBottom: "20px",
-    color: "#1d1d1f",
+    fontSize: "14px",
+    border: "1px solid #fecaca",
+  },
+  formGroup: {
+    marginBottom: "20px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    color: "#374151",
+    fontSize: "14px",
+    fontWeight: "600",
   },
   input: {
     width: "100%",
-    padding: "12px",
-    marginBottom: "15px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
+    padding: "12px 16px",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
     fontSize: "14px",
     boxSizing: "border-box",
+    transition: "all 0.3s ease",
+    outline: "none",
   },
   button: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#1d1d1f",
-    color: "#fff",
+    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+    color: "white",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "8px",
     fontSize: "16px",
+    fontWeight: "600",
     cursor: "pointer",
+    transition: "all 0.3s ease",
+    boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
+    marginTop: "12px",
   },
-  error: {
-    color: "red",
+  divider: {
     textAlign: "center",
-    marginBottom: "10px",
+    color: "#9ca3af",
+    margin: "24px 0",
+    position: "relative",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   demoBox: {
-    backgroundColor: "#f5f5f5",
-    borderRadius: "6px",
-    padding: "10px 12px",
-    marginTop: "10px",
+    backgroundColor: "#f0f4ff",
+    border: "1px solid #c7d2fe",
+    borderRadius: "12px",
+    padding: "16px",
+    marginBottom: "20px",
   },
   demoTitle: {
-    margin: "0 0 6px 0",
-    fontWeight: "600",
-    color: "#1d1d1f",
-    fontSize: "14px",
-  },
-  demoText: {
-    margin: "2px 0",
+    margin: "0 0 12px 0",
+    fontWeight: "700",
+    color: "#4f46e5",
     fontSize: "13px",
-    color: "#333",
+  },
+  demoItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: "12px",
+    color: "#374151",
+    marginBottom: "8px",
   },
   link: {
     textAlign: "center",
-    marginTop: "15px",
+    marginTop: "20px",
     fontSize: "14px",
+    color: "#6b7280",
+  },
+  linkText: {
+    color: "#6366f1",
+    textDecoration: "none",
+    fontWeight: "600",
+    transition: "color 0.3s ease",
   },
 };
 

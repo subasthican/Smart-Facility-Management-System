@@ -42,22 +42,50 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "10px 20px",
-    backgroundColor: "#1d1d1f",
-    color: "#fff"
+    padding: "16px 32px",
+    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+    color: "#fff",
+    boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
+    borderBottom: "1px solid rgba(255,255,255,0.1)"
   },
-  logo: { fontSize: "24px", fontWeight: "bold" },
-  links: { display: "flex", gap: "15px", alignItems: "center" },
-  link: { color: "#fff", textDecoration: "none", fontSize: "16px" },
-  role: { color: "#aaa", fontSize: "14px" },
+  logo: { 
+    fontSize: "28px", 
+    fontWeight: "700",
+    letterSpacing: "-0.5px",
+    background: "linear-gradient(135deg, #fff, #e0e7ff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text"
+  },
+  links: { display: "flex", gap: "24px", alignItems: "center" },
+  link: { 
+    color: "#fff", 
+    textDecoration: "none", 
+    fontSize: "14px",
+    fontWeight: "500",
+    opacity: 0.9,
+    padding: "8px 12px",
+    borderRadius: "6px",
+    transition: "all 0.3s ease"
+  },
+  role: { 
+    color: "#e0e7ff", 
+    fontSize: "12px",
+    fontWeight: "600",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    padding: "6px 12px",
+    borderRadius: "20px"
+  },
   logoutBtn: {
-    backgroundColor: "transparent",
-    color: "#ff4d4d",
-    border: "1px solid #ff4d4d",
-    padding: "5px 12px",
-    borderRadius: "5px",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    color: "#fff",
+    border: "1px solid rgba(255,255,255,0.3)",
+    padding: "8px 16px",
+    borderRadius: "6px",
     cursor: "pointer",
-    fontSize: "14px"
+    fontSize: "14px",
+    fontWeight: "500",
+    transition: "all 0.3s ease"
   }
 };
 

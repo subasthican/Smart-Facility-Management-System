@@ -38,50 +38,72 @@ const Register = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Register</h2>
-        {error && <p style={styles.error}>{error}</p>}
-        {success && <p style={styles.success}>{success}</p>}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
-          <button type="submit" style={styles.button} disabled={submitting}>
-            {submitting ? "Creating account..." : "Register"}
-          </button>
-        </form>
-        <p style={styles.link}>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+      <div style={styles.wrapper}>
+        <div style={styles.card}>
+          <h2 style={styles.title}>Create Account</h2>
+          <p style={styles.subtitle}>Fill in your details to join our platform</p>
+          
+          {error && <div style={styles.error}>{error}</div>}
+          {success && <div style={styles.success}>{success}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Full Name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Email Address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Confirm Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={styles.input}
+                required
+              />
+            </div>
+
+            <button type="submit" style={styles.button} disabled={submitting}>
+              {submitting ? "Creating account..." : "Create Account"}
+            </button>
+          </form>
+
+          <p style={styles.link}>
+            Already have an account? <Link to="/login" style={styles.linkText}>Sign in</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -92,53 +114,95 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "80vh",
+    minHeight: "calc(100vh - 80px)",
+    padding: "40px 20px",
+  },
+  wrapper: {
+    width: "100%",
+    maxWidth: "450px",
   },
   card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    width: "400px",
+    backgroundColor: "white",
+    padding: "48px",
+    borderRadius: "16px",
+    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.1)",
   },
   title: {
     textAlign: "center",
+    marginBottom: "8px",
+    color: "#1f2937",
+    fontSize: "28px",
+    fontWeight: "700",
+  },
+  subtitle: {
+    textAlign: "center",
+    marginBottom: "32px",
+    color: "#6b7280",
+    fontSize: "14px",
+  },
+  error: {
+    backgroundColor: "#fee2e2",
+    color: "#991b1b",
+    padding: "12px 16px",
+    borderRadius: "8px",
     marginBottom: "20px",
-    color: "#1d1d1f",
+    fontSize: "14px",
+    border: "1px solid #fecaca",
+  },
+  success: {
+    backgroundColor: "#dcfce7",
+    color: "#166534",
+    padding: "12px 16px",
+    borderRadius: "8px",
+    marginBottom: "20px",
+    fontSize: "14px",
+    border: "1px solid #bbf7d0",
+  },
+  formGroup: {
+    marginBottom: "20px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    color: "#374151",
+    fontSize: "14px",
+    fontWeight: "600",
   },
   input: {
     width: "100%",
-    padding: "12px",
-    marginBottom: "15px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
+    padding: "12px 16px",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
     fontSize: "14px",
     boxSizing: "border-box",
+    transition: "all 0.3s ease",
+    outline: "none",
   },
   button: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#1d1d1f",
-    color: "#fff",
+    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+    color: "white",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "8px",
     fontSize: "16px",
+    fontWeight: "600",
     cursor: "pointer",
-  },
-  error: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: "10px",
-  },
-  success: {
-    color: "green",
-    textAlign: "center",
-    marginBottom: "10px",
+    transition: "all 0.3s ease",
+    boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
+    marginTop: "12px",
   },
   link: {
     textAlign: "center",
-    marginTop: "15px",
+    marginTop: "20px",
     fontSize: "14px",
+    color: "#6b7280",
+  },
+  linkText: {
+    color: "#6366f1",
+    textDecoration: "none",
+    fontWeight: "600",
+    transition: "color 0.3s ease",
   },
 };
 
