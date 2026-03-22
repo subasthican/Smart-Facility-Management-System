@@ -18,6 +18,8 @@ const Navbar = () => {
         <Link to="/" style={styles.link}>Home</Link>
         {user && <Link to="/dashboard" style={styles.link}>Dashboard</Link>}
         {user && <Link to="/bookings" style={styles.link}>Bookings</Link>}
+        {user && <Link to="/facilities" style={styles.link}>Facilities</Link>}
+        {user && <Link to="/assets" style={styles.link}>Assets</Link>}
         {user ? (
           <>
             <span style={styles.role}>{user.role}</span>

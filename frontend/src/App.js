@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Bookings from "./pages/Bookings";
 import CreateBooking from "./pages/CreateBooking";
+import Facilities from "./pages/Facilities";
+import Assets from "./pages/Assets";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -44,6 +46,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateBooking />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/facilities"
+              element={
+                <ProtectedRoute>
+                  <Facilities />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/assets"
+              element={
+                <ProtectedRoute>
+                  <Assets />
                 </ProtectedRoute>
               }
             />
