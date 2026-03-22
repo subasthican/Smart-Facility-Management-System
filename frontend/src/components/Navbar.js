@@ -20,6 +20,7 @@ const Navbar = () => {
         {user && <Link to="/bookings" style={styles.link}>Bookings</Link>}
         {user && <Link to="/facilities" style={styles.link}>Facilities</Link>}
         {user && <Link to="/assets" style={styles.link}>Assets</Link>}
+        {user && <Link to="/tickets" style={styles.link}>🎫 Tickets</Link>}
         {user?.role === "ADMIN" && <Link to="/admin/users" style={styles.link}>User Management</Link>}
         {user ? (
           <>
