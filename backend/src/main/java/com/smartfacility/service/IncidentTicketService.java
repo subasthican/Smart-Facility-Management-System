@@ -15,6 +15,9 @@ public class IncidentTicketService {
     @Autowired
     private IncidentTicketRepository ticketRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<IncidentTicket> getAllTickets() {
         return ticketRepository.findAll();
     }
@@ -26,13 +29,27 @@ public class IncidentTicketService {
     public IncidentTicket createTicket(IncidentTicket ticket) {
         ticket.setCreatedAt(LocalDateTime.now());
         ticket.setUpdatedAt(LocalDateTime.now());
-        return ticketRepository.save(ticket);
+        IncidentTicket savedTicket = ticketRepository.save(ticket);
+
+        // Notify admin about new ticket
+        notificationService.createTicketNotification(
+            "admin@gmail.com",
+            "New Incident Ticket Created",
+            "A new incident ticket '" + ticket.getTitle() + "' has been reported.",
+            "INFO",
+            savedTicket.getId()
+        );
+
+        return savedTicket;
     }
 
     public IncidentTicket updateTicket(Long id, IncidentTicket ticketDetails) {
         Optional<IncidentTicket> optionalTicket = ticketRepository.findById(id);
         if (optionalTicket.isPresent()) {
             IncidentTicket ticket = optionalTicket.get();
+            String oldStatus = ticket.getStatus();
+            String oldAssignee = ticket.getAssignedTo();
+
             ticket.setTitle(ticketDetails.getTitle());
             ticket.setDescription(ticketDetails.getDescription());
             ticket.setLocation(ticketDetails.getLocation());
@@ -44,7 +61,33 @@ public class IncidentTicketService {
             ticket.setTechnicianNotes(ticketDetails.getTechnicianNotes());
             ticket.setImageUrl(ticketDetails.getImageUrl());
             ticket.setUpdatedAt(LocalDateTime.now());
-            return ticketRepository.save(ticket);
+
+            IncidentTicket updatedTicket = ticketRepository.save(ticket);
+
+            // Send notifications based on changes
+            if (!oldStatus.equals(ticketDetails.getStatus())) {
+                // Status changed
+                notificationService.createTicketNotification(
+                    ticket.getReportedBy(),
+                    "Ticket Status Updated",
+                    "Your ticket '" + ticket.getTitle() + "' status changed to " + ticketDetails.getStatus(),
+                    "INFO",
+                    id
+                );
+            }
+
+            if (ticketDetails.getAssignedTo() != null && !ticketDetails.getAssignedTo().equals(oldAssignee)) {
+                // Assigned to technician
+                notificationService.createTicketNotification(
+                    ticketDetails.getAssignedTo(),
+                    "New Ticket Assigned",
+                    "You have been assigned to ticket '" + ticket.getTitle() + "'",
+                    "WARNING",
+                    id
+                );
+            }
+
+            return updatedTicket;
         }
         return null;
     }
