@@ -10,6 +10,7 @@ import Bookings from "./pages/Bookings";
 import CreateBooking from "./pages/CreateBooking";
 import Facilities from "./pages/Facilities";
 import Assets from "./pages/Assets";
+import AdminUsers from "./pages/AdminUsers";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -35,7 +36,7 @@ function App() {
             <Route
               path="/bookings"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                   <Bookings />
                 </ProtectedRoute>
               }
@@ -44,7 +45,7 @@ function App() {
             <Route
               path="/create-booking"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["STUDENT"]}>
                   <CreateBooking />
                 </ProtectedRoute>
               }
@@ -53,7 +54,7 @@ function App() {
             <Route
               path="/facilities"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                   <Facilities />
                 </ProtectedRoute>
               }
@@ -62,8 +63,17 @@ function App() {
             <Route
               path="/assets"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                   <Assets />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminUsers />
                 </ProtectedRoute>
               }
             />

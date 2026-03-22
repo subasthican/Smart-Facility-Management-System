@@ -6,7 +6,6 @@ const Register = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("STUDENT");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +19,7 @@ const Register = () => {
     setSubmitting(true);
 
     try {
-      await register(fullName.trim(), email.trim().toLowerCase(), password, role);
+      await register(fullName.trim(), email.trim().toLowerCase(), password, "STUDENT");
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
@@ -61,15 +60,6 @@ const Register = () => {
             style={styles.input}
             required
           />
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={styles.input}
-          >
-            <option value="STUDENT">Student</option>
-            <option value="STAFF">Staff</option>
-            <option value="ADMIN">Admin</option>
-          </select>
           <button type="submit" style={styles.button} disabled={submitting}>
             {submitting ? "Creating account..." : "Register"}
           </button>

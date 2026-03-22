@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
 const Assets = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const [assets, setAssets] = useState([]);
   const [facilities, setFacilities] = useState([]);
   const [error, setError] = useState("");
@@ -109,50 +110,52 @@ const Assets = () => {
       <h2>Assets Catalogue</h2>
       {error && <p style={styles.error}>{error}</p>}
 
-      <form onSubmit={handleCreate} style={styles.form}>
-        <input
-          style={styles.input}
-          placeholder="Asset Name"
-          value={form.assetName}
-          onChange={(e) => setForm({ ...form, assetName: e.target.value })}
-          required
-        />
-        <input
-          style={styles.input}
-          placeholder="Category"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-          required
-        />
-        <input
-          style={styles.input}
-          placeholder="Serial Number"
-          value={form.serialNumber}
-          onChange={(e) => setForm({ ...form, serialNumber: e.target.value })}
-          required
-        />
-        <select
-          style={styles.input}
-          value={form.condition}
-          onChange={(e) => setForm({ ...form, condition: e.target.value })}
-        >
-          <option value="GOOD">GOOD</option>
-          <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
-          <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
-        </select>
-        <select
-          style={styles.input}
-          value={form.facilityId}
-          onChange={(e) => setForm({ ...form, facilityId: e.target.value })}
-          required
-        >
-          <option value="">Select Facility</option>
-          {facilities.map((f) => (
-            <option key={f.id} value={f.id}>{f.name}</option>
-          ))}
-        </select>
-        <button style={styles.button} type="submit">Add Asset</button>
-      </form>
+      {isAdmin && (
+        <form onSubmit={handleCreate} style={styles.form}>
+          <input
+            style={styles.input}
+            placeholder="Asset Name"
+            value={form.assetName}
+            onChange={(e) => setForm({ ...form, assetName: e.target.value })}
+            required
+          />
+          <input
+            style={styles.input}
+            placeholder="Category"
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            required
+          />
+          <input
+            style={styles.input}
+            placeholder="Serial Number"
+            value={form.serialNumber}
+            onChange={(e) => setForm({ ...form, serialNumber: e.target.value })}
+            required
+          />
+          <select
+            style={styles.input}
+            value={form.condition}
+            onChange={(e) => setForm({ ...form, condition: e.target.value })}
+          >
+            <option value="GOOD">GOOD</option>
+            <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
+            <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
+          </select>
+          <select
+            style={styles.input}
+            value={form.facilityId}
+            onChange={(e) => setForm({ ...form, facilityId: e.target.value })}
+            required
+          >
+            <option value="">Select Facility</option>
+            {facilities.map((f) => (
+              <option key={f.id} value={f.id}>{f.name}</option>
+            ))}
+          </select>
+          <button style={styles.button} type="submit">Add Asset</button>
+        </form>
+      )}
 
       <div style={styles.filterBar}>
         <label>Filter by Facility:&nbsp;</label>
@@ -187,7 +190,11 @@ const Assets = () => {
                 <td>{a.condition}</td>
                 <td>{facilityName(a.facilityId)}</td>
                 <td>
-                  <button style={styles.deleteBtn} onClick={() => handleDelete(a.id)}>Delete</button>
+                  {isAdmin ? (
+                    <button style={styles.deleteBtn} onClick={() => handleDelete(a.id)}>Delete</button>
+                  ) : (
+                    <span style={styles.readOnly}>Read-only</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -235,6 +242,10 @@ const styles = {
   error: {
     color: "#d64545",
     marginBottom: "10px",
+  },
+  readOnly: {
+    color: "#666",
+    fontSize: "13px",
   },
 };
 

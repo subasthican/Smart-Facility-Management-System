@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
 const Facilities = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -95,56 +96,58 @@ const Facilities = () => {
 
       {error && <p style={styles.error}>{error}</p>}
 
-      <form onSubmit={handleCreate} style={styles.form}>
-        <input
-          style={styles.input}
-          placeholder="Facility Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          required
-        />
-        <input
-          style={styles.input}
-          placeholder="Location"
-          value={form.location}
-          onChange={(e) => setForm({ ...form, location: e.target.value })}
-          required
-        />
-        <input
-          style={styles.input}
-          type="number"
-          placeholder="Capacity"
-          value={form.capacity}
-          onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-          required
-        />
-        <select
-          style={styles.input}
-          value={form.type}
-          onChange={(e) => setForm({ ...form, type: e.target.value })}
-        >
-          <option value="LAB">LAB</option>
-          <option value="HALL">HALL</option>
-          <option value="CLASSROOM">CLASSROOM</option>
-          <option value="MEETING_ROOM">MEETING_ROOM</option>
-        </select>
-        <select
-          style={styles.input}
-          value={form.status}
-          onChange={(e) => setForm({ ...form, status: e.target.value })}
-        >
-          <option value="AVAILABLE">AVAILABLE</option>
-          <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
-          <option value="UNAVAILABLE">UNAVAILABLE</option>
-        </select>
-        <input
-          style={styles.input}
-          placeholder="Description"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-        <button style={styles.button} type="submit">Add Facility</button>
-      </form>
+      {isAdmin && (
+        <form onSubmit={handleCreate} style={styles.form}>
+          <input
+            style={styles.input}
+            placeholder="Facility Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
+          <input
+            style={styles.input}
+            placeholder="Location"
+            value={form.location}
+            onChange={(e) => setForm({ ...form, location: e.target.value })}
+            required
+          />
+          <input
+            style={styles.input}
+            type="number"
+            placeholder="Capacity"
+            value={form.capacity}
+            onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+            required
+          />
+          <select
+            style={styles.input}
+            value={form.type}
+            onChange={(e) => setForm({ ...form, type: e.target.value })}
+          >
+            <option value="LAB">LAB</option>
+            <option value="HALL">HALL</option>
+            <option value="CLASSROOM">CLASSROOM</option>
+            <option value="MEETING_ROOM">MEETING_ROOM</option>
+          </select>
+          <select
+            style={styles.input}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value })}
+          >
+            <option value="AVAILABLE">AVAILABLE</option>
+            <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
+            <option value="UNAVAILABLE">UNAVAILABLE</option>
+          </select>
+          <input
+            style={styles.input}
+            placeholder="Description"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+          <button style={styles.button} type="submit">Add Facility</button>
+        </form>
+      )}
 
       {loading ? (
         <p>Loading...</p>
@@ -169,7 +172,11 @@ const Facilities = () => {
                 <td>{f.capacity}</td>
                 <td>{f.status}</td>
                 <td>
-                  <button style={styles.deleteBtn} onClick={() => handleDelete(f.id)}>Delete</button>
+                  {isAdmin ? (
+                    <button style={styles.deleteBtn} onClick={() => handleDelete(f.id)}>Delete</button>
+                  ) : (
+                    <span style={styles.readOnly}>Read-only</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -216,6 +223,10 @@ const styles = {
   error: {
     color: "#d64545",
     marginBottom: "10px",
+  },
+  readOnly: {
+    color: "#666",
+    fontSize: "13px",
   },
 };
 

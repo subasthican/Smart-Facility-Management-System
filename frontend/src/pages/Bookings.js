@@ -6,7 +6,7 @@ const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,7 +15,11 @@ const Bookings = () => {
 
   const fetchUserBookings = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/bookings/my", {
+      const endpoint = user?.role === "STUDENT"
+        ? "http://localhost:8080/api/bookings/my"
+        : "http://localhost:8080/api/bookings";
+
+      const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -56,16 +60,42 @@ const Bookings = () => {
     }
   };
 
+  const handleConfirm = async (bookingId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/bookings/${bookingId}/confirm`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to confirm booking");
+      }
+
+      setBookings(
+        bookings.map((b) =>
+          b.id === bookingId ? { ...b, status: "CONFIRMED" } : b
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   if (loading) return <p style={styles.loading}>Loading bookings...</p>;
   if (error) return <p style={styles.error}>Error: {error}</p>;
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2>My Bookings</h2>
-        <Link to="/create-booking" style={styles.createBtn}>
-          + New Booking
-        </Link>
+        <h2>{user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}</h2>
+        {user?.role === "STUDENT" && (
+          <Link to="/create-booking" style={styles.createBtn}>
+            + New Booking
+          </Link>
+        )}
       </div>
 
       {bookings.length === 0 ? (
@@ -92,7 +122,22 @@ const Bookings = () => {
                     {booking.status}
                   </td>
                   <td>
-                    {booking.status === "PENDING" || booking.status === "CONFIRMED" ? (
+                    {user?.role === "ADMIN" && booking.status === "PENDING" ? (
+                      <>
+                        <button
+                          onClick={() => handleConfirm(booking.id)}
+                          style={styles.confirmBtn}
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          style={styles.cancelBtn}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : user?.role === "STUDENT" && (booking.status === "PENDING" || booking.status === "CONFIRMED") ? (
                       <button
                         onClick={() => handleCancel(booking.id)}
                         style={styles.cancelBtn}
@@ -164,6 +209,16 @@ const styles = {
     border: "none",
     borderRadius: "3px",
     cursor: "pointer",
+    marginRight: "6px",
+  },
+  confirmBtn: {
+    backgroundColor: "#2e7d32",
+    color: "#fff",
+    padding: "5px 10px",
+    border: "none",
+    borderRadius: "3px",
+    cursor: "pointer",
+    marginRight: "6px",
   },
   disabled: { color: "#999" },
   noBookings: { textAlign: "center", padding: "40px", color: "#666" },

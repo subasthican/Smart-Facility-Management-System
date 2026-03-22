@@ -60,4 +60,5 @@ public class AuthController {
             return ResponseEntity.status(401).body(error);
         }
     }
+
 }
