@@ -20,6 +20,7 @@ public class AdminSeeder {
                 admin.setEmail(adminEmail);
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setRole(User.Role.ADMIN);
+                admin.setActive(true);
                 userRepository.save(admin);
             }
         };
