@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,7 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(User.Role.STUDENT);
+        user.setActive(true);
 
         return userRepository.save(user);
     }
@@ -58,7 +60,28 @@ public class AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(targetRole);
+        user.setActive(true);
 
+        return userRepository.save(user);
+    }
+
+    // Admin fetches manageable users (staff/student)
+    public List<User> getManageableUsers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole() != User.Role.ADMIN)
+                .toList();
+    }
+
+    // Admin toggles active/inactive status for staff/student
+    public User updateUserActiveStatus(Long userId, boolean active) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException("Cannot modify admin account status");
+        }
+
+        user.setActive(active);
         return userRepository.save(user);
     }
 
@@ -71,6 +94,10 @@ public class AuthService {
         }
 
         User user = userOpt.get();
+
+        if (Boolean.FALSE.equals(user.getActive())) {
+            throw new RuntimeException("Account is inactive. Please contact admin.");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
