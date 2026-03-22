@@ -3,6 +3,7 @@ package com.smartfacility.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,8 +31,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/facilities/**", "/assets/**")
+                    .hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/facilities/**", "/assets/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/facilities/**", "/assets/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/facilities/**", "/assets/**")
+                    .hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.POST, "/bookings").hasRole("STUDENT")
+                    .requestMatchers(HttpMethod.GET, "/bookings").hasAnyRole("STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/bookings/my").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/bookings/*/confirm").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/bookings/*/cancel").hasAnyRole("STUDENT", "ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/bookings/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

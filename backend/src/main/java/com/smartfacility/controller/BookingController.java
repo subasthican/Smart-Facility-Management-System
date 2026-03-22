@@ -5,6 +5,7 @@ import com.smartfacility.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -65,8 +66,12 @@ public class BookingController {
     // GET /api/bookings/my - Get current user's bookings
     @GetMapping("/my")
     public ResponseEntity<?> getUserBookings(Authentication auth) {
-        String userEmail = auth.getName();
-        List<Booking> bookings = bookingService.getUserBookings(userEmail);
+        List<Booking> bookings;
+        if (hasRole(auth, "ROLE_STAFF") || hasRole(auth, "ROLE_ADMIN")) {
+            bookings = bookingService.getAllBookings();
+        } else {
+            bookings = bookingService.getUserBookings(auth.getName());
+        }
         return ResponseEntity.ok(bookings);
     }
 
@@ -109,9 +114,14 @@ public class BookingController {
 
     // PUT /api/bookings/:id/cancel - Cancel a booking
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
+    public ResponseEntity<?> cancelBooking(@PathVariable Long id, Authentication auth) {
         try {
-            Booking booking = bookingService.cancelBooking(id);
+            Booking booking;
+            if (hasRole(auth, "ROLE_ADMIN")) {
+                booking = bookingService.cancelBooking(id);
+            } else {
+                booking = bookingService.cancelOwnBooking(id, auth.getName());
+            }
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Booking cancelled");
             response.put("booking", booking);
@@ -121,6 +131,15 @@ public class BookingController {
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
+    }
+
+    private boolean hasRole(Authentication auth, String role) {
+        for (GrantedAuthority authority : auth.getAuthorities()) {
+            if (role.equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // DELETE /api/bookings/:id - Delete a booking

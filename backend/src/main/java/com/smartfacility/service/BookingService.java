@@ -72,6 +72,23 @@ public class BookingService {
         return updateBookingStatus(id, Booking.BookingStatus.CANCELLED);
     }
 
+    // Cancel own booking (student)
+    public Booking cancelOwnBooking(Long id, String userEmail) {
+        Optional<Booking> bookingOpt = bookingRepository.findById(id);
+
+        if (bookingOpt.isEmpty()) {
+            throw new RuntimeException("Booking not found");
+        }
+
+        Booking booking = bookingOpt.get();
+        if (!booking.getUserEmail().equalsIgnoreCase(userEmail)) {
+            throw new RuntimeException("You can only cancel your own bookings");
+        }
+
+        booking.setStatus(Booking.BookingStatus.CANCELLED);
+        return bookingRepository.save(booking);
+    }
+
     // Confirm booking
     public Booking confirmBooking(Long id) {
         return updateBookingStatus(id, Booking.BookingStatus.CONFIRMED);

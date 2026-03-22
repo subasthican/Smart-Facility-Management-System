@@ -21,7 +21,7 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Register a new user
+    // Public self-registration (student only)
     public User register(String fullName, String email, String password, String role) {
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists");
@@ -31,7 +31,33 @@ public class AuthService {
         user.setFullName(fullName);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRole(User.Role.valueOf(role.toUpperCase()));
+        user.setRole(User.Role.STUDENT);
+
+        return userRepository.save(user);
+    }
+
+    // Admin user creation (staff/student only)
+    public User createUserByAdmin(String fullName, String email, String password, String role) {
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        User.Role targetRole;
+        try {
+            targetRole = User.Role.valueOf(role.toUpperCase());
+        } catch (Exception ex) {
+            throw new RuntimeException("Invalid role");
+        }
+
+        if (targetRole == User.Role.ADMIN) {
+            throw new RuntimeException("Admin account creation is not allowed from this endpoint");
+        }
+
+        User user = new User();
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(targetRole);
 
         return userRepository.save(user);
     }
