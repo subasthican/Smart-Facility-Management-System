@@ -29,16 +29,6 @@ const Dashboard = () => {
     }
   ];
 
-  if (user?.role === "ADMIN") {
-    cards.push({
-      title: "User Management",
-      description: "Create and manage system users",
-      icon: "👥",
-      link: "/admin/users",
-      color: "#10b981"
-    });
-  }
-
   return (
     <div style={styles.container}>
       <div style={styles.header}>

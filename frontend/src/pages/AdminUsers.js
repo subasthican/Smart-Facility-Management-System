@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
@@ -15,6 +15,31 @@ const AdminUsers = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [updatingUserId, setUpdatingUserId] = useState(null);
+
+  const loadUsers = useCallback(async () => {
+    setLoadingUsers(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to load users");
+      }
+      setUsers(data);
+    } catch (e) {
+      setError(e.message || "Failed to load users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,10 +75,40 @@ const AdminUsers = () => {
 
       setMessage(`✓ User created successfully with ID ${data.userId}`);
       setForm({ fullName: "", email: "", password: "", confirmPassword: "", role: "STAFF" });
+      loadUsers();
     } catch (e) {
       setError(e.message || "Failed to create user");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const updateUserStatus = async (userId, active) => {
+    setUpdatingUserId(userId);
+    setMessage("");
+    setError("");
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/users/${userId}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ active }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update user status");
+      }
+
+      setMessage(`✓ User status updated to ${active ? "Active" : "Inactive"}`);
+      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, active } : u)));
+    } catch (e) {
+      setError(e.message || "Failed to update user status");
+    } finally {
+      setUpdatingUserId(null);
     }
   };
 
@@ -135,6 +190,62 @@ const AdminUsers = () => {
           </button>
         </form>
       </div>
+
+      <div style={styles.listContainer}>
+        <h2 style={styles.formTitle}>Manage User Status</h2>
+        {loadingUsers ? (
+          <p style={styles.helperText}>Loading users...</p>
+        ) : users.length === 0 ? (
+          <p style={styles.helperText}>No staff/student users found.</p>
+        ) : (
+          <div style={styles.tableWrap}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Name</th>
+                  <th style={styles.th}>Email</th>
+                  <th style={styles.th}>Role</th>
+                  <th style={styles.th}>Status</th>
+                  <th style={styles.th}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id}>
+                    <td style={styles.td}>{u.fullName}</td>
+                    <td style={styles.td}>{u.email}</td>
+                    <td style={styles.td}>{u.role}</td>
+                    <td style={styles.td}>
+                      <span style={u.active ? styles.activePill : styles.inactivePill}>
+                        {u.active ? "ACTIVE" : "INACTIVE"}
+                      </span>
+                    </td>
+                    <td style={styles.td}>
+                      {u.active ? (
+                        <button
+                          style={styles.deactivateBtn}
+                          onClick={() => updateUserStatus(u.id, false)}
+                          disabled={updatingUserId === u.id}
+                        >
+                          {updatingUserId === u.id ? "Updating..." : "Set Inactive"}
+                        </button>
+                      ) : (
+                        <button
+                          style={styles.activateBtn}
+                          onClick={() => updateUserStatus(u.id, true)}
+                          disabled={updatingUserId === u.id}
+                        >
+                          {updatingUserId === u.id ? "Updating..." : "Set Active"}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -148,9 +259,17 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "12px",
     padding: "32px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)"
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
+    marginBottom: "24px",
+  },
+  listContainer: {
+    backgroundColor: "white",
+    borderRadius: "12px",
+    padding: "24px",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
   },
   formTitle: { fontSize: "20px", fontWeight: "700", color: "#1f2937", marginBottom: "24px" },
+  helperText: { color: "#64748b", fontWeight: "600" },
   form: { display: "grid", gap: "20px" },
   formGroup: { display: "flex", flexDirection: "column" },
   label: { marginBottom: "8px", color: "#374151", fontSize: "14px", fontWeight: "600" },
@@ -189,7 +308,69 @@ const styles = {
     borderRadius: "8px",
     marginBottom: "20px",
     border: "1px solid #fecaca"
-  }
+  },
+  tableWrap: {
+    border: "1px solid rgba(15, 23, 42, 0.12)",
+    borderRadius: "12px",
+    overflow: "hidden",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "separate",
+    borderSpacing: 0,
+  },
+  th: {
+    textAlign: "left",
+    padding: "12px 14px",
+    backgroundColor: "#eef2ff",
+    color: "#25324b",
+    fontWeight: "700",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.35)",
+  },
+  td: {
+    padding: "12px 14px",
+    color: "#334155",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    verticalAlign: "middle",
+  },
+  activePill: {
+    display: "inline-block",
+    padding: "5px 10px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
+    backgroundColor: "#dcfce7",
+    color: "#166534",
+  },
+  inactivePill: {
+    display: "inline-block",
+    padding: "5px 10px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
+    backgroundColor: "#fee2e2",
+    color: "#991b1b",
+  },
+  activateBtn: {
+    backgroundColor: "#059669",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "6px 10px",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
+  deactivateBtn: {
+    backgroundColor: "#dc2626",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "6px 10px",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
 };
 
 export default AdminUsers;
