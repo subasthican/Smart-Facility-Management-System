@@ -62,6 +62,7 @@ const CreateBooking = () => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Create New Booking</h2>
+        <p style={styles.subtitle}>Reserve facilities with precision scheduling.</p>
         {error && <p style={styles.error}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
@@ -134,51 +135,62 @@ const styles = {
     padding: "20px",
   },
   card: {
-    backgroundColor: "#fff",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(243,247,255,0.88))",
     padding: "40px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    borderRadius: "18px",
+    boxShadow: "0 24px 50px rgba(15, 23, 42, 0.12)",
+    border: "1px solid rgba(15, 23, 42, 0.1)",
     width: "100%",
     maxWidth: "500px",
   },
   title: {
     textAlign: "center",
-    marginBottom: "20px",
-    color: "#1d1d1f",
+    marginBottom: "6px",
+    color: "#111827",
+    fontSize: "30px",
+    letterSpacing: "-0.02em",
+  },
+  subtitle: {
+    textAlign: "center",
+    marginBottom: "18px",
+    color: "#64748b",
+    fontSize: "14px",
   },
   label: {
     display: "block",
     marginBottom: "8px",
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: "600",
+    color: "#334155",
   },
   input: {
     width: "100%",
-    padding: "12px",
+    padding: "12px 14px",
     marginBottom: "15px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
+    border: "1px solid #cbd5e1",
+    borderRadius: "10px",
     fontSize: "14px",
     boxSizing: "border-box",
+    backgroundColor: "rgba(255,255,255,0.9)",
   },
   button: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#4CAF50",
+    background: "linear-gradient(135deg, #111827, #1e293b)",
     color: "#fff",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "10px",
     fontSize: "16px",
     cursor: "pointer",
-    fontWeight: "bold",
+    fontWeight: "700",
   },
   error: {
-    color: "red",
+    color: "#991b1b",
     textAlign: "center",
     marginBottom: "10px",
     padding: "10px",
-    backgroundColor: "#ffebee",
-    borderRadius: "5px",
+    backgroundColor: "#fee2e2",
+    borderRadius: "8px",
+    border: "1px solid #fecaca",
   },
 };
 

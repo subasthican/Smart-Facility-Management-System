@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { token, user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserBookings();
@@ -85,18 +84,22 @@ const Bookings = () => {
   };
 
   if (loading) return <p style={styles.loading}>Loading bookings...</p>;
-  if (error) return <p style={styles.error}>Error: {error}</p>;
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2>{user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}</h2>
+        <div>
+          <h2 style={styles.title}>{user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}</h2>
+          <p style={styles.subtitle}>Track reservations with real-time status.</p>
+        </div>
         {user?.role === "STUDENT" && (
           <Link to="/create-booking" style={styles.createBtn}>
             + New Booking
           </Link>
         )}
       </div>
+
+      {error && <p style={styles.error}>Error: {error}</p>}
 
       {bookings.length === 0 ? (
         <p style={styles.noBookings}>No bookings yet. Create one now!</p>
@@ -174,56 +177,87 @@ const getStatusStyle = (status) => ({
 });
 
 const styles = {
-  container: { padding: "20px", maxWidth: "1200px", margin: "0 auto" },
+  container: {
+    padding: "20px",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.52), rgba(236,243,255,0.45))",
+    border: "1px solid rgba(15, 23, 42, 0.08)",
+    borderRadius: "18px",
+    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
+  },
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "20px",
+    gap: "12px",
+    flexWrap: "wrap",
+  },
+  title: {
+    fontSize: "30px",
+    letterSpacing: "-0.02em",
+    color: "#18253f",
+    margin: 0,
+  },
+  subtitle: {
+    color: "#52627f",
+    fontSize: "14px",
+    marginTop: "6px",
   },
   createBtn: {
-    backgroundColor: "#4CAF50",
+    background: "linear-gradient(135deg, #0f172a, #1e293b)",
     color: "#fff",
-    padding: "10px 20px",
-    borderRadius: "5px",
+    padding: "10px 18px",
+    borderRadius: "999px",
     textDecoration: "none",
     cursor: "pointer",
+    fontWeight: "600",
   },
-  tableContainer: { overflowX: "auto" },
+  tableContainer: { overflowX: "auto", borderRadius: "14px", border: "1px solid rgba(15, 23, 42, 0.12)" },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    backgroundColor: "#fff",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+    background: "rgba(255,255,255,0.84)",
   },
   tableHeader: {
-    backgroundColor: "#1d1d1f",
-    color: "#fff",
+    backgroundColor: "#111827",
+    color: "#e2e8f0",
     textAlign: "left",
   },
-  tableRow: { borderBottom: "1px solid #ddd" },
+  tableRow: { borderBottom: "1px solid rgba(148,163,184,0.35)" },
   cancelBtn: {
-    backgroundColor: "#f44336",
+    backgroundColor: "#dc2626",
     color: "#fff",
-    padding: "5px 10px",
+    padding: "6px 11px",
     border: "none",
-    borderRadius: "3px",
+    borderRadius: "8px",
     cursor: "pointer",
     marginRight: "6px",
+    fontWeight: "600",
   },
   confirmBtn: {
-    backgroundColor: "#2e7d32",
+    backgroundColor: "#059669",
     color: "#fff",
-    padding: "5px 10px",
+    padding: "6px 11px",
     border: "none",
-    borderRadius: "3px",
+    borderRadius: "8px",
     cursor: "pointer",
     marginRight: "6px",
+    fontWeight: "600",
   },
   disabled: { color: "#999" },
-  noBookings: { textAlign: "center", padding: "40px", color: "#666" },
-  loading: { textAlign: "center", padding: "20px" },
-  error: { color: "red", textAlign: "center", padding: "20px" },
+  noBookings: { textAlign: "center", padding: "40px", color: "#475569" },
+  loading: { textAlign: "center", padding: "20px", color: "#334155" },
+  error: {
+    color: "#991b1b",
+    backgroundColor: "#fee2e2",
+    border: "1px solid #fecaca",
+    borderRadius: "10px",
+    textAlign: "center",
+    padding: "10px",
+    marginBottom: "12px",
+  },
 };
 
 export default Bookings;

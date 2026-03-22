@@ -107,7 +107,8 @@ const Assets = () => {
 
   return (
     <div style={styles.container}>
-      <h2>Assets Catalogue</h2>
+      <h2 style={styles.title}>Assets Catalogue</h2>
+      <p style={styles.subtitle}>Track all equipment across facilities with instant filtering.</p>
       {error && <p style={styles.error}>{error}</p>}
 
       {isAdmin && (
@@ -206,41 +207,78 @@ const Assets = () => {
 };
 
 const styles = {
-  container: { padding: "20px" },
+  container: {
+    padding: "20px",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.52), rgba(236,243,255,0.45))",
+    border: "1px solid rgba(15, 23, 42, 0.08)",
+    borderRadius: "18px",
+    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
+  },
+  title: {
+    fontSize: "30px",
+    color: "#18253f",
+    margin: 0,
+    letterSpacing: "-0.02em",
+  },
+  subtitle: {
+    color: "#52627f",
+    fontSize: "14px",
+    marginTop: "6px",
+    marginBottom: "16px",
+  },
   form: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: "10px",
     marginBottom: "20px",
+    background: "rgba(255,255,255,0.72)",
+    border: "1px solid rgba(15, 23, 42, 0.08)",
+    borderRadius: "14px",
+    padding: "12px",
   },
   input: {
     padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
+    border: "1px solid #cbd5e1",
+    borderRadius: "10px",
+    backgroundColor: "rgba(255,255,255,0.9)",
   },
   button: {
-    backgroundColor: "#1d1d1f",
+    background: "linear-gradient(135deg, #111827, #1e293b)",
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "10px",
     cursor: "pointer",
     padding: "10px",
+    fontWeight: "600",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
+    background: "rgba(255,255,255,0.84)",
+    borderRadius: "12px",
+    overflow: "hidden",
+    border: "1px solid rgba(15, 23, 42, 0.12)",
   },
-  filterBar: { marginBottom: "12px" },
+  filterBar: {
+    marginBottom: "12px",
+    color: "#334155",
+    fontWeight: "600",
+  },
   deleteBtn: {
-    backgroundColor: "#d64545",
+    backgroundColor: "#dc2626",
     color: "#fff",
     border: "none",
-    borderRadius: "4px",
+    borderRadius: "8px",
     cursor: "pointer",
     padding: "6px 10px",
+    fontWeight: "600",
   },
   error: {
-    color: "#d64545",
+    color: "#991b1b",
+    backgroundColor: "#fee2e2",
+    border: "1px solid #fecaca",
+    borderRadius: "10px",
+    padding: "10px",
     marginBottom: "10px",
   },
   readOnly: {
