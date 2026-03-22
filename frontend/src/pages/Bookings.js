@@ -108,23 +108,23 @@ const Bookings = () => {
           <table style={styles.table}>
             <thead>
               <tr style={styles.tableHeader}>
-                <th>Facility</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th style={styles.th}>Facility</th>
+                <th style={styles.th}>Start Time</th>
+                <th style={styles.th}>End Time</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {bookings.map((booking) => (
                 <tr key={booking.id} style={styles.tableRow}>
-                  <td>{booking.facilityName}</td>
-                  <td>{new Date(booking.startTime).toLocaleString()}</td>
-                  <td>{new Date(booking.endTime).toLocaleString()}</td>
-                  <td style={getStatusStyle(booking.status)}>
-                    {booking.status}
+                  <td style={styles.td}>{booking.facilityName}</td>
+                  <td style={styles.td}>{new Date(booking.startTime).toLocaleString()}</td>
+                  <td style={styles.td}>{new Date(booking.endTime).toLocaleString()}</td>
+                  <td style={styles.td}>
+                    <span style={getStatusStyle(booking.status)}>{booking.status}</span>
                   </td>
-                  <td>
+                  <td style={styles.td}>
                     {user?.role === "ADMIN" && booking.status === "PENDING" ? (
                       <>
                         <button
@@ -162,10 +162,8 @@ const Bookings = () => {
 };
 
 const getStatusStyle = (status) => ({
-  padding: "5px 10px",
-  borderRadius: "5px",
+  ...styles.pill,
   color: "#fff",
-  fontWeight: "bold",
   backgroundColor:
     status === "CONFIRMED"
       ? "#4CAF50"
@@ -217,15 +215,36 @@ const styles = {
   tableContainer: { overflowX: "auto", borderRadius: "14px", border: "1px solid rgba(15, 23, 42, 0.12)" },
   table: {
     width: "100%",
-    borderCollapse: "collapse",
+    borderCollapse: "separate",
+    borderSpacing: 0,
     background: "rgba(255,255,255,0.84)",
   },
   tableHeader: {
-    backgroundColor: "#111827",
-    color: "#e2e8f0",
-    textAlign: "left",
+    backgroundColor: "#eef2ff",
   },
-  tableRow: { borderBottom: "1px solid rgba(148,163,184,0.35)" },
+  th: {
+    textAlign: "left",
+    padding: "12px 14px",
+    color: "#25324b",
+    fontWeight: "700",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.35)",
+  },
+  td: {
+    padding: "12px 14px",
+    color: "#334155",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    verticalAlign: "middle",
+  },
+  tableRow: { backgroundColor: "rgba(255,255,255,0.85)" },
+  pill: {
+    display: "inline-block",
+    padding: "5px 10px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
+  },
   cancelBtn: {
     backgroundColor: "#dc2626",
     color: "#fff",

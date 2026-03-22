@@ -3,6 +3,22 @@ import { useAuth } from "../context/AuthContext";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
+const getConditionStyle = (condition) => ({
+  ...styles.pill,
+  backgroundColor:
+    condition === "GOOD"
+      ? "#dcfce7"
+      : condition === "NEEDS_REPAIR"
+      ? "#fef3c7"
+      : "#fee2e2",
+  color:
+    condition === "GOOD"
+      ? "#166534"
+      : condition === "NEEDS_REPAIR"
+      ? "#92400e"
+      : "#991b1b",
+});
+
 const Assets = () => {
   const { token, user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
@@ -169,38 +185,42 @@ const Assets = () => {
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <p style={styles.loading}>Loading...</p>
+      ) : assets.length === 0 ? (
+        <div style={styles.emptyState}>No assets found for this filter.</div>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>Category</th>
-              <th>Serial</th>
-              <th>Condition</th>
-              <th>Facility</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {assets.map((a) => (
-              <tr key={a.id}>
-                <td>{a.assetName}</td>
-                <td>{a.category}</td>
-                <td>{a.serialNumber}</td>
-                <td>{a.condition}</td>
-                <td>{facilityName(a.facilityId)}</td>
-                <td>
-                  {isAdmin ? (
-                    <button style={styles.deleteBtn} onClick={() => handleDelete(a.id)}>Delete</button>
-                  ) : (
-                    <span style={styles.readOnly}>Read-only</span>
-                  )}
-                </td>
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Asset</th>
+                <th style={styles.th}>Category</th>
+                <th style={styles.th}>Serial</th>
+                <th style={styles.th}>Condition</th>
+                <th style={styles.th}>Facility</th>
+                <th style={styles.th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {assets.map((a) => (
+                <tr key={a.id} style={styles.row}>
+                  <td style={styles.td}>{a.assetName}</td>
+                  <td style={styles.td}>{a.category}</td>
+                  <td style={{ ...styles.td, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{a.serialNumber}</td>
+                  <td style={styles.td}><span style={getConditionStyle(a.condition)}>{a.condition}</span></td>
+                  <td style={styles.td}>{facilityName(a.facilityId)}</td>
+                  <td style={styles.td}>
+                    {isAdmin ? (
+                      <button style={styles.deleteBtn} onClick={() => handleDelete(a.id)}>Delete</button>
+                    ) : (
+                      <span style={styles.readOnly}>Read-only</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -253,11 +273,40 @@ const styles = {
   },
   table: {
     width: "100%",
-    borderCollapse: "collapse",
+    borderCollapse: "separate",
+    borderSpacing: 0,
     background: "rgba(255,255,255,0.84)",
+  },
+  tableWrap: {
     borderRadius: "12px",
     overflow: "hidden",
     border: "1px solid rgba(15, 23, 42, 0.12)",
+  },
+  th: {
+    textAlign: "left",
+    padding: "12px 14px",
+    backgroundColor: "#eef2ff",
+    color: "#25324b",
+    fontWeight: "700",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.35)",
+  },
+  td: {
+    padding: "12px 14px",
+    color: "#334155",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    verticalAlign: "middle",
+  },
+  row: {
+    backgroundColor: "rgba(255,255,255,0.85)",
+  },
+  pill: {
+    display: "inline-block",
+    padding: "5px 10px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
   },
   filterBar: {
     marginBottom: "12px",
@@ -282,8 +331,23 @@ const styles = {
     marginBottom: "10px",
   },
   readOnly: {
-    color: "#666",
+    color: "#64748b",
     fontSize: "13px",
+    fontWeight: "600",
+  },
+  loading: {
+    color: "#475569",
+    fontSize: "14px",
+    padding: "14px 0",
+  },
+  emptyState: {
+    color: "#475569",
+    backgroundColor: "rgba(255,255,255,0.8)",
+    border: "1px dashed rgba(100,116,139,0.4)",
+    borderRadius: "12px",
+    padding: "16px",
+    textAlign: "center",
+    fontWeight: "600",
   },
 };
 

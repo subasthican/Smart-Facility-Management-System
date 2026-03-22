@@ -3,6 +3,22 @@ import { useAuth } from "../context/AuthContext";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
+const getFacilityStatusStyle = (status) => ({
+  ...styles.pill,
+  backgroundColor:
+    status === "AVAILABLE"
+      ? "#dcfce7"
+      : status === "UNDER_MAINTENANCE"
+      ? "#fef3c7"
+      : "#fee2e2",
+  color:
+    status === "AVAILABLE"
+      ? "#166534"
+      : status === "UNDER_MAINTENANCE"
+      ? "#92400e"
+      : "#991b1b",
+});
+
 const Facilities = () => {
   const { token, user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
@@ -151,38 +167,42 @@ const Facilities = () => {
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p style={styles.loading}>Loading...</p>
+      ) : facilities.length === 0 ? (
+        <div style={styles.emptyState}>No facilities available.</div>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Location</th>
-              <th>Capacity</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {facilities.map((f) => (
-              <tr key={f.id}>
-                <td>{f.name}</td>
-                <td>{f.type}</td>
-                <td>{f.location}</td>
-                <td>{f.capacity}</td>
-                <td>{f.status}</td>
-                <td>
-                  {isAdmin ? (
-                    <button style={styles.deleteBtn} onClick={() => handleDelete(f.id)}>Delete</button>
-                  ) : (
-                    <span style={styles.readOnly}>Read-only</span>
-                  )}
-                </td>
+        <div style={styles.tableWrap}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Type</th>
+                <th style={styles.th}>Location</th>
+                <th style={styles.th}>Capacity</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {facilities.map((f) => (
+                <tr key={f.id} style={styles.row}>
+                  <td style={styles.td}>{f.name}</td>
+                  <td style={styles.td}>{f.type}</td>
+                  <td style={styles.td}>{f.location}</td>
+                  <td style={styles.td}>{f.capacity}</td>
+                  <td style={styles.td}><span style={getFacilityStatusStyle(f.status)}>{f.status}</span></td>
+                  <td style={styles.td}>
+                    {isAdmin ? (
+                      <button style={styles.deleteBtn} onClick={() => handleDelete(f.id)}>Delete</button>
+                    ) : (
+                      <span style={styles.readOnly}>Read-only</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -235,11 +255,40 @@ const styles = {
   },
   table: {
     width: "100%",
-    borderCollapse: "collapse",
+    borderCollapse: "separate",
+    borderSpacing: 0,
     background: "rgba(255,255,255,0.84)",
+  },
+  tableWrap: {
     borderRadius: "12px",
     overflow: "hidden",
     border: "1px solid rgba(15, 23, 42, 0.12)",
+  },
+  th: {
+    textAlign: "left",
+    padding: "12px 14px",
+    backgroundColor: "#eef2ff",
+    color: "#25324b",
+    fontWeight: "700",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.35)",
+  },
+  td: {
+    padding: "12px 14px",
+    color: "#334155",
+    fontSize: "14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    verticalAlign: "middle",
+  },
+  row: {
+    backgroundColor: "rgba(255,255,255,0.85)",
+  },
+  pill: {
+    display: "inline-block",
+    padding: "5px 10px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: "700",
   },
   deleteBtn: {
     backgroundColor: "#dc2626",
@@ -259,8 +308,23 @@ const styles = {
     marginBottom: "10px",
   },
   readOnly: {
-    color: "#666",
+    color: "#64748b",
     fontSize: "13px",
+    fontWeight: "600",
+  },
+  loading: {
+    color: "#475569",
+    fontSize: "14px",
+    padding: "14px 0",
+  },
+  emptyState: {
+    color: "#475569",
+    backgroundColor: "rgba(255,255,255,0.8)",
+    border: "1px dashed rgba(100,116,139,0.4)",
+    borderRadius: "12px",
+    padding: "16px",
+    textAlign: "center",
+    fontWeight: "600",
   },
 };
 
