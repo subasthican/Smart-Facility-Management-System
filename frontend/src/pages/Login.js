@@ -51,6 +51,11 @@ const Login = () => {
             {submitting ? "Signing in..." : "Login"}
           </button>
         </form>
+        <div style={styles.demoBox}>
+          <p style={styles.demoTitle}>Default Admin Login</p>
+          <p style={styles.demoText}>Email: admin@gmail.com</p>
+          <p style={styles.demoText}>Password: admin123</p>
+        </div>
         <p style={styles.link}>
           Don't have an account? <Link to="/register">Register</Link>
         </p>
@@ -101,6 +106,23 @@ const styles = {
     color: "red",
     textAlign: "center",
     marginBottom: "10px",
+  },
+  demoBox: {
+    backgroundColor: "#f5f5f5",
+    borderRadius: "6px",
+    padding: "10px 12px",
+    marginTop: "10px",
+  },
+  demoTitle: {
+    margin: "0 0 6px 0",
+    fontWeight: "600",
+    color: "#1d1d1f",
+    fontSize: "14px",
+  },
+  demoText: {
+    margin: "2px 0",
+    fontSize: "13px",
+    color: "#333",
   },
   link: {
     textAlign: "center",

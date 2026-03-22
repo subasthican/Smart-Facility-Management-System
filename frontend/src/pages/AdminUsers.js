@@ -9,6 +9,7 @@ const AdminUsers = () => {
     fullName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     role: "STAFF",
   });
   const [message, setMessage] = useState("");
@@ -18,6 +19,11 @@ const AdminUsers = () => {
     e.preventDefault();
     setMessage("");
     setError("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Password and Confirm Password do not match.");
+      return;
+    }
 
     try {
       const res = await fetch(`${API_BASE}/admin/users`, {
@@ -40,7 +46,7 @@ const AdminUsers = () => {
       }
 
       setMessage(`User created successfully with ID ${data.userId}`);
-      setForm({ fullName: "", email: "", password: "", role: "STAFF" });
+      setForm({ fullName: "", email: "", password: "", confirmPassword: "", role: "STAFF" });
     } catch (e) {
       setError(e.message || "Failed to create user");
     }
@@ -74,6 +80,14 @@ const AdminUsers = () => {
           placeholder="Password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+        />
+        <input
+          style={styles.input}
+          type="password"
+          placeholder="Confirm Password"
+          value={form.confirmPassword}
+          onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
           required
         />
         <select
