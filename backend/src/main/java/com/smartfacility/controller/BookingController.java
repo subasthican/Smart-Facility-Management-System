@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,8 @@ public class BookingController {
         try {
             String userEmail = auth.getName();
             String facilityName = (String) request.get("facilityName");
-            LocalDateTime startTime = LocalDateTime.parse((String) request.get("startTime"));
-            LocalDateTime endTime = LocalDateTime.parse((String) request.get("endTime"));
+            LocalDateTime startTime = parseDateTime((String) request.get("startTime"));
+            LocalDateTime endTime = parseDateTime((String) request.get("endTime"));
             String notes = (String) request.get("notes");
 
             Booking booking = bookingService.createBooking(facilityName, startTime, endTime, userEmail, notes);
@@ -43,6 +44,14 @@ public class BookingController {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    private LocalDateTime parseDateTime(String value) {
+        try {
+            return LocalDateTime.parse(value);
+        } catch (Exception ignored) {
+            return OffsetDateTime.parse(value).toLocalDateTime();
         }
     }
 
