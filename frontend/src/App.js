@@ -12,6 +12,7 @@ import Facilities from "./pages/Facilities";
 import Assets from "./pages/Assets";
 import AdminUsers from "./pages/AdminUsers";
 import IncidentTickets from "./pages/IncidentTickets";
+import Notifications from "./pages/Notifications";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -93,6 +94,15 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                   <IncidentTickets />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                  <Notifications />
                 </ProtectedRoute>
               }
             />
