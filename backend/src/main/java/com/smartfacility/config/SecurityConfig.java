@@ -32,10 +32,12 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // OAuth2 login stores transient authorization state between redirect and callback.
+                // IF_REQUIRED keeps JWT flows working while allowing OAuth2 callback state validation.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/register", "/auth/login").permitAll()
+                    .requestMatchers("/auth/register", "/auth/login", "/auth/oauth/google/enabled").permitAll()
                     .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
