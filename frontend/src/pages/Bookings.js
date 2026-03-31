@@ -11,8 +11,8 @@ const Bookings = () => {
   const fetchUserBookings = useCallback(async () => {
     try {
       const endpoint = user?.role === "STUDENT"
-        ? "http://localhost:8080/api/bookings/my"
-        : "http://localhost:8080/api/bookings";
+        ? "http://localhost:8081/api/bookings/my"
+        : "http://localhost:8081/api/bookings";
 
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
@@ -38,7 +38,7 @@ const Bookings = () => {
   const handleCancel = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/bookings/${bookingId}/cancel`,
+        `http://localhost:8081/api/bookings/${bookingId}/cancel`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +62,7 @@ const Bookings = () => {
   const handleConfirm = async (bookingId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/bookings/${bookingId}/confirm`,
+        `http://localhost:8081/api/bookings/${bookingId}/confirm`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },

@@ -14,12 +14,15 @@ const Register = () => {
   const [oauthMessage, setOauthMessage] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
-  const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
+  const googleOAuthUrl = "http://localhost:8081/api/oauth2/authorization/google";
 
   useEffect(() => {
     const checkOauthStatus = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/auth/oauth/google/enabled");
+        const res = await fetch(
+          `http://localhost:8081/api/auth/oauth/google/enabled?ts=${Date.now()}`,
+          { cache: "no-store" }
+        );
         const data = await res.json();
         setOauthEnabled(Boolean(data.enabled));
         if (!data.enabled) {

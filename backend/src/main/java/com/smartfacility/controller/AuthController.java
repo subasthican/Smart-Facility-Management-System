@@ -75,11 +75,11 @@ public class AuthController {
 
         boolean hasClientId = googleClientId != null
             && !googleClientId.isBlank()
-            && !googleClientId.startsWith("local-dev-");
+            && !"local-dev-client-id".equals(googleClientId);
 
         boolean hasClientSecret = googleClientSecret != null
             && !googleClientSecret.isBlank()
-            && !googleClientSecret.startsWith("local-dev-");
+            && !"local-dev-client-secret".equals(googleClientSecret);
 
         boolean enabled = hasClientId && hasClientSecret;
 
