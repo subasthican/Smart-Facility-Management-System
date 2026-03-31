@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -10,9 +10,29 @@ const Register = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [oauthEnabled, setOauthEnabled] = useState(false);
+  const [oauthMessage, setOauthMessage] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
   const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
+
+  useEffect(() => {
+    const checkOauthStatus = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/auth/oauth/google/enabled");
+        const data = await res.json();
+        setOauthEnabled(Boolean(data.enabled));
+        if (!data.enabled) {
+          setOauthMessage(data.message || "Google OAuth is not configured.");
+        }
+      } catch (e) {
+        setOauthEnabled(false);
+        setOauthMessage("Cannot verify OAuth configuration.");
+      }
+    };
+
+    checkOauthStatus();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,7 +122,15 @@ const Register = () => {
           </form>
 
           <div style={styles.divider}>OR</div>
-          <a href={googleOAuthUrl} style={styles.oauthBtn}>Sign up with Google</a>
+          {oauthEnabled ? (
+            <a href={googleOAuthUrl} style={styles.oauthBtn}>Sign up with Google</a>
+          ) : (
+            <button type="button" style={styles.oauthBtnDisabled} disabled>
+              Sign up with Google (Not Configured)
+            </button>
+          )}
+
+          {!oauthEnabled && oauthMessage && <p style={styles.oauthHint}>{oauthMessage}</p>}
 
           <p style={styles.link}>
             Already have an account? <Link to="/login" style={styles.linkText}>Sign in</Link>
@@ -198,34 +226,47 @@ const styles = {
   },
   divider: {
     textAlign: "center",
-    margin: "12px 0",
-    color: "#777",
-    fontSize: "13px",
+    color: "#9ca3af",
+    margin: "24px 0",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   oauthBtn: {
     display: "block",
     width: "100%",
+    padding: "12px",
+    backgroundColor: "#fff",
+    color: "#1d1d1f",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "14px",
     textDecoration: "none",
     textAlign: "center",
     boxSizing: "border-box",
     fontWeight: "600",
   },
-  divider: {
+  oauthBtnDisabled: {
+    display: "block",
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#f3f4f6",
+    color: "#6b7280",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "14px",
     textAlign: "center",
-    color: "#9ca3af",
-    margin: "24px 0",
-    fontSize: "12px",
+    boxSizing: "border-box",
     fontWeight: "600",
+    cursor: "not-allowed",
+  },
+  oauthHint: {
+    marginTop: "10px",
+    color: "#b45309",
+    fontSize: "12px",
+    textAlign: "center",
   },
   link: {
     textAlign: "center",
-  divider: {
-    textAlign: "center",
-    color: "#9ca3af",
-    margin: "24px 0",
-    fontSize: "12px",
-    fontWeight: "600",
-  },
     marginTop: "20px",
     fontSize: "14px",
     color: "#6b7280",

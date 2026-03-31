@@ -29,6 +29,25 @@ const Dashboard = () => {
     }
   ];
 
+  if (user?.role === "ADMIN") {
+    cards.push(
+      {
+        title: "Student Management",
+        description: "Add, edit, and activate or deactivate student accounts",
+        icon: "🎓",
+        link: "/admin/students",
+        color: "#2563eb"
+      },
+      {
+        title: "Staff Management",
+        description: "Add, edit, and activate or deactivate staff accounts",
+        icon: "🧑‍💼",
+        link: "/admin/staff",
+        color: "#0f766e"
+      }
+    );
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>

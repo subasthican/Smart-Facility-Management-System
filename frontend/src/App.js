@@ -11,6 +11,8 @@ import CreateBooking from "./pages/CreateBooking";
 import Facilities from "./pages/Facilities";
 import Assets from "./pages/Assets";
 import AdminUsers from "./pages/AdminUsers";
+import IncidentTickets from "./pages/IncidentTickets";
+import Notifications from "./pages/Notifications";
 import OAuth2Callback from "./pages/OAuth2Callback";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -72,10 +74,37 @@ function App() {
             />
 
             <Route
-              path="/admin/users"
+              path="/admin/students"
               element={
                 <ProtectedRoute allowedRoles={["ADMIN"]}>
-                  <AdminUsers />
+                  <AdminUsers managedRole="STUDENT" />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/staff"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminUsers managedRole="STAFF" />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/tickets"
+              element={
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                  <IncidentTickets />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                  <Notifications />
                 </ProtectedRoute>
               }
             />

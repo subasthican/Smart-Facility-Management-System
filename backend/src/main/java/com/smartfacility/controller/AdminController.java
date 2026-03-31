@@ -68,6 +68,12 @@ public class AdminController {
         }
     }
 
+    // POST /api/admin/users/list - fallback list endpoint when GET is restricted upstream
+    @PostMapping("/users/list")
+    public ResponseEntity<?> listUsers() {
+        return getUsers();
+    }
+
     // PUT /api/admin/users/{id}/status - Admin sets active/inactive
     @PutMapping("/users/{id}/status")
     public ResponseEntity<?> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
@@ -82,6 +88,31 @@ public class AdminController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User status updated successfully");
             response.put("userId", updated.getId());
+            response.put("active", updated.getActive());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // PUT /api/admin/users/{id} - Admin updates basic user details
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        try {
+            User updated = authService.updateUserDetailsByAdmin(
+                    id,
+                    request.get("fullName"),
+                    request.get("email")
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User updated successfully");
+            response.put("userId", updated.getId());
+            response.put("fullName", updated.getFullName());
+            response.put("email", updated.getEmail());
+            response.put("role", updated.getRole().name());
             response.put("active", updated.getActive());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {

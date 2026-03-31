@@ -86,6 +86,34 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    // Admin updates basic details for staff/student accounts
+    public User updateUserDetailsByAdmin(Long userId, String fullName, String email) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException("Cannot modify admin account");
+        }
+
+        String normalizedName = fullName == null ? "" : fullName.trim();
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
+
+        if (normalizedName.isEmpty()) {
+            throw new RuntimeException("Full name is required");
+        }
+        if (normalizedEmail.isEmpty()) {
+            throw new RuntimeException("Email is required");
+        }
+
+        if (!normalizedEmail.equals(user.getEmail()) && userRepository.existsByEmail(normalizedEmail)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        user.setFullName(normalizedName);
+        user.setEmail(normalizedEmail);
+        return userRepository.save(user);
+    }
+
     // Login and return JWT token
     public String login(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);

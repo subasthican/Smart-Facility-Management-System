@@ -37,3 +37,17 @@ INSERT INTO users (full_name, email, password, role) VALUES
     ('Staff User', 'staff@smartfacility.com', '$2a$10$slYQmyNdGzin7olVN3DOCe1RVSubLr4f59JRnWnWbVxVvqtoHlxMi', 'STAFF'),
     ('Student User', 'student@smartfacility.com', '$2a$10$slYQmyNdGzin7olVN3DOCe1RVSubLr4f59JRnWnWbVxVvqtoHlxMi', 'STUDENT')
 ON CONFLICT (email) DO NOTHING;
+
+-- Create Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_email VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT,
+    type VARCHAR(50) NOT NULL DEFAULT 'INFO',
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    related_entity VARCHAR(100),
+    related_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_email) REFERENCES users(email) ON DELETE CASCADE
+);

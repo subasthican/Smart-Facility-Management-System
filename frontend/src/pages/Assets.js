@@ -1,7 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+
+const emptyForm = {
+  assetName: "",
+  category: "",
+  serialNumber: "",
+  condition: "GOOD",
+  facilityId: "",
+};
+
+const parseJsonSafely = async (response) => {
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+};
 
 const getConditionStyle = (condition) => ({
   ...styles.pill,
@@ -22,95 +43,156 @@ const getConditionStyle = (condition) => ({
 const Assets = () => {
   const { token, user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
+
   const [assets, setAssets] = useState([]);
   const [facilities, setFacilities] = useState([]);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [filterFacilityId, setFilterFacilityId] = useState("ALL");
-  const [form, setForm] = useState({
-    assetName: "",
-    category: "",
-    serialNumber: "",
-    condition: "GOOD",
-    facilityId: "",
-  });
 
-  const fetchFacilities = async () => {
-    const res = await fetch(`${API_BASE}/facilities`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.json();
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("create");
+  const [selectedId, setSelectedId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState(emptyForm);
 
-  const fetchAssets = async () => {
-    const url =
-      filterFacilityId === "ALL"
-        ? `${API_BASE}/assets`
-        : `${API_BASE}/assets/facility/${filterFacilityId}`;
-
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.json();
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const [fData, aData] = await Promise.all([fetchFacilities(), fetchAssets()]);
-      setFacilities(fData);
-      setAssets(aData);
+      const assetsUrl =
+        filterFacilityId === "ALL"
+          ? `${API_BASE}/assets`
+          : `${API_BASE}/assets/facility/${filterFacilityId}`;
+
+      const [fRes, aRes] = await Promise.all([
+        fetch(`${API_BASE}/facilities`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(assetsUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const fData = await parseJsonSafely(fRes);
+      const aData = await parseJsonSafely(aRes);
+
+      if (!fRes.ok) {
+        throw new Error(fData?.error || `Failed to load facilities (HTTP ${fRes.status})`);
+      }
+      if (!aRes.ok) {
+        throw new Error(aData?.error || `Failed to load assets (HTTP ${aRes.status})`);
+      }
+
+      setFacilities(Array.isArray(fData) ? fData : []);
+      setAssets(Array.isArray(aData) ? aData : []);
     } catch (e) {
-      setError("Failed to load assets data");
+      setError(e.message || "Failed to load assets data");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, filterFacilityId]);
 
   useEffect(() => {
     loadData();
-  }, [token, filterFacilityId]);
+  }, [loadData]);
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setModalMode("create");
+    setSelectedId(null);
+    setForm(emptyForm);
+  };
+
+  const openAddModal = () => {
     setError("");
+    setMessage("");
+    setModalMode("create");
+    setSelectedId(null);
+    setForm(emptyForm);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (asset) => {
+    setError("");
+    setMessage("");
+    setModalMode("edit");
+    setSelectedId(asset.id);
+    setForm({
+      assetName: asset.assetName || "",
+      category: asset.category || "",
+      serialNumber: asset.serialNumber || "",
+      condition: asset.condition || "GOOD",
+      facilityId: String(asset.facilityId || ""),
+    });
+    setIsModalOpen(true);
+  };
+
+  const submitModal = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    setMessage("");
+
     try {
+      if (!form.assetName.trim() || !form.category.trim() || !form.serialNumber.trim() || !form.facilityId) {
+        throw new Error("Asset name, category, serial number and facility are required");
+      }
+
       const payload = {
-        ...form,
+        assetName: form.assetName.trim(),
+        category: form.category.trim(),
+        serialNumber: form.serialNumber.trim(),
+        condition: form.condition,
         facilityId: Number(form.facilityId),
       };
-      const res = await fetch(`${API_BASE}/assets`, {
-        method: "POST",
+
+      const url = modalMode === "create"
+        ? `${API_BASE}/assets`
+        : `${API_BASE}/assets/${selectedId}`;
+      const method = modalMode === "create" ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+
+      const data = await parseJsonSafely(res);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to create asset");
+        throw new Error(data?.error || `Failed to ${modalMode} asset (HTTP ${res.status})`);
       }
-      setForm({ assetName: "", category: "", serialNumber: "", condition: "GOOD", facilityId: "" });
-      loadData();
+
+      setMessage(modalMode === "create" ? "Asset added successfully" : "Asset updated successfully");
+      resetModal();
+      await loadData();
     } catch (e) {
-      setError(e.message || "Failed to create asset");
+      setError(e.message || "Operation failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this asset?")) return;
+    setError("");
+    setMessage("");
+
     try {
       const res = await fetch(`${API_BASE}/assets/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data = await parseJsonSafely(res);
       if (!res.ok) {
-        throw new Error(data.error || "Failed to delete asset");
+        throw new Error(data?.error || `Failed to delete asset (HTTP ${res.status})`);
       }
-      loadData();
+      setMessage("Asset deleted successfully");
+      await loadData();
     } catch (e) {
       setError(e.message || "Failed to delete asset");
     }
@@ -123,56 +205,18 @@ const Assets = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Assets Catalogue</h2>
-      <p style={styles.subtitle}>Track all equipment across facilities with instant filtering.</p>
-      {error && <p style={styles.error}>{error}</p>}
+      <div style={styles.headerRow}>
+        <div>
+          <h2 style={styles.title}>Assets Catalogue</h2>
+          <p style={styles.subtitle}>Track all equipment across facilities with instant filtering.</p>
+        </div>
+        {isAdmin && (
+          <button style={styles.button} type="button" onClick={openAddModal}>Add Asset</button>
+        )}
+      </div>
 
-      {isAdmin && (
-        <form onSubmit={handleCreate} style={styles.form}>
-          <input
-            style={styles.input}
-            placeholder="Asset Name"
-            value={form.assetName}
-            onChange={(e) => setForm({ ...form, assetName: e.target.value })}
-            required
-          />
-          <input
-            style={styles.input}
-            placeholder="Category"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            required
-          />
-          <input
-            style={styles.input}
-            placeholder="Serial Number"
-            value={form.serialNumber}
-            onChange={(e) => setForm({ ...form, serialNumber: e.target.value })}
-            required
-          />
-          <select
-            style={styles.input}
-            value={form.condition}
-            onChange={(e) => setForm({ ...form, condition: e.target.value })}
-          >
-            <option value="GOOD">GOOD</option>
-            <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
-            <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
-          </select>
-          <select
-            style={styles.input}
-            value={form.facilityId}
-            onChange={(e) => setForm({ ...form, facilityId: e.target.value })}
-            required
-          >
-            <option value="">Select Facility</option>
-            {facilities.map((f) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
-            ))}
-          </select>
-          <button style={styles.button} type="submit">Add Asset</button>
-        </form>
-      )}
+      {message && <p style={styles.success}>{message}</p>}
+      {error && <p style={styles.error}>{error}</p>}
 
       <div style={styles.filterBar}>
         <label>Filter by Facility:&nbsp;</label>
@@ -209,9 +253,12 @@ const Assets = () => {
                   <td style={{ ...styles.td, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{a.serialNumber}</td>
                   <td style={styles.td}><span style={getConditionStyle(a.condition)}>{a.condition}</span></td>
                   <td style={styles.td}>{facilityName(a.facilityId)}</td>
-                  <td style={styles.td}>
+                  <td style={styles.tdActions}>
                     {isAdmin ? (
-                      <button style={styles.deleteBtn} onClick={() => handleDelete(a.id)}>Delete</button>
+                      <>
+                        <button style={styles.editBtn} type="button" onClick={() => openEditModal(a)}>Update</button>
+                        <button style={styles.deleteBtn} type="button" onClick={() => handleDelete(a.id)}>Delete</button>
+                      </>
                     ) : (
                       <span style={styles.readOnly}>Read-only</span>
                     )}
@@ -220,6 +267,64 @@ const Assets = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div style={styles.modalBackdrop}>
+          <div style={styles.modal}>
+            <h3 style={styles.modalTitle}>{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
+            <form onSubmit={submitModal} style={styles.form}>
+              <input
+                style={styles.input}
+                placeholder="Asset Name"
+                value={form.assetName}
+                onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))}
+                required
+              />
+              <input
+                style={styles.input}
+                placeholder="Category"
+                value={form.category}
+                onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
+                required
+              />
+              <input
+                style={styles.input}
+                placeholder="Serial Number"
+                value={form.serialNumber}
+                onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))}
+                required
+              />
+              <select
+                style={styles.input}
+                value={form.condition}
+                onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}
+              >
+                <option value="GOOD">GOOD</option>
+                <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
+                <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
+              </select>
+              <select
+                style={styles.input}
+                value={form.facilityId}
+                onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))}
+                required
+              >
+                <option value="">Select Facility</option>
+                {facilities.map((f) => (
+                  <option key={f.id} value={f.id}>{f.name}</option>
+                ))}
+              </select>
+
+              <div style={styles.modalActions}>
+                <button type="button" style={styles.cancelBtn} onClick={resetModal} disabled={submitting}>Cancel</button>
+                <button type="submit" style={styles.button} disabled={submitting}>
+                  {submitting ? "Saving..." : modalMode === "create" ? "Add Asset" : "Update Asset"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
@@ -233,6 +338,13 @@ const styles = {
     border: "1px solid rgba(15, 23, 42, 0.08)",
     borderRadius: "18px",
     boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
+  },
+  headerRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
   },
   title: {
     fontSize: "30px",
@@ -250,11 +362,6 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: "10px",
-    marginBottom: "20px",
-    background: "rgba(255,255,255,0.72)",
-    border: "1px solid rgba(15, 23, 42, 0.08)",
-    borderRadius: "14px",
-    padding: "12px",
   },
   input: {
     padding: "10px",
@@ -298,6 +405,13 @@ const styles = {
     borderBottom: "1px solid rgba(148,163,184,0.2)",
     verticalAlign: "middle",
   },
+  tdActions: {
+    padding: "10px 14px",
+    borderBottom: "1px solid rgba(148,163,184,0.2)",
+    display: "flex",
+    gap: "8px",
+    flexWrap: "wrap",
+  },
   row: {
     backgroundColor: "rgba(255,255,255,0.85)",
   },
@@ -313,6 +427,15 @@ const styles = {
     color: "#334155",
     fontWeight: "600",
   },
+  editBtn: {
+    border: "1px solid #93c5fd",
+    background: "#eff6ff",
+    color: "#1d4ed8",
+    fontWeight: "700",
+    borderRadius: "8px",
+    padding: "7px 10px",
+    cursor: "pointer",
+  },
   deleteBtn: {
     backgroundColor: "#dc2626",
     color: "#fff",
@@ -320,6 +443,15 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer",
     padding: "6px 10px",
+    fontWeight: "600",
+  },
+  success: {
+    color: "#166534",
+    backgroundColor: "#dcfce7",
+    border: "1px solid #bbf7d0",
+    borderRadius: "10px",
+    padding: "10px",
+    marginBottom: "10px",
     fontWeight: "600",
   },
   error: {
@@ -348,6 +480,44 @@ const styles = {
     padding: "16px",
     textAlign: "center",
     fontWeight: "600",
+  },
+  modalBackdrop: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(15, 23, 42, 0.48)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 999,
+    padding: "18px",
+  },
+  modal: {
+    width: "100%",
+    maxWidth: "720px",
+    background: "#ffffff",
+    borderRadius: "12px",
+    boxShadow: "0 20px 45px rgba(2, 6, 23, 0.3)",
+    padding: "20px",
+  },
+  modalTitle: {
+    marginTop: 0,
+    marginBottom: "14px",
+    color: "#0f172a",
+  },
+  modalActions: {
+    marginTop: "10px",
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "8px",
+  },
+  cancelBtn: {
+    border: "1px solid #cbd5e1",
+    background: "#ffffff",
+    color: "#334155",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    cursor: "pointer",
+    fontWeight: "700",
   },
 };
 

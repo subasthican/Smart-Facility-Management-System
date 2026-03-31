@@ -1,7 +1,7 @@
 package com.smartfacility.config;
 
 import com.smartfacility.model.User;
-import com.smartfacility.service.AuthService;
+import com.smartfacility.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,14 +17,14 @@ import java.io.IOException;
 @Component
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final AuthService authService;
+    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
     @Value("${frontend.app-url:http://localhost:3000}")
     private String frontendAppUrl;
 
-    public OAuth2LoginSuccessHandler(AuthService authService, JwtUtil jwtUtil) {
-        this.authService = authService;
+    public OAuth2LoginSuccessHandler(UserRepository userRepository, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
     }
 
@@ -42,7 +42,15 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             return;
         }
 
-        User user = authService.findOrCreateOAuthUser(name, email);
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
+            User created = new User();
+            created.setFullName((name == null || name.isBlank()) ? "OAuth User" : name);
+            created.setEmail(email);
+            created.setRole(User.Role.STUDENT);
+            // OAuth users don't use password login, but DB column is non-null.
+            created.setPassword("OAUTH2_USER");
+            return userRepository.save(created);
+        });
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
         String redirectUrl = UriComponentsBuilder
