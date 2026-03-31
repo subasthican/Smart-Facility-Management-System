@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/Notifications.css';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = 'http://localhost:8081/api';
 
 const Notifications = () => {
   const { user } = useAuth();
