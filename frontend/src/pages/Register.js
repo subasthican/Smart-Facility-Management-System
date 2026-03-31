@@ -11,6 +11,7 @@ const Register = () => {
   const [success, setSuccess] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
+  const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,6 +69,8 @@ const Register = () => {
           </select>
           <button type="submit" style={styles.button}>Register</button>
         </form>
+        <div style={styles.divider}>or</div>
+        <a href={googleOAuthUrl} style={styles.oauthBtn}>Sign up with Google</a>
         <p style={styles.link}>
           Already have an account? <Link to="/login">Login</Link>
         </p>
@@ -113,6 +116,25 @@ const styles = {
     borderRadius: "5px",
     fontSize: "16px",
     cursor: "pointer",
+  },
+  divider: {
+    textAlign: "center",
+    margin: "12px 0",
+    color: "#777",
+    fontSize: "13px",
+  },
+  oauthBtn: {
+    display: "block",
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#fff",
+    color: "#1d1d1f",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    fontSize: "15px",
+    textDecoration: "none",
+    textAlign: "center",
+    boxSizing: "border-box",
   },
   error: {
     color: "red",

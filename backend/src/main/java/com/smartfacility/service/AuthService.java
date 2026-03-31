@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -51,5 +52,23 @@ public class AuthService {
         }
 
         return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+    }
+
+    // OAuth login/register: create user on first login and return existing user otherwise
+    public User findOrCreateOAuthUser(String fullName, String email) {
+        Optional<User> existing = userRepository.findByEmail(email);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
+        User user = new User();
+        user.setFullName((fullName == null || fullName.isBlank()) ? "OAuth User" : fullName);
+        user.setEmail(email);
+        user.setRole(User.Role.STUDENT);
+
+        // Keep password non-null for schema compatibility.
+        user.setPassword(passwordEncoder.encode("OAUTH2_" + UUID.randomUUID()));
+
+        return userRepository.save(user);
     }
 }
