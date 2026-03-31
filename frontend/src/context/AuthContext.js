@@ -87,6 +87,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login directly from an OAuth callback token
+  const loginWithToken = (jwtToken) => {
+    if (!jwtToken) {
+      throw new Error("Missing OAuth token");
+    }
+
+    localStorage.setItem("token", jwtToken);
+    setToken(jwtToken);
+
+    const payload = JSON.parse(atob(jwtToken.split(".")[1]));
+    setUser({ email: payload.sub, role: payload.role });
+  };
+
   // Logout
   const logout = () => {
     localStorage.removeItem("token");
@@ -95,7 +108,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

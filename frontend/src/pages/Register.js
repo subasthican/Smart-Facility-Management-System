@@ -12,6 +12,7 @@ const Register = () => {
   const [submitting, setSubmitting] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+  const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,6 +100,9 @@ const Register = () => {
               {submitting ? "Creating account..." : "Create Account"}
             </button>
           </form>
+
+          <div style={styles.divider}>OR</div>
+          <a href={googleOAuthUrl} style={styles.oauthBtn}>Sign up with Google</a>
 
           <p style={styles.link}>
             Already have an account? <Link to="/login" style={styles.linkText}>Sign in</Link>
@@ -192,8 +196,36 @@ const styles = {
     boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
     marginTop: "12px",
   },
+  divider: {
+    textAlign: "center",
+    margin: "12px 0",
+    color: "#777",
+    fontSize: "13px",
+  },
+  oauthBtn: {
+    display: "block",
+    width: "100%",
+    textDecoration: "none",
+    textAlign: "center",
+    boxSizing: "border-box",
+    fontWeight: "600",
+  },
+  divider: {
+    textAlign: "center",
+    color: "#9ca3af",
+    margin: "24px 0",
+    fontSize: "12px",
+    fontWeight: "600",
+  },
   link: {
     textAlign: "center",
+  divider: {
+    textAlign: "center",
+    color: "#9ca3af",
+    margin: "24px 0",
+    fontSize: "12px",
+    fontWeight: "600",
+  },
     marginTop: "20px",
     fontSize: "14px",
     color: "#6b7280",

@@ -9,6 +9,7 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,6 +64,10 @@ const Login = () => {
               {submitting ? "Signing in..." : "Sign In"}
             </button>
           </form>
+
+          <div style={styles.divider}>OR</div>
+
+          <a href={googleOAuthUrl} style={styles.oauthBtn}>Continue with Google</a>
 
           <div style={styles.divider}>OR</div>
 
@@ -160,6 +165,20 @@ const styles = {
     transition: "all 0.3s ease",
     boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
     marginTop: "12px",
+  },
+  oauthBtn: {
+    display: "block",
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#fff",
+    color: "#1d1d1f",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "14px",
+    textDecoration: "none",
+    textAlign: "center",
+    boxSizing: "border-box",
+    fontWeight: "600",
   },
   divider: {
     textAlign: "center",
