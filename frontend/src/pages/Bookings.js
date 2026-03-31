@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
@@ -8,11 +8,7 @@ const Bookings = () => {
   const [error, setError] = useState("");
   const { token, user } = useAuth();
 
-  useEffect(() => {
-    fetchUserBookings();
-  }, [token]);
-
-  const fetchUserBookings = async () => {
+  const fetchUserBookings = useCallback(async () => {
     try {
       const endpoint = user?.role === "STUDENT"
         ? "http://localhost:8080/api/bookings/my"
@@ -33,7 +29,11 @@ const Bookings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, user?.role]);
+
+  useEffect(() => {
+    fetchUserBookings();
+  }, [fetchUserBookings]);
 
   const handleCancel = async (bookingId) => {
     try {
