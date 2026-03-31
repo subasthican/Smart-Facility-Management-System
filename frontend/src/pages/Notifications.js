@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/Notifications.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,11 +10,7 @@ const Notifications = () => {
   const [filter, setFilter] = useState('all'); // all, unread, read
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadNotifications();
-  }, [user]);
-
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     if (!user) return;
     try {
       setLoading(true);
@@ -26,7 +22,11 @@ const Notifications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   const markAsRead = async (id) => {
     try {

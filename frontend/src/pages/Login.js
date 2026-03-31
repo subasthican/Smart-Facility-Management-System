@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -7,9 +7,29 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [oauthEnabled, setOauthEnabled] = useState(false);
+  const [oauthMessage, setOauthMessage] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
   const googleOAuthUrl = "http://localhost:8080/api/oauth2/authorization/google";
+
+  useEffect(() => {
+    const checkOauthStatus = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/auth/oauth/google/enabled");
+        const data = await res.json();
+        setOauthEnabled(Boolean(data.enabled));
+        if (!data.enabled) {
+          setOauthMessage(data.message || "Google OAuth is not configured.");
+        }
+      } catch (e) {
+        setOauthEnabled(false);
+        setOauthMessage("Cannot verify OAuth configuration.");
+      }
+    };
+
+    checkOauthStatus();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,7 +87,15 @@ const Login = () => {
 
           <div style={styles.divider}>OR</div>
 
-          <a href={googleOAuthUrl} style={styles.oauthBtn}>Continue with Google</a>
+          {oauthEnabled ? (
+            <a href={googleOAuthUrl} style={styles.oauthBtn}>Continue with Google</a>
+          ) : (
+            <button type="button" style={styles.oauthBtnDisabled} disabled>
+              Continue with Google (Not Configured)
+            </button>
+          )}
+
+          {!oauthEnabled && oauthMessage && <p style={styles.oauthHint}>{oauthMessage}</p>}
 
           <div style={styles.divider}>OR</div>
 
@@ -179,6 +207,26 @@ const styles = {
     textAlign: "center",
     boxSizing: "border-box",
     fontWeight: "600",
+  },
+  oauthBtnDisabled: {
+    display: "block",
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#f3f4f6",
+    color: "#6b7280",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "14px",
+    textAlign: "center",
+    boxSizing: "border-box",
+    fontWeight: "600",
+    cursor: "not-allowed",
+  },
+  oauthHint: {
+    marginTop: "10px",
+    color: "#b45309",
+    fontSize: "12px",
+    textAlign: "center",
   },
   divider: {
     textAlign: "center",

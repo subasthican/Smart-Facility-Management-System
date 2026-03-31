@@ -3,6 +3,7 @@ package com.smartfacility.controller;
 import com.smartfacility.model.User;
 import com.smartfacility.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,12 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id:}")
+    private String googleClientId;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
+    private String googleClientSecret;
 
     // POST /api/auth/register
     @PostMapping("/register")
@@ -60,5 +67,28 @@ public class AuthController {
             return ResponseEntity.status(401).body(error);
         }
     }
+
+        // GET /api/auth/oauth/google/enabled
+        @GetMapping("/oauth/google/enabled")
+        public ResponseEntity<?> isGoogleOauthEnabled() {
+        Map<String, Object> response = new HashMap<>();
+
+        boolean hasClientId = googleClientId != null
+            && !googleClientId.isBlank()
+            && !googleClientId.startsWith("local-dev-");
+
+        boolean hasClientSecret = googleClientSecret != null
+            && !googleClientSecret.isBlank()
+            && !googleClientSecret.startsWith("local-dev-");
+
+        boolean enabled = hasClientId && hasClientSecret;
+
+        response.put("enabled", enabled);
+        response.put("message", enabled
+            ? "Google OAuth is configured"
+            : "Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.");
+
+        return ResponseEntity.ok(response);
+        }
 
 }
