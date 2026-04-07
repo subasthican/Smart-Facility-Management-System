@@ -22,7 +22,8 @@ const Navbar = () => {
         {user && <Link to="/assets" style={styles.link}>Assets</Link>}
         {user && <Link to="/tickets" style={styles.link}>🎫 Tickets</Link>}
         {user && <Link to="/notifications" style={styles.link}>🔔 Notifications</Link>}
-        {user?.role === "ADMIN" && <Link to="/admin/users" style={styles.link}>User Management</Link>}
+        {user?.role === "ADMIN" && <Link to="/admin/students" style={styles.link}>Students</Link>}
+        {user?.role === "ADMIN" && <Link to="/admin/staff" style={styles.link}>Staff</Link>}
         {user ? (
           <>
             <span style={styles.role}>{user.role}</span>

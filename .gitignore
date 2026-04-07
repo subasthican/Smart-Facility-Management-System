@@ -1,1 +1,9 @@
 MEMBER3_SETUP_GUIDE.md
+
+# Local secrets and runtime env
+.env
+.env.*
+!.env.example
+
+# Local logs/pid helpers
+*.pid
