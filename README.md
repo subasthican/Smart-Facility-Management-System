@@ -34,6 +34,18 @@ Smart-Facility-Management-System/
 
 This guide will help you set up the entire Smart Facility Management System from scratch, including database, backend, and frontend.
 
+### 🚀 Quick Start (Run Whole Project)
+
+If you already have PostgreSQL, Java, Maven, and Node.js installed, run everything with one command:
+
+```bash
+./start.sh
+```
+
+This starts PostgreSQL (if available via Homebrew), backend on `8080`, and frontend on `3000`.
+
+Use the manual steps below only if you want to run each service separately.
+
 ### ✅ Prerequisites
 
 You must have the following installed on your machine:

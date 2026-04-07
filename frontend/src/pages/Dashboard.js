@@ -11,35 +11,35 @@ const Dashboard = () => {
       description: "View and manage your facility bookings",
       icon: "📅",
       link: "/bookings",
-      color: "#6366f1"
+      color: "#0f766e"
     },
     {
       title: "Facilities",
       description: "Explore available facilities and resources",
       icon: "🏢",
       link: "/facilities",
-      color: "#ec4899"
+      color: "#0f172a"
     },
     {
       title: "Assets",
       description: "Browse and manage assets",
       icon: "🔧",
       link: "/assets",
-      color: "#f59e0b"
+      color: "#334155"
     },
     {
       title: "Incident Tickets",
       description: "Report issues and track ticket progress",
       icon: "🎫",
       link: "/tickets",
-      color: "#ef4444"
+      color: "#be123c"
     },
     {
       title: "Notifications",
       description: "View system alerts and booking updates",
       icon: "🔔",
       link: "/notifications",
-      color: "#10b981"
+      color: "#1d4ed8"
     }
   ];
 
@@ -50,7 +50,7 @@ const Dashboard = () => {
         description: "Add, edit, and activate or deactivate student accounts",
         icon: "🎓",
         link: "/admin/students",
-        color: "#2563eb"
+        color: "#0369a1"
       },
       {
         title: "Staff Management",
@@ -106,12 +106,12 @@ const styles = {
   title: {
     fontSize: "32px",
     fontWeight: "700",
-    color: "#1f2937",
+    color: "#0f172a",
     marginBottom: "8px",
   },
   subtitle: {
     fontSize: "16px",
-    color: "#6b7280",
+    color: "#475569",
   },
   grid: {
     display: "grid",
@@ -120,10 +120,11 @@ const styles = {
     marginBottom: "40px",
   },
   card: {
-    backgroundColor: "white",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(241,245,249,0.86))",
+    border: "1px solid rgba(15, 23, 42, 0.12)",
     padding: "24px",
-    borderRadius: "12px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
+    borderRadius: "16px",
+    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.1)",
     transition: "all 0.3s ease",
     cursor: "pointer",
     position: "relative",
@@ -136,34 +137,35 @@ const styles = {
   cardTitle: {
     fontSize: "18px",
     fontWeight: "700",
-    color: "#1f2937",
+    color: "#0f172a",
     marginBottom: "8px",
   },
   cardDescription: {
     fontSize: "14px",
-    color: "#6b7280",
+    color: "#475569",
     marginBottom: "12px",
   },
   cardArrow: {
     fontSize: "20px",
-    color: "#9ca3af",
+    color: "#64748b",
     transition: "all 0.3s ease",
   },
   ctaBox: {
-    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
     color: "white",
     padding: "40px",
-    borderRadius: "12px",
+    borderRadius: "16px",
     textAlign: "center",
+    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.22)",
   },
   ctaBtn: {
     display: "inline-block",
     marginTop: "16px",
     padding: "12px 32px",
     backgroundColor: "white",
-    color: "#6366f1",
+    color: "#0f172a",
     textDecoration: "none",
-    borderRadius: "8px",
+    borderRadius: "10px",
     fontWeight: "600",
     transition: "all 0.3s ease",
   },
