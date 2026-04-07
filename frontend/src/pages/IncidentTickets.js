@@ -189,8 +189,8 @@ const IncidentTickets = () => {
 
       {editingTicket && (
         <AppModal onClose={() => setEditingTicket(null)}>
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
-            <h2 className="mb-3 text-xl font-bold text-slate-900">Edit Ticket</h2>
+          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <h2 className="mb-4 text-xl font-bold text-slate-900">Edit Ticket</h2>
             <div className="grid gap-3">
               <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
               <textarea className="min-h-24 rounded-xl border border-slate-300 px-3 py-2 text-sm" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
