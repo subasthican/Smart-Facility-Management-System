@@ -44,19 +44,31 @@ const MainLayout = ({ children }) => {
         {children}
       </main>
 
-      <footer className="mt-4 border-t border-slate-900/10 bg-gradient-to-b from-white/60 to-slate-100/75 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-start justify-between gap-5 px-6 py-6">
+      <footer className="mt-4 border-t border-slate-900/10 bg-gradient-to-b from-white/70 to-slate-100/80 backdrop-blur-md">
+        <div className="mx-auto grid w-full max-w-[1200px] gap-6 px-6 py-6 md:grid-cols-3">
           <div className="max-w-sm">
-            <p className="mb-1 text-sm font-semibold text-slate-900">Smart Facility Management System</p>
-            <p className="text-sm text-slate-600">Precision tools for campus operations and scheduling.</p>
+            <p className="mb-2 text-sm font-semibold text-slate-900">Smart Facility Management System</p>
+            <p className="text-sm leading-relaxed text-slate-600">
+              A student management platform for bookings, facilities, assets, incidents, and role-based access.
+            </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link to="/bookings" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Bookings</Link>
-            <Link to="/facilities" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Facilities</Link>
-            <Link to="/assets" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Assets</Link>
+
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Quick Links</p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Home</Link>
+              <Link to="/dashboard" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Dashboard</Link>
+              <Link to="/bookings" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Bookings</Link>
+              <Link to="/facilities" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Facilities</Link>
+              <Link to="/assets" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Assets</Link>
+            </div>
           </div>
-          <div className="ml-auto">
-            <p className="text-xs text-slate-500">2026 Smart Facility</p>
+
+          <div className="md:text-right">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Support</p>
+            <p className="text-sm text-slate-600">Help desk: support@smartfacility.local</p>
+            <p className="text-sm text-slate-600">Version: Campus release</p>
+            <p className="mt-2 text-xs text-slate-500">2026 Smart Facility</p>
           </div>
         </div>
       </footer>
