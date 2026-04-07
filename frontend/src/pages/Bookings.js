@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -96,22 +97,21 @@ const Bookings = () => {
 
   return (
     <section className="sf-page">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="sf-title">{user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}</h2>
-          <p className="sf-subtitle mt-1">Track reservations with real-time status.</p>
-        </div>
-        {user?.role === "STUDENT" && (
-          <Link to="/create-booking" className="sf-btn-primary no-underline">
-            + New Booking
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        breadcrumb="Operations / Bookings"
+        title={user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}
+        subtitle="Track reservations with real-time status and clear action controls."
+        actions={user?.role === "STUDENT" ? <Link to="/create-booking" className="sf-btn-primary no-underline">+ New Booking</Link> : null}
+      />
 
       {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-center text-sm text-rose-800">Error: {error}</p>}
 
       {bookings.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-300 bg-white/70 px-5 py-10 text-center text-slate-600">No bookings yet. Create one now!</p>
+        <div className="sf-card border-dashed border-slate-300 bg-white/70 px-5 py-10 text-center text-slate-600">
+          <p className="text-lg font-semibold text-slate-700">No bookings yet</p>
+          <p className="mt-1 text-sm text-slate-500">Create a new booking to get started.</p>
+          {user?.role === "STUDENT" && <Link to="/create-booking" className="mt-4 inline-block sf-btn-primary no-underline">Create one now</Link>}
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-900/15 bg-white/85">
           <table className="w-full border-separate border-spacing-0 bg-white/90">

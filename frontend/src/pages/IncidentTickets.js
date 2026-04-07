@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/PageHeader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -120,10 +121,11 @@ const IncidentTickets = () => {
 
   return (
     <section className="sf-page">
-      <div className="mb-4">
-        <h1 className="sf-title">Incident Tickets</h1>
-        <p className="sf-subtitle mt-1">Create, track, and update facility incident requests.</p>
-      </div>
+      <PageHeader
+        breadcrumb="Operations / Incidents"
+        title="Incident Tickets"
+        subtitle="Create, track, and update facility incident requests."
+      />
 
       {error && <p className="mb-4 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
@@ -147,9 +149,12 @@ const IncidentTickets = () => {
       <div>
         <h2 className="mb-3 text-xl font-bold text-slate-800">All Tickets</h2>
         {loading ? (
-          <p className="rounded-xl border border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">Loading tickets...</p>
+          <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">Loading tickets...</div>
         ) : tickets.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">No tickets yet. Create your first incident ticket above.</p>
+          <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center">
+            <p className="text-lg font-semibold text-slate-700">No tickets yet</p>
+            <p className="mt-1 text-sm text-slate-500">Create your first incident ticket above.</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-3">
             {tickets.map((ticket) => (

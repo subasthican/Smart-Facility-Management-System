@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/PageHeader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -162,25 +163,24 @@ const Facilities = () => {
 
   return (
     <section className="sf-page">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="sf-title">Facilities Catalogue</h2>
-          <p className="sf-subtitle mt-1">Manage facility inventory, availability, and capacity.</p>
-        </div>
-        {isAdmin && (
-          <button className="sf-btn-primary" type="button" onClick={openAddModal}>
-            Add Facility
-          </button>
-        )}
-      </div>
+      <PageHeader
+        breadcrumb="Operations / Facilities"
+        title="Facilities Catalogue"
+        subtitle="Manage facility inventory, availability, and capacity."
+        actions={isAdmin ? <button className="sf-btn-primary" type="button" onClick={openAddModal}>Add Facility</button> : null}
+      />
 
       {message && <p className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</p>}
       {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
       {loading ? (
-        <p className="py-4 text-sm text-slate-600">Loading...</p>
+        <div className="sf-card py-8 text-center text-slate-600">Loading facilities...</div>
       ) : facilities.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white/80 p-4 text-center font-semibold text-slate-600">No facilities available.</div>
+        <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center">
+          <p className="text-lg font-semibold text-slate-700">No facilities available</p>
+          <p className="mt-1 text-sm text-slate-500">Add your first facility to start managing spaces.</p>
+          {isAdmin && <button className="mt-4 sf-btn-primary" type="button" onClick={openAddModal}>Add Facility</button>}
+        </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white/90">
           <table className="w-full border-separate border-spacing-0">
