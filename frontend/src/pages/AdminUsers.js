@@ -13,9 +13,7 @@ const emptyForm = {
 
 const parseJsonSafely = async (response) => {
   const text = await response.text();
-  if (!text) {
-    return null;
-  }
+  if (!text) return null;
 
   try {
     return JSON.parse(text);
@@ -42,7 +40,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
   const roleLabel = managedRole === "STUDENT" ? "Student" : "Staff";
 
   const managedUsers = useMemo(
-    () => users.filter((user) => user.role === managedRole),
+    () => users.filter((u) => u.role === managedRole),
     [users, managedRole]
   );
 
@@ -57,10 +55,9 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
         },
         body: JSON.stringify({}),
       });
+
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to load users (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to load users (HTTP ${res.status})`);
       setUsers(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message || "Failed to load users");
@@ -132,9 +129,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
   };
 
   const handleEditUser = async () => {
-    if (!selectedUserId) {
-      throw new Error("Missing user ID for update");
-    }
+    if (!selectedUserId) throw new Error("Missing user ID for update");
     if (!form.fullName.trim() || !form.email.trim()) {
       throw new Error("Full name and email are required");
     }
@@ -196,9 +191,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
       });
 
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to update status (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to update status (HTTP ${res.status})`);
 
       setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, active } : u)));
       setMessage(`${roleLabel} marked as ${active ? "active" : "inactive"}`);
@@ -210,75 +203,75 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.headerRow}>
+    <section className="sf-page">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 style={styles.title}>{roleLabel} Management</h1>
-          <p style={styles.subtitle}>Manage {roleLabel.toLowerCase()} users with add, update, and active controls.</p>
+          <h1 className="sf-title">{roleLabel} Management</h1>
+          <p className="sf-subtitle mt-1">Manage {roleLabel.toLowerCase()} users with add, update, and active controls.</p>
         </div>
-        <div style={styles.headerActions}>
-          <button style={styles.secondaryButton} type="button" onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
-          <button style={styles.primaryButton} type="button" onClick={openAddModal}>
-            Add {roleLabel}
-          </button>
+        <div className="flex flex-wrap gap-2">
+          <button className="sf-btn-secondary" type="button" onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
+          <button className="sf-btn-primary" type="button" onClick={openAddModal}>Add {roleLabel}</button>
         </div>
       </div>
 
-      {message && <div style={styles.success}>{message}</div>}
-      {error && <div style={styles.error}>{error}</div>}
+      {message && <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</div>}
+      {error && <div className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
-      <div style={styles.tableWrap}>
-        <table style={styles.table}>
+      <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white shadow-sm">
+        <table className="w-full border-separate border-spacing-0">
           <thead>
             <tr>
-              <th style={styles.th}>Name</th>
-              <th style={styles.th}>Email</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Actions</th>
+              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Name</th>
+              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Email</th>
+              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Status</th>
+              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loadingUsers ? (
               <tr>
-                <td colSpan={4} style={styles.emptyRow}>Loading {roleLabel.toLowerCase()} data...</td>
+                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold text-slate-500">Loading {roleLabel.toLowerCase()} data...</td>
               </tr>
             ) : managedUsers.length === 0 ? (
               <tr>
-                <td colSpan={4} style={styles.emptyRow}>No {roleLabel.toLowerCase()} users found.</td>
+                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold text-slate-500">No {roleLabel.toLowerCase()} users found.</td>
               </tr>
             ) : (
               managedUsers.map((user) => (
-                <tr key={user.id}>
-                  <td style={styles.td}>{user.fullName}</td>
-                  <td style={styles.td}>{user.email}</td>
-                  <td style={styles.td}>
-                    <span style={user.active ? styles.activePill : styles.inactivePill}>
+                <tr key={user.id} className="bg-white/90">
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{user.fullName}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{user.email}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${user.active ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
                       {user.active ? "ACTIVE" : "INACTIVE"}
                     </span>
                   </td>
-                  <td style={styles.tdActions}>
-                    <button style={styles.editBtn} type="button" onClick={() => openEditModal(user)}>
-                      Update
-                    </button>
-                    {user.active ? (
-                      <button
-                        style={styles.deactivateBtn}
-                        type="button"
-                        onClick={() => updateUserStatus(user.id, false)}
-                        disabled={updatingUserId === user.id}
-                      >
-                        {updatingUserId === user.id ? "Saving..." : "Set Inactive"}
+                  <td className="border-b border-slate-300/30 px-4 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      <button className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700" type="button" onClick={() => openEditModal(user)}>
+                        Update
                       </button>
-                    ) : (
-                      <button
-                        style={styles.activateBtn}
-                        type="button"
-                        onClick={() => updateUserStatus(user.id, true)}
-                        disabled={updatingUserId === user.id}
-                      >
-                        {updatingUserId === user.id ? "Saving..." : "Set Active"}
-                      </button>
-                    )}
+                      {user.active ? (
+                        <button
+                          className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"
+                          type="button"
+                          onClick={() => updateUserStatus(user.id, false)}
+                          disabled={updatingUserId === user.id}
+                        >
+                          {updatingUserId === user.id ? "Saving..." : "Set Inactive"}
+                        </button>
+                      ) : (
+                        <button
+                          className="rounded-xl bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
+                          type="button"
+                          onClick={() => updateUserStatus(user.id, true)}
+                          disabled={updatingUserId === user.id}
+                        >
+                          {updatingUserId === user.id ? "Saving..." : "Set Active"}
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -288,22 +281,22 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
       </div>
 
       {isModalOpen && (
-        <div style={styles.modalBackdrop}>
-          <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
-            <form onSubmit={submitModal} style={styles.form}>
-              <label style={styles.label}>Full Name</label>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+            <h2 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
+            <form onSubmit={submitModal} className="grid gap-3">
+              <label className="text-sm font-semibold text-slate-700">Full Name</label>
               <input
-                style={styles.input}
+                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
                 value={form.fullName}
                 onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
                 placeholder={`${roleLabel} full name`}
                 required
               />
 
-              <label style={styles.label}>Email</label>
+              <label className="text-sm font-semibold text-slate-700">Email</label>
               <input
-                style={styles.input}
+                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -313,18 +306,18 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
               {modalMode === "create" && (
                 <>
-                  <label style={styles.label}>Password</label>
+                  <label className="text-sm font-semibold text-slate-700">Password</label>
                   <input
-                    style={styles.input}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
                     type="password"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                     required
                   />
 
-                  <label style={styles.label}>Confirm Password</label>
+                  <label className="text-sm font-semibold text-slate-700">Confirm Password</label>
                   <input
-                    style={styles.input}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
                     type="password"
                     value={form.confirmPassword}
                     onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
@@ -333,11 +326,9 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
                 </>
               )}
 
-              <div style={styles.modalActions}>
-                <button style={styles.cancelBtn} type="button" onClick={resetModal} disabled={submitting}>
-                  Cancel
-                </button>
-                <button style={styles.primaryButton} type="submit" disabled={submitting}>
+              <div className="mt-2 flex justify-end gap-2">
+                <button className="sf-btn-secondary" type="button" onClick={resetModal} disabled={submitting}>Cancel</button>
+                <button className="sf-btn-primary" type="submit" disabled={submitting}>
                   {submitting ? "Saving..." : modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}
                 </button>
               </div>
@@ -345,213 +336,8 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
-};
-
-const styles = {
-  page: {
-    maxWidth: "1000px",
-    margin: "0 auto",
-    padding: "28px 20px",
-  },
-  headerRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "16px",
-    marginBottom: "20px",
-    flexWrap: "wrap",
-  },
-  headerActions: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: "30px",
-    margin: 0,
-    color: "#0f172a",
-  },
-  subtitle: {
-    margin: "8px 0 0 0",
-    color: "#475569",
-  },
-  success: {
-    marginBottom: "14px",
-    background: "#dcfce7",
-    color: "#166534",
-    border: "1px solid #bbf7d0",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    fontWeight: "600",
-  },
-  error: {
-    marginBottom: "14px",
-    background: "#fee2e2",
-    color: "#991b1b",
-    border: "1px solid #fecaca",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    fontWeight: "600",
-  },
-  tableWrap: {
-    border: "1px solid rgba(15, 23, 42, 0.14)",
-    borderRadius: "12px",
-    overflow: "hidden",
-    background: "#ffffff",
-    boxShadow: "0 12px 28px rgba(15, 23, 42, 0.08)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "separate",
-    borderSpacing: 0,
-  },
-  th: {
-    textAlign: "left",
-    padding: "12px 14px",
-    background: "#f1f5f9",
-    color: "#1e293b",
-    fontSize: "13px",
-    letterSpacing: "0.03em",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.35)",
-  },
-  td: {
-    padding: "12px 14px",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.2)",
-    color: "#334155",
-    fontSize: "14px",
-  },
-  tdActions: {
-    padding: "10px 14px",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.2)",
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  emptyRow: {
-    padding: "20px",
-    textAlign: "center",
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  activePill: {
-    display: "inline-block",
-    padding: "4px 10px",
-    borderRadius: "999px",
-    background: "#dcfce7",
-    color: "#166534",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  inactivePill: {
-    display: "inline-block",
-    padding: "4px 10px",
-    borderRadius: "999px",
-    background: "#fee2e2",
-    color: "#991b1b",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  primaryButton: {
-    border: "none",
-    background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-    color: "#ffffff",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    cursor: "pointer",
-  },
-  secondaryButton: {
-    border: "1px solid #cbd5e1",
-    background: "#ffffff",
-    color: "#334155",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "10px 14px",
-    cursor: "pointer",
-  },
-  editBtn: {
-    border: "1px solid #93c5fd",
-    background: "#eff6ff",
-    color: "#1d4ed8",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "7px 10px",
-    cursor: "pointer",
-  },
-  activateBtn: {
-    border: "none",
-    background: "#16a34a",
-    color: "#ffffff",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "7px 10px",
-    cursor: "pointer",
-  },
-  deactivateBtn: {
-    border: "none",
-    background: "#dc2626",
-    color: "#ffffff",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "7px 10px",
-    cursor: "pointer",
-  },
-  modalBackdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(15, 23, 42, 0.48)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999,
-    padding: "18px",
-  },
-  modal: {
-    width: "100%",
-    maxWidth: "480px",
-    background: "#ffffff",
-    borderRadius: "12px",
-    boxShadow: "0 20px 45px rgba(2, 6, 23, 0.3)",
-    padding: "20px",
-  },
-  modalTitle: {
-    marginTop: 0,
-    marginBottom: "14px",
-    color: "#0f172a",
-  },
-  form: {
-    display: "grid",
-    gap: "10px",
-  },
-  label: {
-    color: "#334155",
-    fontSize: "13px",
-    fontWeight: "700",
-  },
-  input: {
-    border: "1px solid #cbd5e1",
-    borderRadius: "8px",
-    padding: "10px 12px",
-    fontSize: "14px",
-    outline: "none",
-  },
-  modalActions: {
-    marginTop: "10px",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "8px",
-  },
-  cancelBtn: {
-    border: "1px solid #cbd5e1",
-    background: "#ffffff",
-    color: "#334155",
-    borderRadius: "8px",
-    padding: "10px 12px",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
 };
 
 export default AdminUsers;

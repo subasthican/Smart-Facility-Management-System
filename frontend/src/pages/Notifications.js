@@ -1,13 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import '../styles/Notifications.css';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../context/AuthContext";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+
+const typeIcon = (type) => {
+  if (type === "INFO") return "ℹ️";
+  if (type === "SUCCESS") return "✅";
+  if (type === "WARNING") return "⚠️";
+  if (type === "ERROR") return "❌";
+  return "📬";
+};
+
+const typeClass = (type) => {
+  if (type === "INFO") return "border-l-blue-600 bg-blue-50 text-blue-700";
+  if (type === "SUCCESS") return "border-l-emerald-600 bg-emerald-50 text-emerald-700";
+  if (type === "WARNING") return "border-l-amber-500 bg-amber-50 text-amber-700";
+  if (type === "ERROR") return "border-l-rose-600 bg-rose-50 text-rose-700";
+  return "border-l-slate-600 bg-slate-50 text-slate-700";
+};
 
 const Notifications = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
-  const [filter, setFilter] = useState('all'); // all, unread, read
+  const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
   const loadNotifications = useCallback(async () => {
@@ -18,7 +33,7 @@ const Notifications = () => {
       const data = await res.json();
       setNotifications(data || []);
     } catch (err) {
-      console.error('Error loading notifications:', err);
+      console.error("Error loading notifications:", err);
     } finally {
       setLoading(false);
     }
@@ -30,182 +45,97 @@ const Notifications = () => {
 
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
-        method: 'PUT',
-      });
-      if (res.ok) {
-        loadNotifications();
-      }
+      const res = await fetch(`${API_BASE}/notifications/${id}/read`, { method: "PUT" });
+      if (res.ok) loadNotifications();
     } catch (err) {
-      console.error('Error marking as read:', err);
+      console.error("Error marking as read:", err);
     }
   };
 
   const markAllAsRead = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`${API_BASE}/notifications/user/${user.email}/read-all`, {
-        method: 'PUT',
-      });
-      if (res.ok) {
-        loadNotifications();
-      }
+      const res = await fetch(`${API_BASE}/notifications/user/${user.email}/read-all`, { method: "PUT" });
+      if (res.ok) loadNotifications();
     } catch (err) {
-      console.error('Error marking all as read:', err);
+      console.error("Error marking all as read:", err);
     }
   };
 
   const deleteNotification = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/notifications/${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        loadNotifications();
-      }
+      const res = await fetch(`${API_BASE}/notifications/${id}`, { method: "DELETE" });
+      if (res.ok) loadNotifications();
     } catch (err) {
-      console.error('Error deleting notification:', err);
+      console.error("Error deleting notification:", err);
     }
   };
 
-  const getFilteredNotifications = () => {
-    if (filter === 'unread') {
-      return notifications.filter(n => !n.isRead);
-    } else if (filter === 'read') {
-      return notifications.filter(n => n.isRead);
-    }
-    return notifications;
-  };
+  const filteredNotifications = notifications.filter((n) => {
+    if (filter === "unread") return !n.isRead;
+    if (filter === "read") return n.isRead;
+    return true;
+  });
 
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'INFO':
-        return 'ℹ️';
-      case 'SUCCESS':
-        return '✅';
-      case 'WARNING':
-        return '⚠️';
-      case 'ERROR':
-        return '❌';
-      default:
-        return '📬';
-    }
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'INFO':
-        return '#0066cc';
-      case 'SUCCESS':
-        return '#28a745';
-      case 'WARNING':
-        return '#ff9800';
-      case 'ERROR':
-        return '#dc3545';
-      default:
-        return '#666';
-    }
-  };
-
-  const filteredNotifications = getFilteredNotifications();
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="notifications-container">
-      <div className="notifications-header">
-        <h1>🔔 Notifications</h1>
-        <div className="notifications-stats">
-          <span className="unread-badge">{unreadCount} New</span>
+    <section className="sf-page">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-300/60 pb-4">
+        <h1 className="sf-title">🔔 Notifications</h1>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-rose-600 px-3 py-1 text-xs font-semibold text-white">{unreadCount} New</span>
           {unreadCount > 0 && (
-            <button className="mark-all-btn" onClick={markAllAsRead}>
-              Mark All as Read
-            </button>
+            <button className="sf-btn-primary" onClick={markAllAsRead}>Mark All as Read</button>
           )}
         </div>
       </div>
 
-      <div className="notifications-filters">
-        <button
-          className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-          onClick={() => setFilter('all')}
-        >
-          All ({notifications.length})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
-          onClick={() => setFilter('unread')}
-        >
-          Unread ({unreadCount})
-        </button>
-        <button
-          className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
-          onClick={() => setFilter('read')}
-        >
-          Read ({notifications.length - unreadCount})
-        </button>
+      <div className="mb-4 flex flex-wrap gap-2">
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "all" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("all")}>All ({notifications.length})</button>
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "unread" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("unread")}>Unread ({unreadCount})</button>
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "read" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("read")}>Read ({notifications.length - unreadCount})</button>
       </div>
 
       {loading ? (
-        <div className="loading">Loading notifications...</div>
+        <div className="py-10 text-center text-slate-500">Loading notifications...</div>
       ) : filteredNotifications.length === 0 ? (
-        <div className="empty-state">
-          <p>📭 No {filter !== 'all' ? filter : ''} notifications</p>
-          <span>You're all caught up!</span>
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white/70 px-5 py-12 text-center text-slate-500">
+          <p className="text-lg">📭 No {filter !== "all" ? filter : ""} notifications</p>
+          <span className="text-sm">You're all caught up!</span>
         </div>
       ) : (
-        <div className="notifications-list">
+        <div className="flex flex-col gap-3">
           {filteredNotifications.map((notification) => (
-            <div
+            <article
               key={notification.id}
-              className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
-              style={{ borderLeftColor: getTypeColor(notification.type) }}
+              className={`rounded-xl border border-slate-300/40 border-l-4 bg-white/90 p-4 shadow-sm ${typeClass(notification.type)} ${notification.isRead ? "opacity-80" : ""}`}
             >
-              <div className="notification-icon">
-                {getTypeIcon(notification.type)}
-              </div>
-
-              <div className="notification-content">
-                <div className="notification-header">
-                  <h3>{notification.title}</h3>
-                  <span className="notification-type">{notification.type}</span>
+              <div className="flex gap-3">
+                <div className="text-2xl">{typeIcon(notification.type)}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex flex-wrap items-start justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-slate-900">{notification.title}</h3>
+                    <span className="rounded bg-white/70 px-2 py-0.5 text-[11px] font-bold uppercase">{notification.type}</span>
+                  </div>
+                  <p className="mb-2 text-sm text-slate-600">{notification.message}</p>
+                  <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+                    {notification.relatedEntity && <span>📎 {notification.relatedEntity}</span>}
+                    <span>🕐 {new Date(notification.createdAt).toLocaleDateString()} {new Date(notification.createdAt).toLocaleTimeString()}</span>
+                  </div>
                 </div>
-                <p className="notification-message">{notification.message}</p>
-                <div className="notification-meta">
-                  {notification.relatedEntity && (
-                    <span className="related-entity">
-                      📎 {notification.relatedEntity}
-                    </span>
+                <div className="flex items-center gap-1">
+                  {!notification.isRead && (
+                    <button className="rounded-lg border border-emerald-300 bg-emerald-50 px-2 py-1 text-xs" onClick={() => markAsRead(notification.id)} title="Mark as read">✓</button>
                   )}
-                  <span className="notification-time">
-                    🕐 {new Date(notification.createdAt).toLocaleDateString()}{' '}
-                    {new Date(notification.createdAt).toLocaleTimeString()}
-                  </span>
+                  <button className="rounded-lg border border-rose-300 bg-rose-50 px-2 py-1 text-xs" onClick={() => deleteNotification(notification.id)} title="Delete">🗑️</button>
                 </div>
               </div>
-
-              <div className="notification-actions">
-                {!notification.isRead && (
-                  <button
-                    className="action-btn read-btn"
-                    onClick={() => markAsRead(notification.id)}
-                    title="Mark as read"
-                  >
-                    ✓
-                  </button>
-                )}
-                <button
-                  className="action-btn delete-btn"
-                  onClick={() => deleteNotification(notification.id)}
-                  title="Delete"
-                >
-                  🗑️
-                </button>
-              </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
