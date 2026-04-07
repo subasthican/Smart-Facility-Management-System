@@ -724,8 +724,8 @@ video {
   z-index: 20;
 }
 
-.z-50 {
-  z-index: 50;
+.z-\[120\] {
+  z-index: 120;
 }
 
 .col-span-full {
@@ -1311,10 +1311,6 @@ video {
 .bg-slate-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(15 23 42 / var(--tw-bg-opacity, 1));
-}
-
-.bg-slate-900\/45 {
-  background-color: rgb(15 23 42 / 0.45);
 }
 
 .bg-slate-950\/55 {
