@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import PageHeader from "../components/PageHeader";
+import PageHeader from "../components/PageHeader.js";
 
 const Profile = () => {
   const { user } = useAuth();
