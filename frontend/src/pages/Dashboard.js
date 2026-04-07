@@ -26,6 +26,20 @@ const Dashboard = () => {
       icon: "🔧",
       link: "/assets",
       color: "#f59e0b"
+    },
+    {
+      title: "Incident Tickets",
+      description: "Report issues and track ticket progress",
+      icon: "🎫",
+      link: "/tickets",
+      color: "#ef4444"
+    },
+    {
+      title: "Notifications",
+      description: "View system alerts and booking updates",
+      icon: "🔔",
+      link: "/notifications",
+      color: "#10b981"
     }
   ];
 
