@@ -13,7 +13,7 @@ const MainLayout = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[radial-gradient(120%_72%_at_50%_-6%,#eef4ff_0%,#e7eefb_48%,#e2e9f6_100%)]">
+    <div className="flex min-h-screen flex-col bg-sf-shell">
       <header className="sticky top-0 z-20 border-b border-slate-900/10 bg-white/55 shadow-lg backdrop-blur-md backdrop-saturate-150">
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div className="text-xs font-bold tracking-[0.12em] text-slate-900">SMARTFACILITY</div>

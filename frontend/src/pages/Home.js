@@ -15,9 +15,9 @@ const Home = () => {
       : "Welcome";
 
   return (
-    <section className="relative min-h-[calc(100vh-180px)] overflow-hidden rounded-3xl border border-slate-300/70 bg-[radial-gradient(1200px_420px_at_18%_-4%,rgba(147,197,253,0.38),transparent_55%),radial-gradient(900px_360px_at_92%_8%,rgba(196,181,253,0.3),transparent_58%),linear-gradient(165deg,#dfe8f7_0%,#e9f1ff_48%,#dce5f5_100%)] p-7 shadow-shell backdrop-blur-md">
-      <div className="pointer-events-none absolute -right-24 -top-40 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle_at_35%_35%,rgba(125,211,252,0.38),rgba(125,211,252,0))]" />
-      <div className="pointer-events-none absolute -bottom-52 -left-28 h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(129,140,248,0.34),rgba(129,140,248,0))]" />
+    <section className="relative min-h-[calc(100vh-180px)] overflow-hidden rounded-3xl border border-slate-300/70 bg-sf-shell p-7 shadow-shell backdrop-blur-md">
+      <div className="pointer-events-none absolute -right-24 -top-40 h-[440px] w-[440px] rounded-full bg-cyan-200/45 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-52 -left-28 h-[460px] w-[460px] rounded-full bg-indigo-200/40 blur-3xl" />
 
       <div className="relative z-10 mx-auto mb-8 max-w-3xl text-center">
         <p className="mb-4 inline-block rounded-full border border-slate-300/70 bg-white/75 px-3 py-2 text-xs uppercase tracking-[0.14em] text-slate-700 shadow-inner">

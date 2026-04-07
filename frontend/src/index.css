@@ -18,6 +18,14 @@
   --surface: rgba(255, 255, 255, 0.74);
   --surface-strong: rgba(255, 255, 255, 0.9);
   --border: rgba(15, 23, 42, 0.14);
+  --shell-0: #eef4ff;
+  --shell-1: #e8effb;
+  --shell-2: #dee6f4;
+  --accent-border-focus: rgba(15, 118, 110, 0.65);
+  --accent-ring-focus: rgba(15, 118, 110, 0.18);
+  --scroll-track: #e2e8f0;
+  --scroll-thumb: #0f172a;
+  --scroll-thumb-hover: #0b1220;
 }
 
 body {
@@ -25,7 +33,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(120% 85% at 50% -10%, #eef4ff 0%, #e8effb 48%, #dee6f4 100%);
+  background: radial-gradient(120% 85% at 50% -10%, var(--shell-0) 0%, var(--shell-1) 48%, var(--shell-2) 100%);
   min-height: 100vh;
   color: var(--text-strong);
 }
@@ -62,8 +70,8 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: rgba(15, 118, 110, 0.65);
-  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+  border-color: var(--accent-border-focus);
+  box-shadow: 0 0 0 3px var(--accent-ring-focus);
 }
 
 table {
@@ -75,14 +83,14 @@ table {
 }
 
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: var(--scroll-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0f172a;
+  background: var(--scroll-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0b1220;
+  background: var(--scroll-thumb-hover);
 }
