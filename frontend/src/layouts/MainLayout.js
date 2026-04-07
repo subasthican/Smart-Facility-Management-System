@@ -80,7 +80,7 @@ const styles = {
     borderBottom: "1px solid rgba(20, 23, 28, 0.08)",
   },
   headerInner: {
-    maxWidth: "1280px",
+    maxWidth: "1200px",
     margin: "0 auto",
     padding: "16px 24px",
     display: "flex",
@@ -154,7 +154,7 @@ const styles = {
   },
   mainContent: {
     flex: 1,
-    maxWidth: "1280px",
+    maxWidth: "1200px",
     width: "100%",
     margin: "0 auto",
     padding: "24px",
@@ -166,7 +166,7 @@ const styles = {
     backdropFilter: "blur(10px)",
   },
   footerInner: {
-    maxWidth: "1280px",
+    maxWidth: "1200px",
     margin: "0 auto",
     padding: "24px",
     display: "flex",
