@@ -251,18 +251,18 @@ const Assets = () => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
+            <h3 className="mb-5 text-2xl font-bold text-slate-900">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
             <form onSubmit={submitModal} className="grid grid-cols-1 gap-3">
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Category" value={form.category} onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Serial Number" value={form.serialNumber} onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))} required />
-              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.condition} onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}>
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Category" value={form.category} onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Serial Number" value={form.serialNumber} onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))} required />
+              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.condition} onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}>
                 <option value="GOOD">GOOD</option>
                 <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
                 <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
               </select>
-              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.facilityId} onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))} required>
+              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.facilityId} onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))} required>
                 <option value="">Select Facility</option>
                 {facilities.map((f) => (
                   <option key={f.id} value={f.id}>{f.name}</option>

@@ -224,24 +224,24 @@ const Facilities = () => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? "Add Facility" : "Update Facility"}</h3>
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
+            <h3 className="mb-5 text-2xl font-bold text-slate-900">{modalMode === "create" ? "Add Facility" : "Update Facility"}</h3>
             <form onSubmit={submitModal} className="grid grid-cols-1 gap-3">
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Facility Name" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Location" value={form.location} onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="number" placeholder="Capacity" value={form.capacity} onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))} required />
-              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}>
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Facility Name" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Location" value={form.location} onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="number" placeholder="Capacity" value={form.capacity} onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))} required />
+              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}>
                 <option value="LAB">LAB</option>
                 <option value="HALL">HALL</option>
                 <option value="CLASSROOM">CLASSROOM</option>
                 <option value="MEETING_ROOM">MEETING_ROOM</option>
               </select>
-              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.status} onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}>
+              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.status} onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}>
                 <option value="AVAILABLE">AVAILABLE</option>
                 <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
                 <option value="UNAVAILABLE">UNAVAILABLE</option>
               </select>
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Description" value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Description" value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} />
 
               <div className="mt-2 flex justify-end gap-2">
                 <button type="button" className="sf-btn-secondary" onClick={resetModal} disabled={submitting}>Cancel</button>

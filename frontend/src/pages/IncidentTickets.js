@@ -189,19 +189,19 @@ const IncidentTickets = () => {
 
       {editingTicket && (
         <AppModal onClose={() => setEditingTicket(null)}>
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h2 className="mb-4 text-xl font-bold text-slate-900">Edit Ticket</h2>
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
+            <h2 className="mb-5 text-2xl font-bold text-slate-900">Edit Ticket</h2>
             <div className="grid gap-3">
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
-              <textarea className="min-h-24 rounded-xl border border-slate-300 px-3 py-2 text-sm" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
+              <textarea className="min-h-24 rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
+                <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="HIGH">High</option>
                 </select>
-                <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
+                <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
                   <option value="OPEN">Open</option>
                   <option value="ASSIGNED">Assigned</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -209,9 +209,9 @@ const IncidentTickets = () => {
                   <option value="REJECTED">Rejected</option>
                 </select>
               </div>
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
-              <textarea className="min-h-20 rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
-              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
+              <textarea className="min-h-20 rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
+              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
               <div className="mt-1 flex justify-end gap-2">
                 <button className="sf-btn-primary" onClick={() => handleUpdateTicket(editingTicket.id, editingTicket)}>Update</button>
                 <button className="sf-btn-secondary" onClick={() => setEditingTicket(null)}>Cancel</button>
