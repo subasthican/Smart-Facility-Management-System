@@ -14,6 +14,7 @@ import AdminUsers from "./pages/AdminUsers";
 import IncidentTickets from "./pages/IncidentTickets";
 import Notifications from "./pages/Notifications";
 import OAuth2Callback from "./pages/OAuth2Callback";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -105,6 +106,15 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                   <Notifications />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
