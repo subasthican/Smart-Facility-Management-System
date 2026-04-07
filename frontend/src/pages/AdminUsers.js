@@ -282,12 +282,12 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h2 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
+            <h2 className="mb-5 text-2xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
             <form onSubmit={submitModal} className="grid gap-3">
               <label className="text-sm font-semibold text-slate-700">Full Name</label>
               <input
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
                 value={form.fullName}
                 onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
                 placeholder={`${roleLabel} full name`}
@@ -296,7 +296,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
               <label className="text-sm font-semibold text-slate-700">Email</label>
               <input
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -308,7 +308,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
                 <>
                   <label className="text-sm font-semibold text-slate-700">Password</label>
                   <input
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
                     type="password"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
@@ -317,7 +317,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
                   <label className="text-sm font-semibold text-slate-700">Confirm Password</label>
                   <input
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
                     type="password"
                     value={form.confirmPassword}
                     onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
