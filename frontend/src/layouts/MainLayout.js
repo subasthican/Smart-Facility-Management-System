@@ -27,6 +27,7 @@ const MainLayout = ({ children }) => {
             {user ? (
               <>
                 <Link to="/dashboard" className="rounded-full bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-2 text-sm font-semibold text-white no-underline shadow-lg">Dashboard</Link>
+                <Link to="/profile" className="rounded-full border border-slate-900/15 bg-white/60 px-4 py-2 text-sm font-semibold text-slate-800 no-underline shadow">Profile</Link>
                 <span className="rounded-full border border-slate-900/20 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700">{user.role}</span>
                 <button type="button" onClick={handleLogout} className="rounded-full bg-gradient-to-br from-rose-700 to-rose-800 px-4 py-2 text-sm font-semibold text-white shadow-md">Logout</button>
               </>
@@ -58,6 +59,7 @@ const MainLayout = ({ children }) => {
             <div className="flex flex-wrap gap-2">
               <Link to="/" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Home</Link>
               <Link to="/dashboard" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Dashboard</Link>
+              <Link to="/profile" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Profile</Link>
               <Link to="/bookings" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Bookings</Link>
               <Link to="/facilities" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Facilities</Link>
               <Link to="/assets" className="rounded-full border border-slate-900/15 bg-white/70 px-3 py-1.5 text-xs text-slate-800 no-underline shadow">Assets</Link>
