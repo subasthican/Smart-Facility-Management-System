@@ -14,9 +14,7 @@ const emptyForm = {
 
 const parseJsonSafely = async (response) => {
   const text = await response.text();
-  if (!text) {
-    return null;
-  }
+  if (!text) return null;
 
   try {
     return JSON.parse(text);
@@ -25,21 +23,11 @@ const parseJsonSafely = async (response) => {
   }
 };
 
-const getFacilityStatusStyle = (status) => ({
-  ...styles.pill,
-  backgroundColor:
-    status === "AVAILABLE"
-      ? "#dcfce7"
-      : status === "UNDER_MAINTENANCE"
-      ? "#fef3c7"
-      : "#fee2e2",
-  color:
-    status === "AVAILABLE"
-      ? "#166534"
-      : status === "UNDER_MAINTENANCE"
-      ? "#92400e"
-      : "#991b1b",
-});
+const getFacilityStatusClass = (status) => {
+  if (status === "AVAILABLE") return "bg-emerald-100 text-emerald-800";
+  if (status === "UNDER_MAINTENANCE") return "bg-amber-100 text-amber-800";
+  return "bg-rose-100 text-rose-800";
+};
 
 const Facilities = () => {
   const { token, user } = useAuth();
@@ -64,9 +52,7 @@ const Facilities = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to load facilities (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to load facilities (HTTP ${res.status})`);
       setFacilities(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message || "Failed to load facilities");
@@ -130,10 +116,7 @@ const Facilities = () => {
         capacity: Number(form.capacity),
       };
 
-      const url = modalMode === "create"
-        ? `${API_BASE}/facilities`
-        : `${API_BASE}/facilities/${selectedId}`;
-
+      const url = modalMode === "create" ? `${API_BASE}/facilities` : `${API_BASE}/facilities/${selectedId}`;
       const method = modalMode === "create" ? "POST" : "PUT";
 
       const res = await fetch(url, {
@@ -146,9 +129,7 @@ const Facilities = () => {
       });
 
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to ${modalMode} facility (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} facility (HTTP ${res.status})`);
 
       setMessage(modalMode === "create" ? "Facility added successfully" : "Facility updated successfully");
       resetModal();
@@ -171,9 +152,7 @@ const Facilities = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to delete facility (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to delete facility (HTTP ${res.status})`);
       setMessage("Facility deleted successfully");
       await loadFacilities();
     } catch (e) {
@@ -182,55 +161,57 @@ const Facilities = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.headerRow}>
+    <section className="sf-page">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 style={styles.title}>Facilities Catalogue</h2>
-          <p style={styles.subtitle}>Manage facility inventory, availability, and capacity.</p>
+          <h2 className="sf-title">Facilities Catalogue</h2>
+          <p className="sf-subtitle mt-1">Manage facility inventory, availability, and capacity.</p>
         </div>
         {isAdmin && (
-          <button style={styles.button} type="button" onClick={openAddModal}>
+          <button className="sf-btn-primary" type="button" onClick={openAddModal}>
             Add Facility
           </button>
         )}
       </div>
 
-      {message && <p style={styles.success}>{message}</p>}
-      {error && <p style={styles.error}>{error}</p>}
+      {message && <p className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</p>}
+      {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
       {loading ? (
-        <p style={styles.loading}>Loading...</p>
+        <p className="py-4 text-sm text-slate-600">Loading...</p>
       ) : facilities.length === 0 ? (
-        <div style={styles.emptyState}>No facilities available.</div>
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white/80 p-4 text-center font-semibold text-slate-600">No facilities available.</div>
       ) : (
-        <div style={styles.tableWrap}>
-          <table style={styles.table}>
+        <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white/90">
+          <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr>
-                <th style={styles.th}>Name</th>
-                <th style={styles.th}>Type</th>
-                <th style={styles.th}>Location</th>
-                <th style={styles.th}>Capacity</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Actions</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Name</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Type</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Location</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Capacity</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Status</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {facilities.map((f) => (
-                <tr key={f.id} style={styles.row}>
-                  <td style={styles.td}>{f.name}</td>
-                  <td style={styles.td}>{f.type}</td>
-                  <td style={styles.td}>{f.location}</td>
-                  <td style={styles.td}>{f.capacity}</td>
-                  <td style={styles.td}><span style={getFacilityStatusStyle(f.status)}>{f.status}</span></td>
-                  <td style={styles.tdActions}>
+                <tr key={f.id} className="bg-white/90">
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{f.name}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{f.type}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{f.location}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{f.capacity}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${getFacilityStatusClass(f.status)}`}>{f.status}</span>
+                  </td>
+                  <td className="border-b border-slate-300/30 px-4 py-3">
                     {isAdmin ? (
-                      <>
-                        <button style={styles.editBtn} type="button" onClick={() => openEditModal(f)}>Update</button>
-                        <button style={styles.deleteBtn} type="button" onClick={() => handleDelete(f.id)}>Delete</button>
-                      </>
+                      <div className="flex flex-wrap gap-2">
+                        <button className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700" type="button" onClick={() => openEditModal(f)}>Update</button>
+                        <button className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white" type="button" onClick={() => handleDelete(f.id)}>Delete</button>
+                      </div>
                     ) : (
-                      <span style={styles.readOnly}>Read-only</span>
+                      <span className="text-xs font-semibold text-slate-500">Read-only</span>
                     )}
                   </td>
                 </tr>
@@ -241,60 +222,28 @@ const Facilities = () => {
       )}
 
       {isModalOpen && (
-        <div style={styles.modalBackdrop}>
-          <div style={styles.modal}>
-            <h3 style={styles.modalTitle}>{modalMode === "create" ? "Add Facility" : "Update Facility"}</h3>
-            <form onSubmit={submitModal} style={styles.form}>
-              <input
-                style={styles.input}
-                placeholder="Facility Name"
-                value={form.name}
-                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                required
-              />
-              <input
-                style={styles.input}
-                placeholder="Location"
-                value={form.location}
-                onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
-                required
-              />
-              <input
-                style={styles.input}
-                type="number"
-                placeholder="Capacity"
-                value={form.capacity}
-                onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))}
-                required
-              />
-              <select
-                style={styles.input}
-                value={form.type}
-                onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+            <h3 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? "Add Facility" : "Update Facility"}</h3>
+            <form onSubmit={submitModal} className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Facility Name" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Location" value={form.location} onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="number" placeholder="Capacity" value={form.capacity} onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))} required />
+              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}>
                 <option value="LAB">LAB</option>
                 <option value="HALL">HALL</option>
                 <option value="CLASSROOM">CLASSROOM</option>
                 <option value="MEETING_ROOM">MEETING_ROOM</option>
               </select>
-              <select
-                style={styles.input}
-                value={form.status}
-                onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}
-              >
+              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.status} onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}>
                 <option value="AVAILABLE">AVAILABLE</option>
                 <option value="UNDER_MAINTENANCE">UNDER_MAINTENANCE</option>
                 <option value="UNAVAILABLE">UNAVAILABLE</option>
               </select>
-              <input
-                style={styles.input}
-                placeholder="Description"
-                value={form.description}
-                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-              />
-              <div style={styles.modalActions}>
-                <button type="button" style={styles.cancelBtn} onClick={resetModal} disabled={submitting}>Cancel</button>
-                <button type="submit" style={styles.button} disabled={submitting}>
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Description" value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} />
+              <div className="col-span-full mt-2 flex justify-end gap-2">
+                <button type="button" className="sf-btn-secondary" onClick={resetModal} disabled={submitting}>Cancel</button>
+                <button type="submit" className="sf-btn-primary" disabled={submitting}>
                   {submitting ? "Saving..." : modalMode === "create" ? "Add Facility" : "Update Facility"}
                 </button>
               </div>
@@ -302,193 +251,8 @@ const Facilities = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-    background: "linear-gradient(180deg, rgba(255,255,255,0.52), rgba(236,243,255,0.45))",
-    border: "1px solid rgba(15, 23, 42, 0.08)",
-    borderRadius: "18px",
-    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
-  },
-  headerRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: "30px",
-    color: "#18253f",
-    margin: 0,
-    letterSpacing: "-0.02em",
-  },
-  subtitle: {
-    color: "#52627f",
-    fontSize: "14px",
-    marginTop: "6px",
-    marginBottom: "16px",
-  },
-  form: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "10px",
-  },
-  input: {
-    padding: "10px",
-    border: "1px solid #cbd5e1",
-    borderRadius: "10px",
-    backgroundColor: "rgba(255,255,255,0.9)",
-  },
-  button: {
-    background: "linear-gradient(135deg, #111827, #1e293b)",
-    color: "#fff",
-    border: "none",
-    borderRadius: "10px",
-    cursor: "pointer",
-    padding: "10px 12px",
-    fontWeight: "600",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "separate",
-    borderSpacing: 0,
-    background: "rgba(255,255,255,0.84)",
-  },
-  tableWrap: {
-    borderRadius: "12px",
-    overflow: "hidden",
-    border: "1px solid rgba(15, 23, 42, 0.12)",
-  },
-  th: {
-    textAlign: "left",
-    padding: "12px 14px",
-    backgroundColor: "#eef2ff",
-    color: "#25324b",
-    fontWeight: "700",
-    fontSize: "14px",
-    borderBottom: "1px solid rgba(148,163,184,0.35)",
-  },
-  td: {
-    padding: "12px 14px",
-    color: "#334155",
-    fontSize: "14px",
-    borderBottom: "1px solid rgba(148,163,184,0.2)",
-    verticalAlign: "middle",
-  },
-  tdActions: {
-    padding: "10px 14px",
-    borderBottom: "1px solid rgba(148,163,184,0.2)",
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  row: {
-    backgroundColor: "rgba(255,255,255,0.85)",
-  },
-  pill: {
-    display: "inline-block",
-    padding: "5px 10px",
-    borderRadius: "999px",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  editBtn: {
-    border: "1px solid #93c5fd",
-    background: "#eff6ff",
-    color: "#1d4ed8",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "7px 10px",
-    cursor: "pointer",
-  },
-  deleteBtn: {
-    backgroundColor: "#dc2626",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    padding: "6px 10px",
-    fontWeight: "600",
-  },
-  success: {
-    color: "#166534",
-    backgroundColor: "#dcfce7",
-    border: "1px solid #bbf7d0",
-    borderRadius: "10px",
-    padding: "10px",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-  error: {
-    color: "#991b1b",
-    backgroundColor: "#fee2e2",
-    border: "1px solid #fecaca",
-    borderRadius: "10px",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-  readOnly: {
-    color: "#64748b",
-    fontSize: "13px",
-    fontWeight: "600",
-  },
-  loading: {
-    color: "#475569",
-    fontSize: "14px",
-    padding: "14px 0",
-  },
-  emptyState: {
-    color: "#475569",
-    backgroundColor: "rgba(255,255,255,0.8)",
-    border: "1px dashed rgba(100,116,139,0.4)",
-    borderRadius: "12px",
-    padding: "16px",
-    textAlign: "center",
-    fontWeight: "600",
-  },
-  modalBackdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(15, 23, 42, 0.48)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999,
-    padding: "18px",
-  },
-  modal: {
-    width: "100%",
-    maxWidth: "720px",
-    background: "#ffffff",
-    borderRadius: "12px",
-    boxShadow: "0 20px 45px rgba(2, 6, 23, 0.3)",
-    padding: "20px",
-  },
-  modalTitle: {
-    marginTop: 0,
-    marginBottom: "14px",
-    color: "#0f172a",
-  },
-  modalActions: {
-    marginTop: "10px",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "8px",
-  },
-  cancelBtn: {
-    border: "1px solid #cbd5e1",
-    background: "#ffffff",
-    color: "#334155",
-    borderRadius: "8px",
-    padding: "10px 12px",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
 };
 
 export default Facilities;

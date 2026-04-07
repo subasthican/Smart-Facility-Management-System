@@ -25,62 +25,23 @@ const OAuth2Callback = () => {
   }, [loginWithToken, navigate]);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
+    <div className="flex min-h-[75vh] items-center justify-center px-5 py-8">
+      <div className="sf-card w-full max-w-md border border-slate-900/10 bg-gradient-to-b from-white/95 to-slate-100/85 p-10 text-center">
         {error ? (
           <>
-            <h2 style={styles.title}>OAuth Login Error</h2>
-            <p style={styles.error}>{error}</p>
-            <button style={styles.button} onClick={() => navigate("/login")}>Back to Login</button>
+            <h2 className="mb-3 text-2xl font-bold text-slate-900">OAuth Login Error</h2>
+            <p className="mb-4 text-sm text-rose-700">{error}</p>
+            <button className="sf-btn-primary w-full py-3" onClick={() => navigate("/login")}>Back to Login</button>
           </>
         ) : (
           <>
-            <h2 style={styles.title}>Signing you in...</h2>
-            <p style={styles.text}>Completing OAuth login, please wait.</p>
+            <h2 className="mb-3 text-2xl font-bold text-slate-900">Signing you in...</h2>
+            <p className="text-sm text-slate-600">Completing OAuth login, please wait.</p>
           </>
         )}
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "80vh",
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    width: "420px",
-    textAlign: "center",
-  },
-  title: {
-    marginBottom: "14px",
-    color: "#1d1d1f",
-  },
-  text: {
-    color: "#444",
-    marginBottom: "10px",
-  },
-  error: {
-    color: "#d92d20",
-    marginBottom: "16px",
-  },
-  button: {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#1d1d1f",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
 };
 
 export default OAuth2Callback;

@@ -13,9 +13,7 @@ const emptyForm = {
 
 const parseJsonSafely = async (response) => {
   const text = await response.text();
-  if (!text) {
-    return null;
-  }
+  if (!text) return null;
 
   try {
     return JSON.parse(text);
@@ -24,21 +22,11 @@ const parseJsonSafely = async (response) => {
   }
 };
 
-const getConditionStyle = (condition) => ({
-  ...styles.pill,
-  backgroundColor:
-    condition === "GOOD"
-      ? "#dcfce7"
-      : condition === "NEEDS_REPAIR"
-      ? "#fef3c7"
-      : "#fee2e2",
-  color:
-    condition === "GOOD"
-      ? "#166534"
-      : condition === "NEEDS_REPAIR"
-      ? "#92400e"
-      : "#991b1b",
-});
+const getConditionClass = (condition) => {
+  if (condition === "GOOD") return "bg-emerald-100 text-emerald-800";
+  if (condition === "NEEDS_REPAIR") return "bg-amber-100 text-amber-800";
+  return "bg-rose-100 text-rose-800";
+};
 
 const Assets = () => {
   const { token, user } = useAuth();
@@ -60,30 +48,22 @@ const Assets = () => {
   const loadData = useCallback(async () => {
     setLoading(true);
     setError("");
+
     try {
-      const assetsUrl =
-        filterFacilityId === "ALL"
-          ? `${API_BASE}/assets`
-          : `${API_BASE}/assets/facility/${filterFacilityId}`;
+      const assetsUrl = filterFacilityId === "ALL"
+        ? `${API_BASE}/assets`
+        : `${API_BASE}/assets/facility/${filterFacilityId}`;
 
       const [fRes, aRes] = await Promise.all([
-        fetch(`${API_BASE}/facilities`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(assetsUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        fetch(`${API_BASE}/facilities`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(assetsUrl, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
 
       const fData = await parseJsonSafely(fRes);
       const aData = await parseJsonSafely(aRes);
 
-      if (!fRes.ok) {
-        throw new Error(fData?.error || `Failed to load facilities (HTTP ${fRes.status})`);
-      }
-      if (!aRes.ok) {
-        throw new Error(aData?.error || `Failed to load assets (HTTP ${aRes.status})`);
-      }
+      if (!fRes.ok) throw new Error(fData?.error || `Failed to load facilities (HTTP ${fRes.status})`);
+      if (!aRes.ok) throw new Error(aData?.error || `Failed to load assets (HTTP ${aRes.status})`);
 
       setFacilities(Array.isArray(fData) ? fData : []);
       setAssets(Array.isArray(aData) ? aData : []);
@@ -148,9 +128,7 @@ const Assets = () => {
         facilityId: Number(form.facilityId),
       };
 
-      const url = modalMode === "create"
-        ? `${API_BASE}/assets`
-        : `${API_BASE}/assets/${selectedId}`;
+      const url = modalMode === "create" ? `${API_BASE}/assets` : `${API_BASE}/assets/${selectedId}`;
       const method = modalMode === "create" ? "POST" : "PUT";
 
       const res = await fetch(url, {
@@ -163,9 +141,7 @@ const Assets = () => {
       });
 
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to ${modalMode} asset (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} asset (HTTP ${res.status})`);
 
       setMessage(modalMode === "create" ? "Asset added successfully" : "Asset updated successfully");
       resetModal();
@@ -188,9 +164,7 @@ const Assets = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseJsonSafely(res);
-      if (!res.ok) {
-        throw new Error(data?.error || `Failed to delete asset (HTTP ${res.status})`);
-      }
+      if (!res.ok) throw new Error(data?.error || `Failed to delete asset (HTTP ${res.status})`);
       setMessage("Asset deleted successfully");
       await loadData();
     } catch (e) {
@@ -204,23 +178,23 @@ const Assets = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.headerRow}>
+    <section className="sf-page">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 style={styles.title}>Assets Catalogue</h2>
-          <p style={styles.subtitle}>Track all equipment across facilities with instant filtering.</p>
+          <h2 className="sf-title">Assets Catalogue</h2>
+          <p className="sf-subtitle mt-1">Track all equipment across facilities with instant filtering.</p>
         </div>
         {isAdmin && (
-          <button style={styles.button} type="button" onClick={openAddModal}>Add Asset</button>
+          <button className="sf-btn-primary" type="button" onClick={openAddModal}>Add Asset</button>
         )}
       </div>
 
-      {message && <p style={styles.success}>{message}</p>}
-      {error && <p style={styles.error}>{error}</p>}
+      {message && <p className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</p>}
+      {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
-      <div style={styles.filterBar}>
+      <div className="mb-3 text-sm font-semibold text-slate-700">
         <label>Filter by Facility:&nbsp;</label>
-        <select value={filterFacilityId} onChange={(e) => setFilterFacilityId(e.target.value)}>
+        <select className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" value={filterFacilityId} onChange={(e) => setFilterFacilityId(e.target.value)}>
           <option value="ALL">All</option>
           {facilities.map((f) => (
             <option key={f.id} value={f.id}>{f.name}</option>
@@ -229,38 +203,40 @@ const Assets = () => {
       </div>
 
       {loading ? (
-        <p style={styles.loading}>Loading...</p>
+        <p className="py-4 text-sm text-slate-600">Loading...</p>
       ) : assets.length === 0 ? (
-        <div style={styles.emptyState}>No assets found for this filter.</div>
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white/80 p-4 text-center font-semibold text-slate-600">No assets found for this filter.</div>
       ) : (
-        <div style={styles.tableWrap}>
-          <table style={styles.table}>
+        <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white/90">
+          <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr>
-                <th style={styles.th}>Asset</th>
-                <th style={styles.th}>Category</th>
-                <th style={styles.th}>Serial</th>
-                <th style={styles.th}>Condition</th>
-                <th style={styles.th}>Facility</th>
-                <th style={styles.th}>Actions</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Asset</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Category</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Serial</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Condition</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Facility</th>
+                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {assets.map((a) => (
-                <tr key={a.id} style={styles.row}>
-                  <td style={styles.td}>{a.assetName}</td>
-                  <td style={styles.td}>{a.category}</td>
-                  <td style={{ ...styles.td, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{a.serialNumber}</td>
-                  <td style={styles.td}><span style={getConditionStyle(a.condition)}>{a.condition}</span></td>
-                  <td style={styles.td}>{facilityName(a.facilityId)}</td>
-                  <td style={styles.tdActions}>
+                <tr key={a.id} className="bg-white/90">
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{a.assetName}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{a.category}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 font-mono text-sm text-slate-700">{a.serialNumber}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${getConditionClass(a.condition)}`}>{a.condition}</span>
+                  </td>
+                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{facilityName(a.facilityId)}</td>
+                  <td className="border-b border-slate-300/30 px-4 py-3">
                     {isAdmin ? (
-                      <>
-                        <button style={styles.editBtn} type="button" onClick={() => openEditModal(a)}>Update</button>
-                        <button style={styles.deleteBtn} type="button" onClick={() => handleDelete(a.id)}>Delete</button>
-                      </>
+                      <div className="flex flex-wrap gap-2">
+                        <button className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700" type="button" onClick={() => openEditModal(a)}>Update</button>
+                        <button className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white" type="button" onClick={() => handleDelete(a.id)}>Delete</button>
+                      </div>
                     ) : (
-                      <span style={styles.readOnly}>Read-only</span>
+                      <span className="text-xs font-semibold text-slate-500">Read-only</span>
                     )}
                   </td>
                 </tr>
@@ -271,55 +247,27 @@ const Assets = () => {
       )}
 
       {isModalOpen && (
-        <div style={styles.modalBackdrop}>
-          <div style={styles.modal}>
-            <h3 style={styles.modalTitle}>{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
-            <form onSubmit={submitModal} style={styles.form}>
-              <input
-                style={styles.input}
-                placeholder="Asset Name"
-                value={form.assetName}
-                onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))}
-                required
-              />
-              <input
-                style={styles.input}
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
-                required
-              />
-              <input
-                style={styles.input}
-                placeholder="Serial Number"
-                value={form.serialNumber}
-                onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))}
-                required
-              />
-              <select
-                style={styles.input}
-                value={form.condition}
-                onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+            <h3 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
+            <form onSubmit={submitModal} className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Category" value={form.category} onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))} required />
+              <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Serial Number" value={form.serialNumber} onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))} required />
+              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.condition} onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}>
                 <option value="GOOD">GOOD</option>
                 <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
                 <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
               </select>
-              <select
-                style={styles.input}
-                value={form.facilityId}
-                onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))}
-                required
-              >
+              <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={form.facilityId} onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))} required>
                 <option value="">Select Facility</option>
                 {facilities.map((f) => (
                   <option key={f.id} value={f.id}>{f.name}</option>
                 ))}
               </select>
-
-              <div style={styles.modalActions}>
-                <button type="button" style={styles.cancelBtn} onClick={resetModal} disabled={submitting}>Cancel</button>
-                <button type="submit" style={styles.button} disabled={submitting}>
+              <div className="col-span-full mt-2 flex justify-end gap-2">
+                <button type="button" className="sf-btn-secondary" onClick={resetModal} disabled={submitting}>Cancel</button>
+                <button type="submit" className="sf-btn-primary" disabled={submitting}>
                   {submitting ? "Saving..." : modalMode === "create" ? "Add Asset" : "Update Asset"}
                 </button>
               </div>
@@ -327,198 +275,8 @@ const Assets = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-    background: "linear-gradient(180deg, rgba(255,255,255,0.52), rgba(236,243,255,0.45))",
-    border: "1px solid rgba(15, 23, 42, 0.08)",
-    borderRadius: "18px",
-    boxShadow: "0 20px 40px rgba(15, 23, 42, 0.08)",
-  },
-  headerRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-  title: {
-    fontSize: "30px",
-    color: "#18253f",
-    margin: 0,
-    letterSpacing: "-0.02em",
-  },
-  subtitle: {
-    color: "#52627f",
-    fontSize: "14px",
-    marginTop: "6px",
-    marginBottom: "16px",
-  },
-  form: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "10px",
-  },
-  input: {
-    padding: "10px",
-    border: "1px solid #cbd5e1",
-    borderRadius: "10px",
-    backgroundColor: "rgba(255,255,255,0.9)",
-  },
-  button: {
-    background: "linear-gradient(135deg, #111827, #1e293b)",
-    color: "#fff",
-    border: "none",
-    borderRadius: "10px",
-    cursor: "pointer",
-    padding: "10px",
-    fontWeight: "600",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "separate",
-    borderSpacing: 0,
-    background: "rgba(255,255,255,0.84)",
-  },
-  tableWrap: {
-    borderRadius: "12px",
-    overflow: "hidden",
-    border: "1px solid rgba(15, 23, 42, 0.12)",
-  },
-  th: {
-    textAlign: "left",
-    padding: "12px 14px",
-    backgroundColor: "#eef2ff",
-    color: "#25324b",
-    fontWeight: "700",
-    fontSize: "14px",
-    borderBottom: "1px solid rgba(148,163,184,0.35)",
-  },
-  td: {
-    padding: "12px 14px",
-    color: "#334155",
-    fontSize: "14px",
-    borderBottom: "1px solid rgba(148,163,184,0.2)",
-    verticalAlign: "middle",
-  },
-  tdActions: {
-    padding: "10px 14px",
-    borderBottom: "1px solid rgba(148,163,184,0.2)",
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  row: {
-    backgroundColor: "rgba(255,255,255,0.85)",
-  },
-  pill: {
-    display: "inline-block",
-    padding: "5px 10px",
-    borderRadius: "999px",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  filterBar: {
-    marginBottom: "12px",
-    color: "#334155",
-    fontWeight: "600",
-  },
-  editBtn: {
-    border: "1px solid #93c5fd",
-    background: "#eff6ff",
-    color: "#1d4ed8",
-    fontWeight: "700",
-    borderRadius: "8px",
-    padding: "7px 10px",
-    cursor: "pointer",
-  },
-  deleteBtn: {
-    backgroundColor: "#dc2626",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    padding: "6px 10px",
-    fontWeight: "600",
-  },
-  success: {
-    color: "#166534",
-    backgroundColor: "#dcfce7",
-    border: "1px solid #bbf7d0",
-    borderRadius: "10px",
-    padding: "10px",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-  error: {
-    color: "#991b1b",
-    backgroundColor: "#fee2e2",
-    border: "1px solid #fecaca",
-    borderRadius: "10px",
-    padding: "10px",
-    marginBottom: "10px",
-  },
-  readOnly: {
-    color: "#64748b",
-    fontSize: "13px",
-    fontWeight: "600",
-  },
-  loading: {
-    color: "#475569",
-    fontSize: "14px",
-    padding: "14px 0",
-  },
-  emptyState: {
-    color: "#475569",
-    backgroundColor: "rgba(255,255,255,0.8)",
-    border: "1px dashed rgba(100,116,139,0.4)",
-    borderRadius: "12px",
-    padding: "16px",
-    textAlign: "center",
-    fontWeight: "600",
-  },
-  modalBackdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(15, 23, 42, 0.48)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999,
-    padding: "18px",
-  },
-  modal: {
-    width: "100%",
-    maxWidth: "720px",
-    background: "#ffffff",
-    borderRadius: "12px",
-    boxShadow: "0 20px 45px rgba(2, 6, 23, 0.3)",
-    padding: "20px",
-  },
-  modalTitle: {
-    marginTop: 0,
-    marginBottom: "14px",
-    color: "#0f172a",
-  },
-  modalActions: {
-    marginTop: "10px",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "8px",
-  },
-  cancelBtn: {
-    border: "1px solid #cbd5e1",
-    background: "#ffffff",
-    color: "#334155",
-    borderRadius: "8px",
-    padding: "10px 12px",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
 };
 
 export default Assets;
