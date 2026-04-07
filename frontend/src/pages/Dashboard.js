@@ -97,9 +97,8 @@ const Dashboard = () => {
 
 const styles = {
   container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "32px 20px",
+    width: "100%",
+    padding: "8px 0",
   },
   header: {
     marginBottom: "48px",

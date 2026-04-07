@@ -176,9 +176,8 @@ const getStatusStyle = (status) => ({
 
 const styles = {
   container: {
+    width: "100%",
     padding: "20px",
-    maxWidth: "1200px",
-    margin: "0 auto",
     background: "linear-gradient(180deg, rgba(255,255,255,0.52), rgba(236,243,255,0.45))",
     border: "1px solid rgba(15, 23, 42, 0.08)",
     borderRadius: "18px",
