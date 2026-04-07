@@ -251,7 +251,7 @@ const Assets = () => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
             <h3 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
             <form onSubmit={submitModal} className="grid grid-cols-1 gap-3">
               <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
