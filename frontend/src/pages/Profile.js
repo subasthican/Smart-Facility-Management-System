@@ -1,17 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/PageHeader";
 
 const Profile = () => {
   const { user } = useAuth();
 
   return (
     <section className="sf-page space-y-6">
-      <div>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Account</p>
-        <h1 className="sf-title">Profile & Support</h1>
-        <p className="sf-subtitle mt-2">Review your account role, session status, and quick links for the student management system.</p>
-      </div>
+      <PageHeader
+        breadcrumb="Account / Profile"
+        title="Profile & Support"
+        subtitle="Review your account role, session status, and quick links for the student management system."
+      />
 
       <div className="grid gap-4 md:grid-cols-3">
         <article className="sf-card p-5">
