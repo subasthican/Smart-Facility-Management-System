@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AppModal from "../components/AppModal";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -51,7 +52,6 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({}),
       });
@@ -64,7 +64,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
     } finally {
       setLoadingUsers(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     loadUsers();
@@ -281,7 +281,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
+        <AppModal onClose={resetModal}>
           <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
             <h2 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
             <form onSubmit={submitModal} className="grid gap-3">
@@ -334,7 +334,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
               </div>
             </form>
           </div>
-        </div>
+        </AppModal>
       )}
     </section>
   );
