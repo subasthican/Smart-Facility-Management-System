@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
+import PageHeader from "../components/PageHeader";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -81,15 +82,17 @@ const Notifications = () => {
 
   return (
     <section className="sf-page">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-300/60 pb-4">
-        <h1 className="sf-title">🔔 Notifications</h1>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-rose-600 px-3 py-1 text-xs font-semibold text-white">{unreadCount} New</span>
-          {unreadCount > 0 && (
-            <button className="sf-btn-primary" onClick={markAllAsRead}>Mark All as Read</button>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb="Operations / Notifications"
+        title="Notifications"
+        subtitle="View system alerts, booking updates, and action reminders."
+        actions={(
+          <>
+            <span className="rounded-full bg-rose-600 px-3 py-1 text-xs font-semibold text-white">{unreadCount} New</span>
+            {unreadCount > 0 && <button className="sf-btn-primary" onClick={markAllAsRead}>Mark All as Read</button>}
+          </>
+        )}
+      />
 
       <div className="mb-4 flex flex-wrap gap-2">
         <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "all" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("all")}>All ({notifications.length})</button>
@@ -98,9 +101,9 @@ const Notifications = () => {
       </div>
 
       {loading ? (
-        <div className="py-10 text-center text-slate-500">Loading notifications...</div>
+        <div className="sf-card py-10 text-center text-slate-500">Loading notifications...</div>
       ) : filteredNotifications.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white/70 px-5 py-12 text-center text-slate-500">
+        <div className="sf-card border-dashed border-slate-300 bg-white/70 px-5 py-12 text-center text-slate-500">
           <p className="text-lg">📭 No {filter !== "all" ? filter : ""} notifications</p>
           <span className="text-sm">You're all caught up!</span>
         </div>
