@@ -157,10 +157,11 @@ const styles = {
     maxWidth: "450px",
   },
   card: {
-    backgroundColor: "white",
+    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(241,245,249,0.86))",
+    border: "1px solid rgba(15, 23, 42, 0.12)",
     padding: "48px",
-    borderRadius: "16px",
-    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.1)",
+    borderRadius: "18px",
+    boxShadow: "0 24px 44px rgba(15, 23, 42, 0.14)",
   },
   title: {
     textAlign: "center",
@@ -216,15 +217,15 @@ const styles = {
   button: {
     width: "100%",
     padding: "12px",
-    background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
     color: "white",
     border: "none",
-    borderRadius: "8px",
+    borderRadius: "10px",
     fontSize: "16px",
     fontWeight: "600",
     cursor: "pointer",
     transition: "all 0.3s ease",
-    boxShadow: "0 10px 30px rgba(99, 102, 241, 0.2)",
+    boxShadow: "0 14px 26px rgba(15, 23, 42, 0.25)",
     marginTop: "12px",
   },
   divider: {
@@ -275,7 +276,7 @@ const styles = {
     color: "#6b7280",
   },
   linkText: {
-    color: "#6366f1",
+    color: "#0f766e",
     textDecoration: "none",
     fontWeight: "600",
     transition: "color 0.3s ease",

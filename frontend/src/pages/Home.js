@@ -2,6 +2,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const tokens = {
+  surfaceBase: "#dfe8f7",
+  textPrimary: "#0f172a",
+  textSecondary: "#334155",
+  textMuted: "#475569",
+  borderSoft: "rgba(15, 23, 42, 0.14)",
+  glassFill: "rgba(255, 255, 255, 0.48)",
+  glassFillStrong: "rgba(255, 255, 255, 0.68)",
+  highlight: "rgba(255, 255, 255, 0.84)",
+  shadowDark: "rgba(15, 23, 42, 0.24)",
+  shadowSoft: "rgba(15, 23, 42, 0.12)",
+  accentStart: "#0f172a",
+  accentEnd: "#1e293b",
+};
+
 const Home = () => {
   const { user } = useAuth();
 
@@ -16,6 +31,8 @@ const Home = () => {
 
   return (
     <div style={styles.page}>
+      <div style={styles.bgOrbTop} aria-hidden="true" />
+      <div style={styles.bgOrbBottom} aria-hidden="true" />
       <section style={styles.hero}>
         <div style={styles.content}>
           <p style={styles.eyebrow}>Smart Facility Management</p>
@@ -25,16 +42,18 @@ const Home = () => {
           </p>
 
           {!user ? (
-            <div style={styles.ctas}>
-              <Link to="/register" style={styles.ctaBtn}>Get Started</Link>
-              <Link to="/login" style={styles.ctaBtnSecondary}>Sign In</Link>
+            <div style={styles.ctasPanel}>
+              <div style={styles.ctas}>
+                <Link to="/register" style={styles.ctaBtn}>Get Started</Link>
+                <Link to="/login" style={styles.ctaBtnSecondary}>Sign In</Link>
+              </div>
             </div>
           ) : null}
         </div>
 
         {user?.role === "ADMIN" && (
           <div style={styles.grid}>
-            <Card title="User Management" text="Create and manage student/staff accounts." link="/admin/users" />
+            <Card title="User Management" text="Create and manage student/staff accounts." link="/admin/students" />
             <Card title="Bookings Review" text="Approve and monitor all bookings." link="/bookings" />
             <Card title="Facilities & Assets" text="Manage catalogues and availability." link="/facilities" />
           </div>
@@ -73,14 +92,52 @@ const styles = {
     minHeight: "calc(100vh - 180px)",
     paddingBottom: "10px",
     fontFamily: "Avenir Next, SF Pro Display, Helvetica Neue, Arial, sans-serif",
-    color: "#14171c",
+    color: tokens.textPrimary,
+    position: "relative",
+    overflow: "hidden",
+    background: `
+      radial-gradient(1200px 420px at 18% -4%, rgba(147, 197, 253, 0.38), transparent 55%),
+      radial-gradient(900px 360px at 92% 8%, rgba(196, 181, 253, 0.3), transparent 58%),
+      linear-gradient(165deg, ${tokens.surfaceBase} 0%, #e9f1ff 48%, #dce5f5 100%)
+    `,
+  },
+  bgOrbTop: {
+    position: "absolute",
+    width: "440px",
+    height: "440px",
+    borderRadius: "50%",
+    background: "radial-gradient(circle at 35% 35%, rgba(125, 211, 252, 0.38), rgba(125, 211, 252, 0))",
+    top: "-170px",
+    right: "-90px",
+    pointerEvents: "none",
+  },
+  bgOrbBottom: {
+    position: "absolute",
+    width: "460px",
+    height: "460px",
+    borderRadius: "50%",
+    background: "radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.34), rgba(129, 140, 248, 0))",
+    bottom: "-220px",
+    left: "-120px",
+    pointerEvents: "none",
   },
   hero: {
-    borderRadius: "20px",
-    border: "1px solid rgba(18, 24, 39, 0.08)",
-    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(244,248,255,0.88))",
-    boxShadow: "0 20px 40px rgba(31, 41, 55, 0.12)",
+    borderRadius: "24px",
+    border: `1px solid ${tokens.borderSoft}`,
+    background: `linear-gradient(180deg, ${tokens.glassFillStrong}, ${tokens.glassFill})`,
+    boxShadow: `
+      14px 14px 34px ${tokens.shadowSoft},
+      -14px -14px 30px ${tokens.highlight},
+      0 26px 56px ${tokens.shadowDark},
+      inset 1px 1px 0 rgba(255,255,255,0.64),
+      inset -1px -1px 0 rgba(148,163,184,0.24)
+    `,
+    backdropFilter: "blur(14px) saturate(148%)",
+    WebkitBackdropFilter: "blur(14px) saturate(148%)",
     padding: "44px 28px",
+    position: "relative",
+    zIndex: 1,
+    overflow: "hidden",
   },
   content: {
     textAlign: "center",
@@ -95,21 +152,23 @@ const styles = {
     padding: "8px 12px",
     borderRadius: "999px",
     marginBottom: "14px",
-    background: "rgba(255,255,255,0.85)",
-    border: "1px solid rgba(17, 24, 39, 0.12)",
-    color: "#2a3347",
+    background: "rgba(255,255,255,0.72)",
+    border: `1px solid ${tokens.borderSoft}`,
+    color: tokens.textSecondary,
+    boxShadow: "inset 2px 2px 6px rgba(15, 23, 42, 0.06), inset -2px -2px 6px rgba(255,255,255,0.9)",
   },
   title: {
     fontSize: "clamp(32px, 4vw, 52px)",
     fontWeight: 700,
     letterSpacing: "-0.02em",
-    color: "#0f172a",
+    color: "#0b1428",
     lineHeight: 1.1,
     marginBottom: "12px",
+    textShadow: "0 1px 0 rgba(255,255,255,0.75)",
   },
   subtitle: {
     fontSize: "16px",
-    color: "#3a465f",
+    color: tokens.textMuted,
     maxWidth: "680px",
     margin: "0 auto 20px",
     lineHeight: 1.6,
@@ -120,27 +179,36 @@ const styles = {
     justifyContent: "center",
     flexWrap: "wrap",
   },
+  ctasPanel: {
+    display: "inline-block",
+    padding: "10px",
+    borderRadius: "999px",
+    background: "rgba(255,255,255,0.36)",
+    border: "1px solid rgba(15, 23, 42, 0.09)",
+    boxShadow: "inset 4px 4px 10px rgba(15,23,42,0.08), inset -4px -4px 10px rgba(255,255,255,0.68)",
+  },
   ctaBtn: {
-    padding: "13px 24px",
-    background: "linear-gradient(140deg, #111827 0%, #1f2937 100%)",
+    padding: "13px 26px",
+    background: `linear-gradient(140deg, ${tokens.accentStart} 0%, ${tokens.accentEnd} 100%)`,
     color: "#ffffff",
     textDecoration: "none",
     borderRadius: "999px",
     fontWeight: 600,
     fontSize: "14px",
     letterSpacing: "0.01em",
-    border: "1px solid rgba(255,255,255,0.25)",
-    boxShadow: "0 8px 16px rgba(17, 24, 39, 0.18)",
+    border: "1px solid rgba(255,255,255,0.28)",
+    boxShadow: "10px 10px 22px rgba(15, 23, 42, 0.3), -4px -4px 14px rgba(255,255,255,0.35)",
   },
   ctaBtnSecondary: {
-    padding: "13px 24px",
-    background: "rgba(255,255,255,0.85)",
-    color: "#1f2a44",
+    padding: "13px 26px",
+    background: "rgba(255,255,255,0.62)",
+    color: tokens.textSecondary,
     textDecoration: "none",
     borderRadius: "999px",
     fontWeight: 600,
     fontSize: "14px",
-    border: "1px solid rgba(17, 24, 39, 0.14)",
+    border: `1px solid ${tokens.borderSoft}`,
+    boxShadow: "8px 8px 16px rgba(15, 23, 42, 0.13), -6px -6px 14px rgba(255,255,255,0.78)",
   },
   grid: {
     display: "grid",
@@ -148,28 +216,30 @@ const styles = {
     gap: "12px",
   },
   card: {
-    background: "rgba(255,255,255,0.9)",
-    border: "1px solid rgba(15, 23, 42, 0.09)",
+    background: "rgba(255,255,255,0.62)",
+    border: `1px solid ${tokens.borderSoft}`,
     borderRadius: "14px",
     padding: "16px",
     textAlign: "left",
-    boxShadow: "0 10px 20px rgba(31, 41, 55, 0.08)",
+    boxShadow: "10px 10px 20px rgba(15, 23, 42, 0.1), -7px -7px 16px rgba(255,255,255,0.75)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
   },
   cardTitle: {
     fontSize: "18px",
     marginBottom: "6px",
-    color: "#1e293b",
+    color: tokens.textPrimary,
   },
   cardText: {
     fontSize: "14px",
-    color: "#475569",
+    color: tokens.textMuted,
     lineHeight: 1.5,
     marginBottom: "12px",
   },
   cardLink: {
     display: "inline-block",
     textDecoration: "none",
-    color: "#0f172a",
+    color: tokens.textPrimary,
     fontWeight: "700",
     fontSize: "14px",
   },
