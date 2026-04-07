@@ -11,35 +11,35 @@ const Dashboard = () => {
       description: "View and manage your facility bookings",
       icon: "📅",
       link: "/bookings",
-      color: "#0f766e"
+      border: "border-l-teal-700",
     },
     {
       title: "Facilities",
       description: "Explore available facilities and resources",
       icon: "🏢",
       link: "/facilities",
-      color: "#0f172a"
+      border: "border-l-slate-900",
     },
     {
       title: "Assets",
       description: "Browse and manage assets",
       icon: "🔧",
       link: "/assets",
-      color: "#334155"
+      border: "border-l-slate-700",
     },
     {
       title: "Incident Tickets",
       description: "Report issues and track ticket progress",
       icon: "🎫",
       link: "/tickets",
-      color: "#be123c"
+      border: "border-l-rose-700",
     },
     {
       title: "Notifications",
       description: "View system alerts and booking updates",
       icon: "🔔",
       link: "/notifications",
-      color: "#1d4ed8"
+      border: "border-l-blue-700",
     }
   ];
 
@@ -50,125 +50,52 @@ const Dashboard = () => {
         description: "Add, edit, and activate or deactivate student accounts",
         icon: "🎓",
         link: "/admin/students",
-        color: "#0369a1"
+        border: "border-l-sky-700",
       },
       {
         title: "Staff Management",
         description: "Add, edit, and activate or deactivate staff accounts",
         icon: "🧑‍💼",
         link: "/admin/staff",
-        color: "#0f766e"
+        border: "border-l-teal-700",
       }
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Welcome, {user?.email}! 👋</h1>
-        <p style={styles.subtitle}>You're logged in as <strong>{user?.role}</strong></p>
+    <section className="sf-page relative overflow-hidden">
+      <div className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-cyan-200/45 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -left-16 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl" />
+
+      <div className="relative mb-12">
+        <h1 className="sf-title">Welcome, {user?.email}! 👋</h1>
+        <p className="sf-subtitle mt-2">You're logged in as <strong>{user?.role}</strong></p>
       </div>
 
-      <div style={styles.grid}>
+      <div className="relative mb-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card, idx) => (
-          <Link key={idx} to={card.link} style={{ textDecoration: "none" }}>
-            <div style={{...styles.card, borderLeft: `4px solid ${card.color}`}}>
-              <div style={styles.cardIcon}>{card.icon}</div>
-              <h3 style={styles.cardTitle}>{card.title}</h3>
-              <p style={styles.cardDescription}>{card.description}</p>
-              <div style={styles.cardArrow}>→</div>
-            </div>
+          <Link key={idx} to={card.link} className="no-underline">
+            <article className={`sf-card border-l-4 p-6 transition hover:-translate-y-1 ${card.border}`}>
+              <div className="mb-3 text-4xl">{card.icon}</div>
+              <h3 className="mb-2 text-lg font-bold text-slate-900">{card.title}</h3>
+              <p className="mb-3 text-sm text-slate-600">{card.description}</p>
+              <div className="text-lg text-slate-500">→</div>
+            </article>
           </Link>
         ))}
       </div>
 
       {user?.role === "STUDENT" && (
-        <div style={styles.ctaBox}>
+        <div className="relative rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-10 text-center text-white shadow-2xl">
           <h3>Ready to book a facility?</h3>
-          <p>Start by creating a new booking to reserve space for your needs.</p>
-          <Link to="/create-booking" style={styles.ctaBtn}>
+          <p className="mt-2 text-slate-200">Start by creating a new booking to reserve space for your needs.</p>
+          <Link to="/create-booking" className="mt-5 inline-block rounded-xl bg-white px-8 py-3 font-semibold text-slate-900 no-underline shadow-md">
             Create New Booking
           </Link>
         </div>
       )}
-    </div>
+    </section>
   );
-};
-
-const styles = {
-  container: {
-    width: "100%",
-    padding: "8px 0",
-  },
-  header: {
-    marginBottom: "48px",
-  },
-  title: {
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#0f172a",
-    marginBottom: "8px",
-  },
-  subtitle: {
-    fontSize: "16px",
-    color: "#475569",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "24px",
-    marginBottom: "40px",
-  },
-  card: {
-    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(241,245,249,0.86))",
-    border: "1px solid rgba(15, 23, 42, 0.12)",
-    padding: "24px",
-    borderRadius: "16px",
-    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.1)",
-    transition: "all 0.3s ease",
-    cursor: "pointer",
-    position: "relative",
-    overflow: "hidden",
-  },
-  cardIcon: {
-    fontSize: "40px",
-    marginBottom: "12px",
-  },
-  cardTitle: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#0f172a",
-    marginBottom: "8px",
-  },
-  cardDescription: {
-    fontSize: "14px",
-    color: "#475569",
-    marginBottom: "12px",
-  },
-  cardArrow: {
-    fontSize: "20px",
-    color: "#64748b",
-    transition: "all 0.3s ease",
-  },
-  ctaBox: {
-    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-    color: "white",
-    padding: "40px",
-    borderRadius: "16px",
-    textAlign: "center",
-    boxShadow: "0 18px 34px rgba(15, 23, 42, 0.22)",
-  },
-  ctaBtn: {
-    display: "inline-block",
-    marginTop: "16px",
-    padding: "12px 32px",
-    backgroundColor: "white",
-    color: "#0f172a",
-    textDecoration: "none",
-    borderRadius: "10px",
-    fontWeight: "600",
-    transition: "all 0.3s ease",
-  },
 };
 
 export default Dashboard;

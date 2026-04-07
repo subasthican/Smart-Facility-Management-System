@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+
 const CreateBooking = () => {
   const [facilityName, setFacilityName] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -30,7 +32,7 @@ const CreateBooking = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/bookings", {
+      const response = await fetch(`${API_BASE}/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,18 +61,18 @@ const CreateBooking = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Create New Booking</h2>
-        <p style={styles.subtitle}>Reserve facilities with precision scheduling.</p>
-        {error && <p style={styles.error}>{error}</p>}
+    <div className="flex min-h-[80vh] items-center justify-center px-5 py-8">
+      <div className="sf-card w-full max-w-xl border border-slate-900/10 bg-gradient-to-b from-white/95 to-slate-100/85 p-10">
+        <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900">Create New Booking</h2>
+        <p className="mb-4 mt-1 text-center text-sm text-slate-500">Reserve facilities with precision scheduling.</p>
+        {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-center text-sm text-rose-800">{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <label style={styles.label}>Facility Name *</label>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">Facility Name *</label>
           <select
             value={facilityName}
             onChange={(e) => setFacilityName(e.target.value)}
-            style={styles.input}
+            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
             required
           >
             <option value="">Select a facility</option>
@@ -83,40 +85,36 @@ const CreateBooking = () => {
             <option value="Sports Field">Sports Field</option>
           </select>
 
-          <label style={styles.label}>Start Time *</label>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">Start Time *</label>
           <input
             type="datetime-local"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            style={styles.input}
+            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
             required
           />
 
-          <label style={styles.label}>End Time *</label>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">End Time *</label>
           <input
             type="datetime-local"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            style={styles.input}
+            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
             required
           />
 
-          <label style={styles.label}>Notes (Optional)</label>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">Notes (Optional)</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            style={{ ...styles.input, minHeight: "100px", resize: "vertical" }}
+            className="mb-4 min-h-[100px] w-full resize-y rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
             placeholder="Any special requests or notes..."
           />
 
           <button
             type="submit"
             disabled={loading}
-            style={{
-              ...styles.button,
-              opacity: loading ? 0.6 : 1,
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
+            className={`sf-btn-primary w-full py-3 text-base ${loading ? "cursor-not-allowed opacity-60" : ""}`}
           >
             {loading ? "Creating..." : "Create Booking"}
           </button>
@@ -124,74 +122,6 @@ const CreateBooking = () => {
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "80vh",
-    padding: "20px",
-  },
-  card: {
-    background: "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(243,247,255,0.88))",
-    padding: "40px",
-    borderRadius: "18px",
-    boxShadow: "0 24px 50px rgba(15, 23, 42, 0.12)",
-    border: "1px solid rgba(15, 23, 42, 0.1)",
-    width: "100%",
-    maxWidth: "500px",
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: "6px",
-    color: "#111827",
-    fontSize: "30px",
-    letterSpacing: "-0.02em",
-  },
-  subtitle: {
-    textAlign: "center",
-    marginBottom: "18px",
-    color: "#64748b",
-    fontSize: "14px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "600",
-    color: "#334155",
-  },
-  input: {
-    width: "100%",
-    padding: "12px 14px",
-    marginBottom: "15px",
-    border: "1px solid #cbd5e1",
-    borderRadius: "10px",
-    fontSize: "14px",
-    boxSizing: "border-box",
-    backgroundColor: "rgba(255,255,255,0.9)",
-  },
-  button: {
-    width: "100%",
-    padding: "12px",
-    background: "linear-gradient(135deg, #111827, #1e293b)",
-    color: "#fff",
-    border: "none",
-    borderRadius: "10px",
-    fontSize: "16px",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
-  error: {
-    color: "#991b1b",
-    textAlign: "center",
-    marginBottom: "10px",
-    padding: "10px",
-    backgroundColor: "#fee2e2",
-    borderRadius: "8px",
-    border: "1px solid #fecaca",
-  },
 };
 
 export default CreateBooking;
