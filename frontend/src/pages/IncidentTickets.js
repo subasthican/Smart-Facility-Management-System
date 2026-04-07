@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/PageHeader.js";
+import AppModal from "../components/AppModal";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
 
@@ -187,7 +188,7 @@ const IncidentTickets = () => {
       </div>
 
       {editingTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
+        <AppModal onClose={() => setEditingTicket(null)}>
           <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
             <h2 className="mb-3 text-xl font-bold text-slate-900">Edit Ticket</h2>
             <div className="grid gap-3">
@@ -217,7 +218,7 @@ const IncidentTickets = () => {
               </div>
             </div>
           </div>
-        </div>
+        </AppModal>
       )}
     </section>
   );
