@@ -282,7 +282,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
             <h2 className="mb-4 text-xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
             <form onSubmit={submitModal} className="grid gap-3">
               <label className="text-sm font-semibold text-slate-700">Full Name</label>
