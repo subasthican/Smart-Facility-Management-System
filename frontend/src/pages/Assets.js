@@ -191,9 +191,9 @@ const Assets = () => {
       {message && <p className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</p>}
       {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
-      <div className="mb-3 text-sm font-semibold text-slate-700">
+      <div className="mb-3 text-sm font-semibold" style={{ color: "var(--text-muted)" }}>
         <label>Filter by Facility:&nbsp;</label>
-        <select className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" value={filterFacilityId} onChange={(e) => setFilterFacilityId(e.target.value)}>
+        <select className="sf-input inline-block w-auto px-3 py-2" value={filterFacilityId} onChange={(e) => setFilterFacilityId(e.target.value)}>
           <option value="ALL">All</option>
           {facilities.map((f) => (
             <option key={f.id} value={f.id}>{f.name}</option>
@@ -202,44 +202,44 @@ const Assets = () => {
       </div>
 
       {loading ? (
-        <div className="sf-card py-8 text-center text-slate-600">Loading assets...</div>
+        <div className="sf-card py-8 text-center sf-subtitle">Loading assets...</div>
       ) : assets.length === 0 ? (
-        <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center">
-          <p className="text-lg font-semibold text-slate-700">No assets found</p>
-          <p className="mt-1 text-sm text-slate-500">Try a different facility filter or add a new asset.</p>
+        <div className="sf-card border-dashed p-6 text-center">
+          <p className="text-lg font-semibold sf-title">No assets found</p>
+          <p className="mt-1 text-sm sf-subtitle">Try a different facility filter or add a new asset.</p>
           {isAdmin && <button className="mt-4 sf-btn-primary" type="button" onClick={openAddModal}>Add Asset</button>}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white/90">
-          <table className="w-full border-separate border-spacing-0">
+        <div className="sf-table-wrap">
+          <table className="sf-table">
             <thead>
               <tr>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Asset</th>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Category</th>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Serial</th>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Condition</th>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Facility</th>
-                <th className="border-b border-slate-300/50 bg-indigo-50 px-4 py-3 text-left text-sm font-bold text-slate-700">Actions</th>
+                <th className="sf-th">Asset</th>
+                <th className="sf-th">Category</th>
+                <th className="sf-th">Serial</th>
+                <th className="sf-th">Condition</th>
+                <th className="sf-th">Facility</th>
+                <th className="sf-th">Actions</th>
               </tr>
             </thead>
             <tbody>
               {assets.map((a) => (
-                <tr key={a.id} className="bg-white/90">
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{a.assetName}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{a.category}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 font-mono text-sm text-slate-700">{a.serialNumber}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                <tr key={a.id}>
+                  <td className="sf-td">{a.assetName}</td>
+                  <td className="sf-td">{a.category}</td>
+                  <td className="sf-td font-mono">{a.serialNumber}</td>
+                  <td className="sf-td">
                     <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${getConditionClass(a.condition)}`}>{a.condition}</span>
                   </td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{facilityName(a.facilityId)}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3">
+                  <td className="sf-td">{facilityName(a.facilityId)}</td>
+                  <td className="sf-td">
                     {isAdmin ? (
                       <div className="flex flex-wrap gap-2">
-                        <button className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700" type="button" onClick={() => openEditModal(a)}>Update</button>
+                        <button className="sf-btn-secondary px-3 py-1.5 text-xs" type="button" onClick={() => openEditModal(a)}>Update</button>
                         <button className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white" type="button" onClick={() => handleDelete(a.id)}>Delete</button>
                       </div>
                     ) : (
-                      <span className="text-xs font-semibold text-slate-500">Read-only</span>
+                      <span className="text-xs font-semibold sf-subtitle">Read-only</span>
                     )}
                   </td>
                 </tr>
@@ -251,18 +251,18 @@ const Assets = () => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
-            <h3 className="mb-5 text-2xl font-bold text-slate-900">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
+          <div className="sf-modal-card">
+            <h3 className="mb-5 text-2xl font-bold sf-title">{modalMode === "create" ? "Add Asset" : "Update Asset"}</h3>
             <form onSubmit={submitModal} className="grid grid-cols-1 gap-3">
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Category" value={form.category} onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))} required />
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Serial Number" value={form.serialNumber} onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))} required />
-              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.condition} onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}>
+              <input className="sf-input text-base" placeholder="Asset Name" value={form.assetName} onChange={(e) => setForm((prev) => ({ ...prev, assetName: e.target.value }))} required />
+              <input className="sf-input text-base" placeholder="Category" value={form.category} onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))} required />
+              <input className="sf-input text-base" placeholder="Serial Number" value={form.serialNumber} onChange={(e) => setForm((prev) => ({ ...prev, serialNumber: e.target.value }))} required />
+              <select className="sf-input text-base" value={form.condition} onChange={(e) => setForm((prev) => ({ ...prev, condition: e.target.value }))}>
                 <option value="GOOD">GOOD</option>
                 <option value="NEEDS_REPAIR">NEEDS_REPAIR</option>
                 <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
               </select>
-              <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={form.facilityId} onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))} required>
+              <select className="sf-input text-base" value={form.facilityId} onChange={(e) => setForm((prev) => ({ ...prev, facilityId: e.target.value }))} required>
                 <option value="">Select Facility</option>
                 {facilities.map((f) => (
                   <option key={f.id} value={f.id}>{f.name}</option>

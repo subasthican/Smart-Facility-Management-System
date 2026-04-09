@@ -130,15 +130,15 @@ const IncidentTickets = () => {
 
       {error && <p className="mb-4 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
-      <div className="mb-4 rounded-2xl border border-slate-300/50 bg-white/90 p-4">
-        <h2 className="mb-3 text-xl font-bold text-slate-800">Create New Ticket</h2>
+      <div className="mb-4 sf-card p-4">
+        <h2 className="mb-3 text-xl font-bold sf-title">Create New Ticket</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" placeholder="Title" value={newTicket.title} onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })} />
-          <input className="rounded-xl border border-slate-300 px-3 py-2 text-sm" type="text" placeholder="Location" value={newTicket.location} onChange={(e) => setNewTicket({ ...newTicket, location: e.target.value })} />
+          <input className="sf-input px-3 py-2" type="text" placeholder="Title" value={newTicket.title} onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })} />
+          <input className="sf-input px-3 py-2" type="text" placeholder="Location" value={newTicket.location} onChange={(e) => setNewTicket({ ...newTicket, location: e.target.value })} />
         </div>
-        <textarea className="mt-3 min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" placeholder="Description" value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })} />
+        <textarea className="sf-input mt-3 min-h-24 w-full px-3 py-2" placeholder="Description" value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })} />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <select className="rounded-xl border border-slate-300 px-3 py-2 text-sm" value={newTicket.priority} onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}>
+          <select className="sf-input w-auto px-3 py-2" value={newTicket.priority} onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}>
             <option value="LOW">Low</option>
             <option value="MEDIUM">Medium</option>
             <option value="HIGH">High</option>
@@ -148,37 +148,37 @@ const IncidentTickets = () => {
       </div>
 
       <div>
-        <h2 className="mb-3 text-xl font-bold text-slate-800">All Tickets</h2>
+        <h2 className="mb-3 text-xl font-bold sf-title">All Tickets</h2>
         {loading ? (
-          <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center text-slate-600">Loading tickets...</div>
+          <div className="sf-card border-dashed p-6 text-center sf-subtitle">Loading tickets...</div>
         ) : tickets.length === 0 ? (
-          <div className="sf-card border-dashed border-slate-300 bg-white/80 p-6 text-center">
-            <p className="text-lg font-semibold text-slate-700">No tickets yet</p>
-            <p className="mt-1 text-sm text-slate-500">Create your first incident ticket above.</p>
+          <div className="sf-card border-dashed p-6 text-center">
+            <p className="text-lg font-semibold sf-title">No tickets yet</p>
+            <p className="mt-1 text-sm sf-subtitle">Create your first incident ticket above.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {tickets.map((ticket) => (
-              <article key={ticket.id} className="rounded-xl border border-slate-300/60 bg-white/95 p-4 shadow-sm">
+              <article key={ticket.id} className="sf-card p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="text-lg font-bold text-slate-900">{ticket.title}</h3>
+                  <h3 className="text-lg font-bold sf-title">{ticket.title}</h3>
                   <div className="flex flex-wrap gap-2">
                     <span className={`rounded-full px-3 py-1 text-xs font-bold ${priorityClass(ticket.priority)}`}>{ticket.priority}</span>
                     <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass(ticket.status)}`}>{ticket.status}</span>
                   </div>
                 </div>
-                <p className="mt-2 text-sm text-slate-700">{ticket.description}</p>
-                <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-600">
+                <p className="mt-2 text-sm sf-subtitle">{ticket.description}</p>
+                <div className="mt-2 flex flex-wrap gap-3 text-xs sf-subtitle">
                   <span>Location: {ticket.location || "-"}</span>
                   <span>Reported By: {ticket.reportedBy || "-"}</span>
                   <span>Assigned To: {ticket.assignedTo || "-"}</span>
                 </div>
 
-                {ticket.technicianNotes && <p className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">Technician Notes: {ticket.technicianNotes}</p>}
+                {ticket.technicianNotes && <p className="mt-2 rounded-lg border px-3 py-2 text-xs sf-subtitle" style={{ borderColor: "var(--sf-card-border)", background: "var(--surface)" }}>Technician Notes: {ticket.technicianNotes}</p>}
                 {ticket.imageUrl && <img src={ticket.imageUrl} alt="Ticket" className="mt-3 max-w-[260px] rounded-lg border border-slate-300" />}
 
                 <div className="mt-3 flex gap-2">
-                  <button onClick={() => setEditingTicket(ticket)} className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Edit</button>
+                  <button onClick={() => setEditingTicket(ticket)} className="sf-btn-secondary px-3 py-1.5 text-xs">Edit</button>
                   <button onClick={() => handleDeleteTicket(ticket.id)} className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white">Delete</button>
                 </div>
               </article>
@@ -189,19 +189,19 @@ const IncidentTickets = () => {
 
       {editingTicket && (
         <AppModal onClose={() => setEditingTicket(null)}>
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
-            <h2 className="mb-5 text-2xl font-bold text-slate-900">Edit Ticket</h2>
+          <div className="sf-modal-card">
+            <h2 className="mb-5 text-2xl font-bold sf-title">Edit Ticket</h2>
             <div className="grid gap-3">
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
-              <textarea className="min-h-24 rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
+              <input className="sf-input text-base" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
+              <textarea className="sf-input min-h-24 text-base" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
+              <input className="sf-input text-base" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
+                <select className="sf-input text-base" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="HIGH">High</option>
                 </select>
-                <select className="rounded-xl border border-slate-300 px-4 py-3 text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
+                <select className="sf-input text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
                   <option value="OPEN">Open</option>
                   <option value="ASSIGNED">Assigned</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -209,9 +209,9 @@ const IncidentTickets = () => {
                   <option value="REJECTED">Rejected</option>
                 </select>
               </div>
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
-              <textarea className="min-h-20 rounded-xl border border-slate-300 px-4 py-3 text-base" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
-              <input className="rounded-xl border border-slate-300 px-4 py-3 text-base" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
+              <input className="sf-input text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
+              <textarea className="sf-input min-h-20 text-base" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
+              <input className="sf-input text-base" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
               <div className="mt-1 flex justify-end gap-2">
                 <button className="sf-btn-primary" onClick={() => handleUpdateTicket(editingTicket.id, editingTicket)}>Update</button>
                 <button className="sf-btn-secondary" onClick={() => setEditingTicket(null)}>Cancel</button>
