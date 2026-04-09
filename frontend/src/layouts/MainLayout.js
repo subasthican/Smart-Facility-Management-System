@@ -149,6 +149,7 @@ const MainLayout = ({ children }) => {
                 <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Facilities</Link>
                 <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Assets</Link>
                 <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Bookings</Link>
+                <Link to="/ai-chat" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>AI Chat</Link>
               </>
             ) : null}
           </nav>
@@ -210,6 +211,7 @@ const MainLayout = ({ children }) => {
               <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Bookings</Link>
               <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Facilities</Link>
               <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Assets</Link>
+              <Link to="/ai-chat" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>AI Chat</Link>
             </div>
           </div>
 
