@@ -35,7 +35,7 @@ const MainLayout = ({ children }) => {
   };
 
   return (
-    <div className={`relative flex min-h-screen flex-col ${isGuestHome ? "bg-sf-shell" : isDark ? "bg-[#020202] text-slate-100" : "bg-sf-shell text-slate-900"}`}>
+    <div className={`relative flex min-h-screen flex-col ${isGuestHome ? (isDark ? "bg-[#020202] text-slate-100" : "bg-sf-shell text-slate-900") : isDark ? "bg-[#020202] text-slate-100" : "bg-sf-shell text-slate-900"}`}>
       {!isGuestHome && (
         <>
           <div
@@ -75,7 +75,7 @@ const MainLayout = ({ children }) => {
       )}
 
       {isGuestHome && (
-        <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+        <div className="absolute left-0 right-0 top-0 z-20 px-6 pt-6 sm:px-8 sm:pt-8">
           <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
             <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
             <div className="flex items-center gap-2">
