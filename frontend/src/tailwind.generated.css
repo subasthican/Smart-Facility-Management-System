@@ -917,6 +917,10 @@ video {
   display: grid;
 }
 
+.hidden {
+  display: none;
+}
+
 .h-64 {
   height: 16rem;
 }
@@ -1251,6 +1255,14 @@ video {
   border-color: rgb(255 255 255 / 0.2);
 }
 
+.border-slate-300\/60 {
+  border-color: rgb(203 213 225 / 0.6);
+}
+
+.border-slate-300\/70 {
+  border-color: rgb(203 213 225 / 0.7);
+}
+
 .border-l-amber-500 {
   --tw-border-opacity: 1;
   border-left-color: rgb(245 158 11 / var(--tw-border-opacity, 1));
@@ -1498,6 +1510,46 @@ video {
   background-color: rgb(255 255 255 / 0.9);
 }
 
+.bg-slate-300\/30 {
+  background-color: rgb(203 213 225 / 0.3);
+}
+
+.bg-slate-400\/20 {
+  background-color: rgb(148 163 184 / 0.2);
+}
+
+.bg-slate-100\/60 {
+  background-color: rgb(241 245 249 / 0.6);
+}
+
+.bg-slate-100\/70 {
+  background-color: rgb(241 245 249 / 0.7);
+}
+
+.bg-slate-100\/80 {
+  background-color: rgb(241 245 249 / 0.8);
+}
+
+.bg-slate-200\/45 {
+  background-color: rgb(226 232 240 / 0.45);
+}
+
+.bg-slate-200\/55 {
+  background-color: rgb(226 232 240 / 0.55);
+}
+
+.bg-slate-200\/70 {
+  background-color: rgb(226 232 240 / 0.7);
+}
+
+.bg-slate-300\/35 {
+  background-color: rgb(203 213 225 / 0.35);
+}
+
+.bg-slate-300\/55 {
+  background-color: rgb(203 213 225 / 0.55);
+}
+
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
@@ -1536,6 +1588,12 @@ video {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.from-slate-200\/35 {
+  --tw-gradient-from: rgb(226 232 240 / 0.35) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(226 232 240 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .via-black\/45 {
   --tw-gradient-to: rgb(0 0 0 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), rgb(0 0 0 / 0.45) var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -1544,6 +1602,11 @@ video {
 .via-black\/55 {
   --tw-gradient-to: rgb(0 0 0 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), rgb(0 0 0 / 0.55) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.via-slate-300\/45 {
+  --tw-gradient-to: rgb(203 213 225 / 0)  var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(203 213 225 / 0.45) var(--tw-gradient-via-position), var(--tw-gradient-to);
 }
 
 .to-black\/70 {
@@ -1564,6 +1627,10 @@ video {
 
 .to-white {
   --tw-gradient-to: #fff var(--tw-gradient-to-position);
+}
+
+.to-slate-400\/35 {
+  --tw-gradient-to: rgb(148 163 184 / 0.35) var(--tw-gradient-to-position);
 }
 
 .p-10 {
@@ -2000,6 +2067,21 @@ video {
 
 .shadow-slate-900\/20 {
   --tw-shadow-color: rgb(15 23 42 / 0.2);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-300\/20 {
+  --tw-shadow-color: rgb(203 213 225 / 0.2);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-400\/20 {
+  --tw-shadow-color: rgb(148 163 184 / 0.2);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-700\/10 {
+  --tw-shadow-color: rgb(51 65 85 / 0.1);
   --tw-shadow: var(--tw-shadow-colored);
 }
 

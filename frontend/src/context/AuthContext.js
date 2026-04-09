@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 
 const AuthContext = createContext();
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
@@ -12,28 +12,52 @@ export const AuthProvider = ({ children }) => {
 
   const decodeToken = (jwt) => {
     const payload = JSON.parse(atob(jwt.split(".")[1]));
-    return { email: payload.sub, role: payload.role };
+    return { email: payload.sub, role: payload.role, fullName: "", phoneNumber: "" };
   };
 
-  const parseResponse = async (response) => {
+  const parseResponse = useCallback(async (response) => {
     const contentType = response.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       return response.json();
     }
     return { error: "Unexpected server response format" };
-  };
+  }, []);
+
+  const fetchCurrentUserProfile = useCallback(async (jwtToken) => {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${jwtToken}` },
+    });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to load profile");
+    }
+
+    setUser((prev) => ({
+      ...(prev || decodeToken(jwtToken)),
+      fullName: data.fullName || "",
+      phoneNumber: data.phoneNumber || "",
+      email: data.email || (prev?.email || ""),
+      role: data.role || (prev?.role || ""),
+    }));
+
+    return data;
+  }, [parseResponse]);
 
   // On mount, check if token exists and decode user info
   useEffect(() => {
     if (token) {
       try {
         setUser(decodeToken(token));
+        fetchCurrentUserProfile(token).catch(() => {
+          // Keep JWT-derived fallback user data if profile fetch fails.
+        });
       } catch (e) {
         logout();
       }
     }
     setLoading(false);
-  }, [token]);
+  }, [token, fetchCurrentUserProfile]);
 
   // Register
   const register = async (fullName, email, password, role) => {
@@ -77,6 +101,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", data.token);
       setToken(data.token);
       setUser(decodeToken(data.token));
+      fetchCurrentUserProfile(data.token).catch(() => {
+        // Keep JWT-derived fallback user data if profile fetch fails.
+      });
 
       return data;
     } catch (error) {
@@ -97,7 +124,35 @@ export const AuthProvider = ({ children }) => {
     setToken(jwtToken);
 
     const payload = JSON.parse(atob(jwtToken.split(".")[1]));
-    setUser({ email: payload.sub, role: payload.role });
+    setUser({ email: payload.sub, role: payload.role, fullName: "", phoneNumber: "" });
+    fetchCurrentUserProfile(jwtToken).catch(() => {
+      // Keep JWT-derived fallback user data if profile fetch fails.
+    });
+  };
+
+  const updateProfile = async ({ fullName, phoneNumber }) => {
+    if (!token) throw new Error("Not authenticated");
+
+    const response = await fetch(`${API_BASE}/auth/me/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ fullName, phoneNumber }),
+    });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update profile");
+    }
+
+    setUser((prev) => ({
+      ...prev,
+      fullName: data.fullName || fullName,
+      phoneNumber: data.phoneNumber || phoneNumber || "",
+    }));
+    return data;
   };
 
   // Logout
@@ -108,7 +163,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, loginWithToken, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        loginWithToken,
+        register,
+        logout,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

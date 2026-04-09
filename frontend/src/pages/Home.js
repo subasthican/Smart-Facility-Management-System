@@ -222,8 +222,19 @@ const Home = () => {
     }
 
   return (
-      <section className="relative min-h-[calc(100vh-180px)] overflow-hidden rounded-3xl border border-white/10 bg-[#020202] p-7 shadow-shell backdrop-blur-md">
-      <div className="pointer-events-none absolute inset-0">
+      <section className={`relative min-h-[calc(100vh-180px)] overflow-hidden rounded-3xl p-7 shadow-shell backdrop-blur-md ${isDark ? "border border-white/10 bg-[#020202]" : "border border-slate-300/60 bg-slate-300/55"}`}>
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={
+          isDark
+            ? undefined
+            : {
+                opacity: 0.32,
+                filter: "grayscale(1) contrast(1.24) brightness(1.1)",
+                mixBlendMode: "normal",
+              }
+        }
+      >
         <Beams
           beamWidth={3}
           beamHeight={30}
@@ -235,16 +246,16 @@ const Home = () => {
           rotation={30}
         />
       </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-black/55 to-black/80" />
-      <div className="pointer-events-none absolute -right-24 -top-40 h-[440px] w-[440px] rounded-full bg-white/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-52 -left-28 h-[460px] w-[460px] rounded-full bg-cyan-300/10 blur-3xl" />
+      <div className={`pointer-events-none absolute inset-0 ${isDark ? "bg-gradient-to-b from-black/30 via-black/55 to-black/80" : "bg-gradient-to-b from-slate-200/35 via-slate-300/45 to-slate-400/35"}`} />
+      <div className={`pointer-events-none absolute -right-24 -top-40 h-[440px] w-[440px] rounded-full blur-3xl ${isDark ? "bg-white/10" : "bg-slate-200/45"}`} />
+      <div className={`pointer-events-none absolute -bottom-52 -left-28 h-[460px] w-[460px] rounded-full blur-3xl ${isDark ? "bg-cyan-300/10" : "bg-slate-300/35"}`} />
 
-      <div className="relative z-10 mb-8 mx-auto max-w-5xl rounded-[2rem] border border-white/10 bg-black/35 px-6 py-8 text-center shadow-2xl shadow-black/40 backdrop-blur-2xl sm:px-8 sm:py-10">
-        <p className="mb-4 inline-block rounded-full border border-white/15 bg-white/8 px-3 py-2 text-xs uppercase tracking-[0.14em] text-white/80 shadow-inner shadow-black/20">
+      <div className={`relative z-10 mb-8 mx-auto max-w-5xl rounded-[2rem] px-6 py-8 text-center shadow-2xl backdrop-blur-2xl sm:px-8 sm:py-10 ${isDark ? "border border-white/10 bg-black/35 shadow-black/40" : "border border-slate-300/60 bg-slate-100/70 shadow-slate-700/10"}`}>
+        <p className={`mb-4 inline-block rounded-full px-3 py-2 text-xs uppercase tracking-[0.14em] shadow-inner ${isDark ? "border border-white/15 bg-white/8 text-white/80 shadow-black/20" : "border border-slate-300/70 bg-slate-200/70 text-slate-600 shadow-slate-400/20"}`}>
           Smart Facility Management
         </p>
-        <h1 className="text-4xl font-bold tracking-tight text-white md:text-5xl">{selectedRole?.title || "Welcome"}</h1>
-        <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-200">
+        <h1 className={`text-4xl font-bold tracking-tight md:text-5xl ${isDark ? "text-white" : "text-slate-900"}`}>{selectedRole?.title || "Welcome"}</h1>
+        <p className={`mx-auto mt-3 max-w-2xl text-base leading-relaxed ${isDark ? "text-slate-200" : "text-slate-700"}`}>
           {selectedRole?.subtitle || "A clean and comfortable workspace to manage bookings, facilities, and assets with clear role-based actions."}
         </p>
 
@@ -253,7 +264,7 @@ const Home = () => {
             <Link
               key={action.label}
               to={action.link}
-              className="rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow backdrop-blur-sm"
+              className={isDark ? "rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow backdrop-blur-sm" : "rounded-full border border-slate-300/70 bg-slate-100/80 px-5 py-2.5 text-sm font-semibold text-slate-700 no-underline shadow"}
             >
               {action.label}
             </Link>
@@ -262,46 +273,46 @@ const Home = () => {
       </div>
 
       <div className="relative z-10 mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Today Bookings" value="126" hint="+12 from yesterday" />
-        <StatCard label="Open Facilities" value="34" hint="2 under maintenance" />
-        <StatCard label="Assets In Use" value="218" hint="78% utilization" />
-        <StatCard label="Avg. Response" value="1.8m" hint="Support requests" />
+        <StatCard label="Today Bookings" value="126" hint="+12 from yesterday" isDark={isDark} />
+        <StatCard label="Open Facilities" value="34" hint="2 under maintenance" isDark={isDark} />
+        <StatCard label="Assets In Use" value="218" hint="78% utilization" isDark={isDark} />
+        <StatCard label="Avg. Response" value="1.8m" hint="Support requests" isDark={isDark} />
       </div>
 
-      <div className="relative z-10 mb-8 rounded-3xl border border-white/10 bg-black/35 p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6">
-        <h2 className="text-xl font-bold text-white">How to finish tasks faster</h2>
+      <div className={`relative z-10 mb-8 rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
+        <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>How to finish tasks faster</h2>
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm font-bold text-white">1. Check availability</p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-300">Open facilities and verify room status before creating requests.</p>
+          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>1. Check availability</p>
+            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Open facilities and verify room status before creating requests.</p>
           </article>
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm font-bold text-white">2. Create booking</p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-300">Submit booking details with date, time, and required assets.</p>
+          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>2. Create booking</p>
+            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Submit booking details with date, time, and required assets.</p>
           </article>
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm font-bold text-white">3. Track and update</p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-300">Monitor approval and update plans quickly from your dashboard.</p>
+          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>3. Track and update</p>
+            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Monitor approval and update plans quickly from your dashboard.</p>
           </article>
         </div>
       </div>
 
       <div className="relative z-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {selectedRole?.cards?.map((item) => (
-          <Card key={item.title} title={item.title} text={item.text} link={item.link} />
+          <Card key={item.title} title={item.title} text={item.text} link={item.link} isDark={isDark} />
         ))}
       </div>
 
-      <div className="relative z-10 mt-8 rounded-3xl border border-white/10 bg-black/35 p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6">
-        <h2 className="text-xl font-bold text-white">Announcements</h2>
+      <div className={`relative z-10 mt-8 rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
+        <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Announcements</h2>
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm font-semibold text-white">Lab A upgraded with new systems</p>
-            <p className="mt-1 text-sm text-slate-300">New machines are available for project classes from Monday.</p>
+          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+            <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Lab A upgraded with new systems</p>
+            <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>New machines are available for project classes from Monday.</p>
           </article>
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm font-semibold text-white">Weekend maintenance schedule</p>
-            <p className="mt-1 text-sm text-slate-300">Main auditorium and Seminar Hall 2 will be unavailable on Saturday.</p>
+          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+            <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Weekend maintenance schedule</p>
+            <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>Main auditorium and Seminar Hall 2 will be unavailable on Saturday.</p>
           </article>
         </div>
       </div>
@@ -309,21 +320,21 @@ const Home = () => {
   );
 };
 
-const Card = ({ title, text, link }) => (
-  <article className="rounded-[24px] border border-white/10 bg-white/8 p-4 shadow-lg shadow-black/20 backdrop-blur-xl">
-    <h3 className="mb-2 text-lg font-bold text-white">{title}</h3>
-    <p className="mb-3 text-sm leading-relaxed text-slate-200">{text}</p>
-    <Link to={link} className="text-sm font-bold text-white no-underline">
+const Card = ({ title, text, link, isDark }) => (
+  <article className={isDark ? "rounded-[24px] border border-white/10 bg-white/8 p-4 shadow-lg shadow-black/20 backdrop-blur-xl" : "rounded-[24px] border border-slate-300/70 bg-slate-100/68 p-4 shadow-lg shadow-slate-700/10 backdrop-blur-xl"}>
+    <h3 className={`mb-2 text-lg font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{title}</h3>
+    <p className={`mb-3 text-sm leading-relaxed ${isDark ? "text-slate-200" : "text-slate-600"}`}>{text}</p>
+    <Link to={link} className={`text-sm font-bold no-underline ${isDark ? "text-white" : "text-slate-900"}`}>
       Open
     </Link>
   </article>
 );
 
-const StatCard = ({ label, value, hint }) => (
-  <article className="rounded-2xl border border-white/10 bg-black/35 p-4 shadow-lg shadow-black/25 backdrop-blur-xl">
-    <p className="text-xs uppercase tracking-[0.12em] text-slate-300">{label}</p>
-    <p className="mt-2 text-2xl font-black text-white">{value}</p>
-    <p className="mt-1 text-xs text-slate-400">{hint}</p>
+const StatCard = ({ label, value, hint, isDark }) => (
+  <article className={isDark ? "rounded-2xl border border-white/10 bg-black/35 p-4 shadow-lg shadow-black/25 backdrop-blur-xl" : "rounded-2xl border border-slate-300/70 bg-slate-100/68 p-4 shadow-lg shadow-slate-700/10 backdrop-blur-xl"}>
+    <p className={`text-xs uppercase tracking-[0.12em] ${isDark ? "text-slate-300" : "text-slate-600"}`}>{label}</p>
+    <p className={`mt-2 text-2xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>{value}</p>
+    <p className={`mt-1 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{hint}</p>
   </article>
 );
 
