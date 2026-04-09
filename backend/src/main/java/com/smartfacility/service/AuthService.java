@@ -135,6 +135,53 @@ public class AuthService {
         return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
     }
 
+    // Authenticated user profile lookup by email (subject from JWT)
+    public User getCurrentUserProfile(String email) {
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
+        return userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    // Self-service full-name update (student/staff only)
+    public User updateOwnFullName(String email, String fullName) {
+        User user = getCurrentUserProfile(email);
+
+        if (user.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException("Admin full name update is not allowed from this endpoint");
+        }
+
+        String normalizedName = fullName == null ? "" : fullName.trim();
+        if (normalizedName.isEmpty()) {
+            throw new RuntimeException("Full name is required");
+        }
+
+        user.setFullName(normalizedName);
+        return userRepository.save(user);
+    }
+
+    // Self-service profile update (student/staff only)
+    public User updateOwnProfile(String email, String fullName, String phoneNumber) {
+        User user = getCurrentUserProfile(email);
+
+        if (user.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException("Admin profile update is not allowed from this endpoint");
+        }
+
+        String normalizedName = fullName == null ? "" : fullName.trim();
+        if (normalizedName.isEmpty()) {
+            throw new RuntimeException("Full name is required");
+        }
+
+        String normalizedPhone = phoneNumber == null ? "" : phoneNumber.trim();
+        if (normalizedPhone.length() > 30) {
+            throw new RuntimeException("Phone number is too long");
+        }
+
+        user.setFullName(normalizedName);
+        user.setPhoneNumber(normalizedPhone.isEmpty() ? null : normalizedPhone);
+        return userRepository.save(user);
+    }
+
     // OAuth login/register: create user on first login and return existing user otherwise
     public User findOrCreateOAuthUser(String fullName, String email) {
         Optional<User> existing = userRepository.findByEmail(email);
