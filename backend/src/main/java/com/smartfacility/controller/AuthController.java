@@ -82,6 +82,49 @@ public class AuthController {
             response.put("email", user.getEmail());
             response.put("role", user.getRole().name());
             response.put("active", user.getActive());
+            response.put("mustResetPassword", user.getMustResetPassword());
+            response.put("lastPasswordChangedAt", user.getLastPasswordChangedAt());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // POST /api/auth/forgot-password/request
+    @PostMapping("/forgot-password/request")
+    public ResponseEntity<?> requestPasswordResetCode(@RequestBody Map<String, String> request) {
+        try {
+            AuthService.ForgotPasswordCodeResult result = authService.requestPasswordResetCode(request.get("email"));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", result.message());
+            response.put("expiresInMinutes", result.expiresInMinutes());
+            if (result.code() != null) {
+                response.put("code", result.code());
+            }
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // POST /api/auth/forgot-password/reset
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<?> resetPasswordWithCode(@RequestBody Map<String, String> request) {
+        try {
+            User updated = authService.resetPasswordWithCode(
+                    request.get("email"),
+                    request.get("code"),
+                    request.get("newPassword")
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Password reset successful");
+            response.put("email", updated.getEmail());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
@@ -130,6 +173,24 @@ public class AuthController {
             response.put("phoneNumber", updated.getPhoneNumber());
             response.put("email", updated.getEmail());
             response.put("role", updated.getRole().name());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // PUT /api/auth/me/password/first-login
+    @PutMapping("/me/password/first-login")
+    public ResponseEntity<?> resetFirstLoginPassword(@RequestBody Map<String, String> request, Authentication authentication) {
+        try {
+            User updated = authService.resetFirstLoginPassword(authentication.getName(), request.get("newPassword"));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Password reset successful");
+            response.put("email", updated.getEmail());
+            response.put("mustResetPassword", updated.getMustResetPassword());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();

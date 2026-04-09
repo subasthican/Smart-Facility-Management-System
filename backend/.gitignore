@@ -2,8 +2,12 @@ target/
 *.class
 *.jar
 *.war
+*.log
+logs/
 .idea/
 *.iml
 .settings/
 .classpath
 .project
+mail-local.properties
+*.pid

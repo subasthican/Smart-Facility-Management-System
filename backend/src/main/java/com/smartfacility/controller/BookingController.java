@@ -98,9 +98,9 @@ public class BookingController {
 
     // PUT /api/bookings/:id/confirm - Confirm a booking
     @PutMapping("/{id}/confirm")
-    public ResponseEntity<?> confirmBooking(@PathVariable Long id) {
+    public ResponseEntity<?> confirmBooking(@PathVariable Long id, Authentication auth) {
         try {
-            Booking booking = bookingService.confirmBooking(id);
+            Booking booking = bookingService.confirmBooking(id, auth.getName());
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Booking confirmed");
             response.put("booking", booking);
@@ -118,7 +118,7 @@ public class BookingController {
         try {
             Booking booking;
             if (hasRole(auth, "ROLE_ADMIN")) {
-                booking = bookingService.cancelBooking(id);
+                booking = bookingService.cancelBooking(id, auth.getName());
             } else {
                 booking = bookingService.cancelOwnBooking(id, auth.getName());
             }
@@ -144,9 +144,9 @@ public class BookingController {
 
     // DELETE /api/bookings/:id - Delete a booking
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBooking(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBooking(@PathVariable Long id, Authentication auth) {
         try {
-            bookingService.deleteBooking(id);
+            bookingService.deleteBooking(id, auth.getName());
             Map<String, String> response = new HashMap<>();
             response.put("message", "Booking deleted successfully");
             return ResponseEntity.ok(response);

@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader.js";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const getStatusClass = (status) => {
   if (status === "CONFIRMED") return "bg-emerald-600";

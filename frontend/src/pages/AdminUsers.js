@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AppModal from "../components/AppModal";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const emptyForm = {
   fullName: "",
@@ -32,6 +32,9 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [recentCredentials, setRecentCredentials] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("create");
@@ -39,6 +42,13 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
   const [form, setForm] = useState(emptyForm);
 
   const roleLabel = managedRole === "STUDENT" ? "Student" : "Staff";
+
+  const formatDateTime = (value) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleString();
+  };
 
   const managedUsers = useMemo(
     () => users.filter((u) => u.role === managedRole),
@@ -52,6 +62,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({}),
       });
@@ -64,7 +75,7 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
     } finally {
       setLoadingUsers(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     loadUsers();
@@ -75,14 +86,19 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
     setModalMode("create");
     setSelectedUserId(null);
     setForm(emptyForm);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const openAddModal = () => {
     setError("");
     setMessage("");
+    setRecentCredentials(null);
     setModalMode("create");
     setSelectedUserId(null);
     setForm(emptyForm);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setIsModalOpen(true);
   };
 
@@ -97,14 +113,16 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
       password: "",
       confirmPassword: "",
     });
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setIsModalOpen(true);
   };
 
   const handleCreateUser = async () => {
-    if (!form.fullName.trim() || !form.email.trim() || !form.password) {
-      throw new Error("Full name, email, and password are required");
+    if (!form.fullName.trim() || !form.email.trim()) {
+      throw new Error("Full name and email are required");
     }
-    if (form.password !== form.confirmPassword) {
+    if (form.password && form.password !== form.confirmPassword) {
       throw new Error("Password and confirm password do not match");
     }
 
@@ -126,6 +144,8 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
     if (!res.ok) {
       throw new Error(data?.error || `Failed to create ${roleLabel.toLowerCase()} (HTTP ${res.status})`);
     }
+
+    return data;
   };
 
   const handleEditUser = async () => {
@@ -160,8 +180,16 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
     try {
       if (modalMode === "create") {
-        await handleCreateUser();
-        setMessage(`${roleLabel} added successfully`);
+        const data = await handleCreateUser();
+        const tempPassword = data?.temporaryPassword || form.password;
+        setMessage(
+          `${roleLabel} added successfully. Temporary password: ${tempPassword}. User must reset password on first login.`
+        );
+        setRecentCredentials({
+          email: form.email.trim().toLowerCase(),
+          role: managedRole,
+          temporaryPassword: tempPassword,
+        });
       } else {
         await handleEditUser();
         setMessage(`${roleLabel} updated successfully`);
@@ -224,6 +252,9 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
             <tr>
               <th className="sf-th">Name</th>
               <th className="sf-th">Email</th>
+              <th className="sf-th">Temp Password</th>
+              <th className="sf-th">Password Reset</th>
+              <th className="sf-th">Last Changed</th>
               <th className="sf-th">Status</th>
               <th className="sf-th">Actions</th>
             </tr>
@@ -231,17 +262,30 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
           <tbody>
             {loadingUsers ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">Loading {roleLabel.toLowerCase()} data...</td>
+                <td colSpan={7} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">Loading {roleLabel.toLowerCase()} data...</td>
               </tr>
             ) : managedUsers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">No {roleLabel.toLowerCase()} users found.</td>
+                <td colSpan={7} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">No {roleLabel.toLowerCase()} users found.</td>
               </tr>
             ) : (
               managedUsers.map((user) => (
                 <tr key={user.id}>
                   <td className="sf-td">{user.fullName}</td>
                   <td className="sf-td">{user.email}</td>
+                  <td className="sf-td">
+                    {user.temporaryPassword ? (
+                      <code className="rounded bg-amber-100 px-2 py-1 text-xs text-amber-900">{user.temporaryPassword}</code>
+                    ) : (
+                      <span className="text-xs sf-subtitle">-</span>
+                    )}
+                  </td>
+                  <td className="sf-td">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${user.mustResetPassword ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>
+                      {user.mustResetPassword ? "REQUIRED" : "COMPLETED"}
+                    </span>
+                  </td>
+                  <td className="sf-td text-xs sf-subtitle">{formatDateTime(user.lastPasswordChangedAt)}</td>
                   <td className="sf-td">
                     <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${user.active ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
                       {user.active ? "ACTIVE" : "INACTIVE"}
@@ -280,6 +324,22 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
         </table>
       </div>
 
+      {recentCredentials && (
+        <div className="mt-4 rounded-xl border border-amber-300/40 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-semibold">Temporary credentials generated</p>
+          <p className="mt-1">Email: {recentCredentials.email}</p>
+          <p className="mt-1">Temporary Password: <strong>{recentCredentials.temporaryPassword}</strong></p>
+          <p className="mt-2 text-xs">Share this password with the user. They will be forced to reset it on first login.</p>
+          <button
+            className="sf-btn-secondary mt-3 px-3 py-1.5 text-xs"
+            type="button"
+            onClick={() => setRecentCredentials(null)}
+          >
+            Hide Temporary Password
+          </button>
+        </div>
+      )}
+
       {isModalOpen && (
         <AppModal onClose={resetModal}>
           <div className="sf-modal-card">
@@ -307,22 +367,40 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
               {modalMode === "create" && (
                 <>
                   <label className="sf-label">Password</label>
-                  <input
-                    className="sf-input text-base"
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      className="sf-input pr-12 text-base"
+                      type={showPassword ? "text" : "password"}
+                      value={form.password}
+                      onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                      placeholder="Leave blank to auto-generate"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold sf-subtitle"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
 
                   <label className="sf-label">Confirm Password</label>
-                  <input
-                    className="sf-input text-base"
-                    type="password"
-                    value={form.confirmPassword}
-                    onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      className="sf-input pr-12 text-base"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={form.confirmPassword}
+                      onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                      placeholder="Confirm only if password is entered"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold sf-subtitle"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 </>
               )}
 

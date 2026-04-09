@@ -1,4 +1,5 @@
-MEMBER3_SETUP_GUIDE.md
+# Documentation files
+*.md
 
 # Local secrets and runtime env
 .env
@@ -7,3 +8,15 @@ MEMBER3_SETUP_GUIDE.md
 
 # Local logs/pid helpers
 *.pid
+
+# OS/editor junk
+.DS_Store
+.idea/
+*.iml
+
+# Generic logs
+*.log
+logs/
+
+# Backend sensitive local config
+backend/src/main/resources/application.properties

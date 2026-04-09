@@ -1,0 +1,12 @@
+package com.smartfacility.repository;
+
+import com.smartfacility.model.NotebookNote;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface NotebookNoteRepository extends JpaRepository<NotebookNote, Long> {
+    List<NotebookNote> findByNotebookIdOrderByPageNumberAscUpdatedAtDesc(Long notebookId);
+}

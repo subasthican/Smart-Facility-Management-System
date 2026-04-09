@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 
 const AuthContext = createContext();
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -12,7 +12,13 @@ export const AuthProvider = ({ children }) => {
 
   const decodeToken = (jwt) => {
     const payload = JSON.parse(atob(jwt.split(".")[1]));
-    return { email: payload.sub, role: payload.role, fullName: "", phoneNumber: "" };
+    return {
+      email: payload.sub,
+      role: payload.role,
+      fullName: "",
+      phoneNumber: "",
+      mustResetPassword: false,
+    };
   };
 
   const parseResponse = useCallback(async (response) => {
@@ -39,6 +45,7 @@ export const AuthProvider = ({ children }) => {
       phoneNumber: data.phoneNumber || "",
       email: data.email || (prev?.email || ""),
       role: data.role || (prev?.role || ""),
+      mustResetPassword: Boolean(data.mustResetPassword),
     }));
 
     return data;
@@ -46,17 +53,23 @@ export const AuthProvider = ({ children }) => {
 
   // On mount, check if token exists and decode user info
   useEffect(() => {
-    if (token) {
+    const initAuth = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setUser(decodeToken(token));
-        fetchCurrentUserProfile(token).catch(() => {
-          // Keep JWT-derived fallback user data if profile fetch fails.
-        });
+        await fetchCurrentUserProfile(token);
       } catch (e) {
         logout();
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    initAuth();
   }, [token, fetchCurrentUserProfile]);
 
   // Register
@@ -101,9 +114,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", data.token);
       setToken(data.token);
       setUser(decodeToken(data.token));
-      fetchCurrentUserProfile(data.token).catch(() => {
+      try {
+        await fetchCurrentUserProfile(data.token);
+      } catch {
         // Keep JWT-derived fallback user data if profile fetch fails.
-      });
+      }
 
       return data;
     } catch (error) {
@@ -124,10 +139,41 @@ export const AuthProvider = ({ children }) => {
     setToken(jwtToken);
 
     const payload = JSON.parse(atob(jwtToken.split(".")[1]));
-    setUser({ email: payload.sub, role: payload.role, fullName: "", phoneNumber: "" });
+    setUser({
+      email: payload.sub,
+      role: payload.role,
+      fullName: "",
+      phoneNumber: "",
+      mustResetPassword: false,
+    });
     fetchCurrentUserProfile(jwtToken).catch(() => {
       // Keep JWT-derived fallback user data if profile fetch fails.
     });
+  };
+
+  const resetFirstLoginPassword = async (newPassword) => {
+    if (!token) throw new Error("Not authenticated");
+
+    const response = await fetch(`${API_BASE}/auth/me/password/first-login`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ newPassword }),
+    });
+
+    const data = await parseResponse(response);
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to reset password");
+    }
+
+    setUser((prev) => ({
+      ...(prev || {}),
+      mustResetPassword: false,
+    }));
+
+    return data;
   };
 
   const updateProfile = async ({ fullName, phoneNumber }) => {
@@ -173,6 +219,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateProfile,
+        resetFirstLoginPassword,
       }}
     >
       {children}

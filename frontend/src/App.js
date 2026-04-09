@@ -15,8 +15,12 @@ import AdminUsers from "./pages/AdminUsers";
 import IncidentTickets from "./pages/IncidentTickets";
 import Notifications from "./pages/Notifications";
 import OAuth2Callback from "./pages/OAuth2Callback";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import AIChat from "./pages/AIChat";
+import Quizzes from "./pages/Quizzes";
+import Notebook from "./pages/Notebook";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -29,7 +33,16 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+              <Route
+                path="/reset-password"
+                element={
+                  <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                    <ResetPassword />
+                  </ProtectedRoute>
+                }
+              />
 
             {/* Protected Routes */}
               <Route
@@ -127,6 +140,24 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                     <AIChat />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/quizzes"
+                element={
+                  <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                    <Quizzes />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/notebooks"
+                element={
+                  <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                    <Notebook />
                   </ProtectedRoute>
                 }
               />

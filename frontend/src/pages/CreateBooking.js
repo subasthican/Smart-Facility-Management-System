@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
+
+const getLocalDatetimeInputValue = (date) => {
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 16);
+};
 
 const CreateBooking = () => {
   const [facilityName, setFacilityName] = useState("");
@@ -13,6 +19,7 @@ const CreateBooking = () => {
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
   const navigate = useNavigate();
+  const nowIso = getLocalDatetimeInputValue(new Date());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +28,12 @@ const CreateBooking = () => {
 
     if (!facilityName || !startTime || !endTime) {
       setError("Please fill in all required fields");
+      setLoading(false);
+      return;
+    }
+
+    if (new Date(startTime) < new Date()) {
+      setError("Start time cannot be in the past");
       setLoading(false);
       return;
     }
@@ -91,6 +104,7 @@ const CreateBooking = () => {
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             className="sf-input mb-4"
+            min={nowIso}
             required
           />
 
@@ -100,6 +114,7 @@ const CreateBooking = () => {
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             className="sf-input mb-4"
+            min={startTime || nowIso}
             required
           />
 
