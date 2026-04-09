@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -22,8 +22,12 @@ const ThemeToggleIcon = ({ isDark }) => (
 const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const [isAiDockOpen, setIsAiDockOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const isAiEmbed =
+    location.pathname === "/ai-chat" &&
+    new URLSearchParams(location.search).get("embed") === "1";
   const isGuestHome = !user && location.pathname === "/";
   const isAuthRoute = !user && ["/login", "/register", "/oauth2/callback"].includes(location.pathname);
   const isAuthenticated = !!user;
@@ -36,7 +40,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className={`relative flex min-h-screen flex-col ${isGuestHome ? (isDark ? "bg-[#020202] text-slate-100" : "bg-sf-shell text-slate-900") : isDark ? "bg-[#020202] text-slate-100" : "bg-sf-shell text-slate-900"}`}>
-      {!isGuestHome && (
+      {!isGuestHome && !isAiEmbed && (
         <>
           <div
             className="pointer-events-none absolute inset-0"
@@ -74,7 +78,7 @@ const MainLayout = ({ children }) => {
         </>
       )}
 
-      {isGuestHome && (
+      {isGuestHome && !isAiEmbed && (
         <div className="absolute left-0 right-0 top-0 z-20 px-6 pt-6 sm:px-8 sm:pt-8">
           <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
             <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
@@ -95,7 +99,7 @@ const MainLayout = ({ children }) => {
         </div>
       )}
 
-      {isAuthRoute && (
+      {isAuthRoute && !isAiEmbed && (
         <div className="px-6 pt-6 sm:px-8 sm:pt-8">
           <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
             <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
@@ -118,7 +122,7 @@ const MainLayout = ({ children }) => {
         </div>
       )}
 
-      {!isGuestHome && !isAuthRoute && (
+      {!isGuestHome && !isAuthRoute && !isAiEmbed && (
       <header className={isAuthenticated ? "absolute left-0 right-0 top-0 z-20 pt-6" : `sticky top-0 z-20 border-b shadow-lg backdrop-blur-md backdrop-saturate-150 ${isDark ? "border-white/10 bg-black/35" : "border-slate-900/10 bg-white/55"}`}>
         <div className={`mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 ${user ? "rounded-full border px-5 py-3 shadow-2xl backdrop-blur-xl " + (isDark ? "border-white/15 bg-black/45 shadow-black/30" : "border-slate-900/10 bg-white/75 shadow-slate-900/10") : "py-3"}`}>
           <div className={user ? "" : isDark ? "flex flex-wrap items-center gap-4 rounded-full border border-white/10 bg-black/55 px-5 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl" : "flex flex-wrap items-center gap-4 rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl"}>
@@ -149,7 +153,6 @@ const MainLayout = ({ children }) => {
                 <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Facilities</Link>
                 <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Assets</Link>
                 <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Bookings</Link>
-                <Link to="/ai-chat" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>AI Chat</Link>
               </>
             ) : null}
           </nav>
@@ -181,7 +184,9 @@ const MainLayout = ({ children }) => {
       )}
 
       <main className={
-        isGuestHome
+        isAiEmbed
+          ? "w-full flex-1 p-0"
+          : isGuestHome
           ? "w-full flex-1"
           : isAuthenticatedHome
             ? "w-full flex-1"
@@ -192,7 +197,60 @@ const MainLayout = ({ children }) => {
         {children}
       </main>
 
-      {!isGuestHome && (
+      {isAuthenticated && !isAiEmbed && (
+        <button
+          type="button"
+          aria-label={isAiDockOpen ? "Close AI Chat" : "Open AI Chat"}
+          title={isAiDockOpen ? "Close AI Chat" : "Open AI Chat"}
+          onClick={() => setIsAiDockOpen((prev) => !prev)}
+          className={`group z-[9999] inline-flex h-14 w-14 items-center justify-center rounded-full border no-underline shadow-2xl backdrop-blur-xl transition hover:-translate-y-0.5 ${isDark ? "border-cyan-300/45 bg-slate-900/90 text-cyan-200 shadow-cyan-500/30" : "border-sky-400/55 bg-white/90 text-sky-700 shadow-sky-500/30"}`}
+          style={{ position: "fixed", right: "24px", bottom: "24px", left: "auto", top: "auto" }}
+        >
+          <span className={`pointer-events-none absolute inset-0 rounded-full blur-md ${isDark ? "bg-cyan-400/25" : "bg-sky-400/25"}`} />
+          <span className={`pointer-events-none absolute -inset-1 rounded-full border ${isDark ? "border-cyan-300/30" : "border-sky-400/35"} opacity-70 group-hover:opacity-100`} />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="relative z-10">
+            <path d="M7 9H17M7 13H14M21 12C21 16.4183 16.9706 20 12 20C10.7364 20 9.53294 19.7685 8.45172 19.3512L3 20L4.03774 16.0732C3.37727 14.896 3 13.4913 3 12C3 7.58172 7.02944 4 12 4C16.9706 4 21 7.58172 21 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      )}
+
+      {isAuthenticated && !isAiEmbed && isAiDockOpen && (
+        <div
+          className={`z-[9998] overflow-hidden rounded-2xl border shadow-2xl ${isDark ? "border-white/15 bg-black/85" : "border-slate-900/15 bg-white/95"}`}
+          style={{
+            position: "fixed",
+            right: "24px",
+            bottom: "92px",
+            width: "min(360px, calc(100vw - 24px))",
+            height: "min(460px, calc(100vh - 120px))",
+          }}
+        >
+          <div className={`flex items-center justify-between border-b px-4 py-2 ${isDark ? "border-white/10" : "border-slate-900/10"}`}>
+            <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>AI Chat</p>
+            <div className="flex items-center gap-2">
+              <Link to="/ai-chat" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white no-underline" : "rounded-full border border-slate-900/15 bg-white px-3 py-1 text-xs text-slate-700 no-underline"}>
+                Full Page
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsAiDockOpen(false)}
+                className={isDark ? "rounded-full border border-white/15 bg-white/10 px-2 py-1 text-xs text-white" : "rounded-full border border-slate-900/15 bg-white px-2 py-1 text-xs text-slate-700"}
+                aria-label="Close AI Chat"
+                title="Close AI Chat"
+              >
+                X
+              </button>
+            </div>
+          </div>
+          <iframe
+            title="AI Chat Dock"
+            src={`/ai-chat?embed=1&theme=${isDark ? "dark" : "light"}`}
+            className="h-[calc(100%-45px)] w-full border-0"
+          />
+        </div>
+      )}
+
+      {!isGuestHome && !isAiEmbed && (
       <footer className="relative z-10 mt-8 pb-6">
         <div className="mx-auto grid w-full max-w-[1200px] gap-4 px-6 py-5 md:grid-cols-3">
           <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-slate-900/10 bg-white/70"}`}>
