@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import PageHeader from "../components/PageHeader.js";
 import AppModal from "../components/AppModal";
 
@@ -8,6 +9,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/ap
 
 const IncidentTickets = () => {
   const { user, token } = useAuth();
+  const { isDark } = useTheme();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -107,17 +109,17 @@ const IncidentTickets = () => {
   };
 
   const priorityClass = (priority) => {
-    if (priority === "HIGH") return "bg-rose-100 text-rose-800";
-    if (priority === "MEDIUM") return "bg-amber-100 text-amber-800";
-    return "bg-emerald-100 text-emerald-800";
+    if (priority === "HIGH") return isDark ? "bg-rose-400/20 text-rose-100 border border-rose-400/30" : "bg-rose-100 text-rose-800";
+    if (priority === "MEDIUM") return isDark ? "bg-amber-400/20 text-amber-100 border border-amber-400/30" : "bg-amber-100 text-amber-800";
+    return isDark ? "bg-emerald-400/20 text-emerald-100 border border-emerald-400/30" : "bg-emerald-100 text-emerald-800";
   };
 
   const statusClass = (status) => {
-    if (status === "CLOSED") return "bg-emerald-100 text-emerald-800";
-    if (status === "IN_PROGRESS") return "bg-cyan-100 text-cyan-800";
-    if (status === "ASSIGNED") return "bg-violet-100 text-violet-800";
-    if (status === "REJECTED") return "bg-slate-100 text-slate-700";
-    return "bg-blue-100 text-blue-800";
+    if (status === "CLOSED") return isDark ? "bg-emerald-400/20 text-emerald-100 border border-emerald-400/30" : "bg-emerald-100 text-emerald-800";
+    if (status === "IN_PROGRESS") return isDark ? "bg-cyan-400/20 text-cyan-100 border border-cyan-400/30" : "bg-cyan-100 text-cyan-800";
+    if (status === "ASSIGNED") return isDark ? "bg-violet-400/20 text-violet-100 border border-violet-400/30" : "bg-violet-100 text-violet-800";
+    if (status === "REJECTED") return isDark ? "bg-slate-400/20 text-slate-100 border border-slate-400/30" : "bg-slate-100 text-slate-700";
+    return isDark ? "bg-blue-400/20 text-blue-100 border border-blue-400/30" : "bg-blue-100 text-blue-800";
   };
 
   return (
@@ -128,7 +130,7 @@ const IncidentTickets = () => {
         subtitle="Create, track, and update facility incident requests."
       />
 
-      {error && <p className="mb-4 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</p>}
+      {error && <p className={isDark ? "mb-4 rounded-xl border border-rose-400/35 bg-rose-400/15 px-4 py-3 text-sm text-rose-100" : "mb-4 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800"}>{error}</p>}
 
       <div className="mb-4 sf-card p-4">
         <h2 className="mb-3 text-xl font-bold sf-title">Create New Ticket</h2>
@@ -174,12 +176,12 @@ const IncidentTickets = () => {
                   <span>Assigned To: {ticket.assignedTo || "-"}</span>
                 </div>
 
-                {ticket.technicianNotes && <p className="mt-2 rounded-lg border px-3 py-2 text-xs sf-subtitle" style={{ borderColor: "var(--sf-card-border)", background: "var(--surface)" }}>Technician Notes: {ticket.technicianNotes}</p>}
-                {ticket.imageUrl && <img src={ticket.imageUrl} alt="Ticket" className="mt-3 max-w-[260px] rounded-lg border border-slate-300" />}
+                {ticket.technicianNotes && <p className={isDark ? "mt-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs sf-subtitle" : "mt-2 rounded-lg border px-3 py-2 text-xs sf-subtitle"} style={!isDark ? { borderColor: "var(--sf-card-border)", background: "var(--surface)" } : undefined}>Technician Notes: {ticket.technicianNotes}</p>}
+                {ticket.imageUrl && <img src={ticket.imageUrl} alt="Ticket" className={isDark ? "mt-3 max-w-[260px] rounded-lg border border-white/20" : "mt-3 max-w-[260px] rounded-lg border border-slate-300"} />}
 
                 <div className="mt-3 flex gap-2">
                   <button onClick={() => setEditingTicket(ticket)} className="sf-btn-secondary px-3 py-1.5 text-xs">Edit</button>
-                  <button onClick={() => handleDeleteTicket(ticket.id)} className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white">Delete</button>
+                  <button onClick={() => handleDeleteTicket(ticket.id)} className={isDark ? "rounded-xl border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-100" : "rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"}>Delete</button>
                 </div>
               </article>
             ))}

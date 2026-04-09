@@ -4,9 +4,11 @@
 
 @layer components {
   .sf-page {
-    @apply rounded-3xl p-6 shadow-shell backdrop-blur-md;
-    border: 1px solid var(--sf-page-border);
-    background: var(--sf-page-bg);
+    @apply p-6;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .sf-card {
