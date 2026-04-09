@@ -865,6 +865,14 @@ video {
   margin-top: 2rem;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
 .block {
   display: block;
 }
@@ -897,6 +905,10 @@ video {
   height: 100%;
 }
 
+.max-h-\[55vh\] {
+  max-height: 55vh;
+}
+
 .min-h-20 {
   min-height: 5rem;
 }
@@ -927,6 +939,10 @@ video {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.min-h-\[52px\] {
+  min-height: 52px;
 }
 
 .w-9 {
@@ -975,6 +991,10 @@ video {
 
 .max-w-xl {
   max-width: 36rem;
+}
+
+.max-w-\[88\%\] {
+  max-width: 88%;
 }
 
 .flex-1 {
@@ -1063,12 +1083,24 @@ video {
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
 
+.self-end {
+  align-self: flex-end;
+}
+
 .overflow-hidden {
   overflow: hidden;
 }
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
 }
 
 .rounded {
@@ -1227,6 +1259,14 @@ video {
 
 .border-white\/20 {
   border-color: rgb(255 255 255 / 0.2);
+}
+
+.border-rose-300\/40 {
+  border-color: rgb(253 164 175 / 0.4);
+}
+
+.border-slate-700\/40 {
+  border-color: rgb(51 65 85 / 0.4);
 }
 
 .border-l-amber-400 {
@@ -1504,6 +1544,14 @@ video {
   background-color: rgb(255 255 255 / 0.9);
 }
 
+.bg-rose-500\/10 {
+  background-color: rgb(244 63 94 / 0.1);
+}
+
+.bg-slate-700\/35 {
+  background-color: rgb(51 65 85 / 0.35);
+}
+
 .bg-gradient-to-b {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
@@ -1702,6 +1750,10 @@ video {
   padding-top: 1.5rem;
 }
 
+.pr-1 {
+  padding-right: 0.25rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -1793,6 +1845,10 @@ video {
 
 .tracking-tight {
   letter-spacing: -0.025em;
+}
+
+.tracking-\[0\.08em\] {
+  letter-spacing: 0.08em;
 }
 
 .text-amber-100 {
@@ -1936,6 +1992,11 @@ video {
 
 .text-white\/90 {
   color: rgb(255 255 255 / 0.9);
+}
+
+.text-rose-200 {
+  --tw-text-opacity: 1;
+  color: rgb(254 205 211 / var(--tw-text-opacity, 1));
 }
 
 .no-underline {
@@ -2120,6 +2181,10 @@ video {
 
   .sm\:p-8 {
     padding: 2rem;
+  }
+
+  .sm\:p-5 {
+    padding: 1.25rem;
   }
 
   .sm\:px-6 {
