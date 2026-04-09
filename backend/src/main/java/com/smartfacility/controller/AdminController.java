@@ -23,17 +23,20 @@ public class AdminController {
     @PostMapping("/users")
     public ResponseEntity<?> createUser(@RequestBody Map<String, String> request) {
         try {
-            User user = authService.createUserByAdmin(
+            AuthService.AdminCreatedUserResult created = authService.createUserByAdmin(
                     request.get("fullName"),
                     request.get("email"),
                     request.get("password"),
                     request.get("role")
             );
+            User user = created.user();
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User created successfully");
             response.put("userId", user.getId());
             response.put("role", user.getRole().name());
+            response.put("temporaryPassword", created.temporaryPassword());
+            response.put("mustResetPassword", user.getMustResetPassword());
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
@@ -57,6 +60,9 @@ public class AdminController {
                 item.put("email", user.getEmail());
                 item.put("role", user.getRole().name());
                 item.put("active", user.getActive());
+                item.put("mustResetPassword", user.getMustResetPassword());
+                item.put("temporaryPassword", Boolean.TRUE.equals(user.getMustResetPassword()) ? user.getTemporaryPassword() : null);
+                item.put("lastPasswordChangedAt", user.getLastPasswordChangedAt());
                 response.add(item);
             }
 

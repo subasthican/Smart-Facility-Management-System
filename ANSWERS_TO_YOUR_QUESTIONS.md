@@ -26,7 +26,7 @@ Before starting backend, set credentials:
 
 ```bash
 export GOOGLE_CLIENT_ID='772097616315-fhfc9vobh1a63abpmh3es1adoavpc51j.apps.googleusercontent.com'
-export GOOGLE_CLIENT_CRITICAL_SECRET='your-secret-here'
+export GOOGLE_CLIENT_SECRET='your-secret-here'
 ```
 
 Then start backend:

@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import PageHeader from "../components/PageHeader.js";
 import AppModal from "../components/AppModal";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const IncidentTickets = () => {
   const { user, token } = useAuth();

@@ -26,24 +26,33 @@ public class IncidentTicketService {
         return ticketRepository.findById(id);
     }
 
-    public IncidentTicket createTicket(IncidentTicket ticket) {
+    public IncidentTicket createTicket(IncidentTicket ticket, String actorEmail) {
+        ticket.setReportedBy(actorEmail);
         ticket.setCreatedAt(LocalDateTime.now());
         ticket.setUpdatedAt(LocalDateTime.now());
         IncidentTicket savedTicket = ticketRepository.save(ticket);
 
-        // Notify admin about new ticket
-        notificationService.createTicketNotification(
-            "admin@gmail.com",
-            "New Incident Ticket Created",
-            "A new incident ticket '" + ticket.getTitle() + "' has been reported.",
-            "INFO",
+        notificationService.notifyUser(
+            actorEmail,
+            "Ticket Created",
+            "Your incident ticket '" + ticket.getTitle() + "' was created successfully.",
+            "SUCCESS",
+            "TICKET",
             savedTicket.getId()
+        );
+        notificationService.notifyAdmins(
+            "New Incident Ticket",
+            "A new incident ticket '" + ticket.getTitle() + "' was reported by " + actorEmail + ".",
+            "INFO",
+            "TICKET",
+            savedTicket.getId(),
+            actorEmail
         );
 
         return savedTicket;
     }
 
-    public IncidentTicket updateTicket(Long id, IncidentTicket ticketDetails) {
+    public IncidentTicket updateTicket(Long id, IncidentTicket ticketDetails, String actorEmail) {
         Optional<IncidentTicket> optionalTicket = ticketRepository.findById(id);
         if (optionalTicket.isPresent()) {
             IncidentTicket ticket = optionalTicket.get();
@@ -60,6 +69,7 @@ public class IncidentTicketService {
             ticket.setAssignedTo(ticketDetails.getAssignedTo());
             ticket.setTechnicianNotes(ticketDetails.getTechnicianNotes());
             ticket.setImageUrl(ticketDetails.getImageUrl());
+            ticket.setReportedBy(ticket.getReportedBy());
             ticket.setUpdatedAt(LocalDateTime.now());
 
             IncidentTicket updatedTicket = ticketRepository.save(ticket);
@@ -87,12 +97,41 @@ public class IncidentTicketService {
                 );
             }
 
+            notificationService.notifyAdmins(
+                "Ticket Updated",
+                "Ticket #" + id + " ('" + ticket.getTitle() + "') was updated by " + actorEmail + ".",
+                "INFO",
+                "TICKET",
+                id,
+                actorEmail
+            );
+
             return updatedTicket;
         }
         return null;
     }
 
-    public void deleteTicket(Long id) {
+    public void deleteTicket(Long id, String actorEmail) {
+        Optional<IncidentTicket> ticketOpt = ticketRepository.findById(id);
+        if (ticketOpt.isPresent()) {
+            IncidentTicket ticket = ticketOpt.get();
+            notificationService.notifyUser(
+                ticket.getReportedBy(),
+                "Ticket Deleted",
+                "Your incident ticket '" + ticket.getTitle() + "' was deleted.",
+                "WARNING",
+                "TICKET",
+                id
+            );
+            notificationService.notifyAdmins(
+                "Ticket Deleted",
+                "Ticket #" + id + " ('" + ticket.getTitle() + "') was deleted by " + actorEmail + ".",
+                "INFO",
+                "TICKET",
+                id,
+                actorEmail
+            );
+        }
         ticketRepository.deleteById(id);
     }
 

@@ -15,9 +15,21 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // Create a new booking
     public Booking createBooking(String facilityName, LocalDateTime startTime, LocalDateTime endTime,
                                  String userEmail, String notes) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime.isBefore(now)) {
+            throw new RuntimeException("Booking start time cannot be in the past");
+        }
+        if (!endTime.isAfter(startTime)) {
+            throw new RuntimeException("End time must be after start time");
+        }
+
         // Check for conflicts
         if (bookingRepository.existsByFacilityNameAndStartTimeAndEndTime(facilityName, startTime, endTime)) {
             throw new RuntimeException("Facility is already booked for this time slot");
@@ -31,7 +43,25 @@ public class BookingService {
         booking.setNotes(notes);
         booking.setBookingDate(LocalDateTime.now());
 
-        return bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
+
+        notificationService.notifyUser(
+            userEmail,
+            "Booking Created",
+            "Your booking for '" + facilityName + "' has been created and is pending approval.",
+            "SUCCESS",
+            "BOOKING",
+            saved.getId()
+        );
+        notificationService.notifyAdmins(
+            "New Booking Request",
+            "A new booking request for '" + facilityName + "' was submitted by " + userEmail + ".",
+            "INFO",
+            "BOOKING",
+            saved.getId()
+        );
+
+        return saved;
     }
 
     // Get all bookings by user email
@@ -55,7 +85,7 @@ public class BookingService {
     }
 
     // Update booking status
-    public Booking updateBookingStatus(Long id, Booking.BookingStatus status) {
+    public Booking updateBookingStatus(Long id, Booking.BookingStatus status, String actorEmail) {
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
 
         if (bookingOpt.isEmpty()) {
@@ -64,12 +94,32 @@ public class BookingService {
 
         Booking booking = bookingOpt.get();
         booking.setStatus(status);
-        return bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
+
+        String statusText = status.name().toLowerCase();
+        notificationService.notifyUser(
+            saved.getUserEmail(),
+            "Booking " + status.name(),
+            "Your booking for '" + saved.getFacilityName() + "' was marked as " + statusText + ".",
+            Booking.BookingStatus.CONFIRMED.equals(status) ? "SUCCESS" : "WARNING",
+            "BOOKING",
+            saved.getId()
+        );
+        notificationService.notifyAdmins(
+            "Booking Status Updated",
+            "Booking #" + saved.getId() + " was updated to " + status + " by " + actorEmail + ".",
+            "INFO",
+            "BOOKING",
+            saved.getId(),
+            actorEmail
+        );
+
+        return saved;
     }
 
     // Cancel booking
-    public Booking cancelBooking(Long id) {
-        return updateBookingStatus(id, Booking.BookingStatus.CANCELLED);
+    public Booking cancelBooking(Long id, String actorEmail) {
+        return updateBookingStatus(id, Booking.BookingStatus.CANCELLED, actorEmail);
     }
 
     // Cancel own booking (student)
@@ -86,16 +136,35 @@ public class BookingService {
         }
 
         booking.setStatus(Booking.BookingStatus.CANCELLED);
-        return bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
+
+        notificationService.notifyUser(
+            saved.getUserEmail(),
+            "Booking Cancelled",
+            "Your booking for '" + saved.getFacilityName() + "' was cancelled.",
+            "WARNING",
+            "BOOKING",
+            saved.getId()
+        );
+        notificationService.notifyAdmins(
+            "Booking Cancelled By User",
+            "Booking #" + saved.getId() + " for '" + saved.getFacilityName() + "' was cancelled by " + userEmail + ".",
+            "INFO",
+            "BOOKING",
+            saved.getId(),
+            userEmail
+        );
+
+        return saved;
     }
 
     // Confirm booking
-    public Booking confirmBooking(Long id) {
-        return updateBookingStatus(id, Booking.BookingStatus.CONFIRMED);
+    public Booking confirmBooking(Long id, String actorEmail) {
+        return updateBookingStatus(id, Booking.BookingStatus.CONFIRMED, actorEmail);
     }
 
     // Delete booking (only if pending or cancelled)
-    public void deleteBooking(Long id) {
+    public void deleteBooking(Long id, String actorEmail) {
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
 
         if (bookingOpt.isEmpty()) {
@@ -106,6 +175,23 @@ public class BookingService {
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
             throw new RuntimeException("Cannot delete completed bookings");
         }
+
+        notificationService.notifyUser(
+            booking.getUserEmail(),
+            "Booking Deleted",
+            "Your booking for '" + booking.getFacilityName() + "' was deleted by admin.",
+            "WARNING",
+            "BOOKING",
+            booking.getId()
+        );
+        notificationService.notifyAdmins(
+            "Booking Deleted",
+            "Booking #" + booking.getId() + " for '" + booking.getFacilityName() + "' was deleted by " + actorEmail + ".",
+            "INFO",
+            "BOOKING",
+            booking.getId(),
+            actorEmail
+        );
 
         bookingRepository.deleteById(id);
     }

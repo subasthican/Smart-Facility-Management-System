@@ -4,6 +4,7 @@ import com.smartfacility.model.Asset;
 import com.smartfacility.service.AssetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,27 +37,27 @@ public class AssetController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAsset(@RequestBody Asset asset) {
+    public ResponseEntity<?> createAsset(@RequestBody Asset asset, Authentication auth) {
         try {
-            return ResponseEntity.ok(assetService.createAsset(asset));
+            return ResponseEntity.ok(assetService.createAsset(asset, auth.getName()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAsset(@PathVariable Long id, @RequestBody Asset asset) {
+    public ResponseEntity<?> updateAsset(@PathVariable Long id, @RequestBody Asset asset, Authentication auth) {
         try {
-            return ResponseEntity.ok(assetService.updateAsset(id, asset));
+            return ResponseEntity.ok(assetService.updateAsset(id, asset, auth.getName()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAsset(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAsset(@PathVariable Long id, Authentication auth) {
         try {
-            assetService.deleteAsset(id);
+            assetService.deleteAsset(id, auth.getName());
             return ResponseEntity.ok(success("Asset deleted successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));

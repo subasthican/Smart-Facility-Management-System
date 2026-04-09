@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import PageHeader from "../components/PageHeader.js";
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const typeIcon = (type) => {
   if (type === "INFO") return "ℹ️";
@@ -22,7 +22,7 @@ const typeClass = (type, isDark) => {
 };
 
 const Notifications = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { isDark } = useTheme();
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -32,7 +32,9 @@ const Notifications = () => {
     if (!user) return;
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/notifications/user/${user.email}`);
+      const res = await fetch(`${API_BASE}/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       setNotifications(data || []);
     } catch (err) {
@@ -40,7 +42,7 @@ const Notifications = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, token]);
 
   useEffect(() => {
     loadNotifications();
@@ -48,7 +50,10 @@ const Notifications = () => {
 
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/notifications/${id}/read`, { method: "PUT" });
+      const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) loadNotifications();
     } catch (err) {
       console.error("Error marking as read:", err);
@@ -58,7 +63,10 @@ const Notifications = () => {
   const markAllAsRead = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`${API_BASE}/notifications/user/${user.email}/read-all`, { method: "PUT" });
+      const res = await fetch(`${API_BASE}/notifications/read-all`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) loadNotifications();
     } catch (err) {
       console.error("Error marking all as read:", err);
@@ -67,7 +75,10 @@ const Notifications = () => {
 
   const deleteNotification = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/notifications/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE}/notifications/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) loadNotifications();
     } catch (err) {
       console.error("Error deleting notification:", err);
