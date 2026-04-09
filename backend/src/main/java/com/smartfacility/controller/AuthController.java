@@ -5,6 +5,7 @@ import com.smartfacility.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -65,6 +66,75 @@ public class AuthController {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.status(401).body(error);
+        }
+    }
+
+    // GET /api/auth/me
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        try {
+            User user = authService.getCurrentUserProfile(authentication.getName());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getId());
+            response.put("fullName", user.getFullName());
+            response.put("phoneNumber", user.getPhoneNumber());
+            response.put("email", user.getEmail());
+            response.put("role", user.getRole().name());
+            response.put("active", user.getActive());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // PUT /api/auth/me/full-name
+    @PutMapping("/me/full-name")
+    public ResponseEntity<?> updateMyFullName(@RequestBody Map<String, String> request, Authentication authentication) {
+        try {
+            User updated = authService.updateOwnProfile(
+                    authentication.getName(),
+                    request.get("fullName"),
+                    request.get("phoneNumber")
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Full name updated successfully");
+            response.put("fullName", updated.getFullName());
+            response.put("phoneNumber", updated.getPhoneNumber());
+            response.put("email", updated.getEmail());
+            response.put("role", updated.getRole().name());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // PUT /api/auth/me/profile
+    @PutMapping("/me/profile")
+    public ResponseEntity<?> updateMyProfile(@RequestBody Map<String, String> request, Authentication authentication) {
+        try {
+            User updated = authService.updateOwnProfile(
+                    authentication.getName(),
+                    request.get("fullName"),
+                    request.get("phoneNumber")
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Profile updated successfully");
+            response.put("fullName", updated.getFullName());
+            response.put("phoneNumber", updated.getPhoneNumber());
+            response.put("email", updated.getEmail());
+            response.put("role", updated.getRole().name());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
