@@ -95,15 +95,15 @@ const Notifications = () => {
       />
 
       <div className="mb-4 flex flex-wrap gap-2">
-        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "all" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("all")}>All ({notifications.length})</button>
-        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "unread" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("unread")}>Unread ({unreadCount})</button>
-        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "read" ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-600"}`} onClick={() => setFilter("read")}>Read ({notifications.length - unreadCount})</button>
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "all" ? "border-slate-900 bg-slate-900 text-white" : "sf-btn-secondary"}`} onClick={() => setFilter("all")}>All ({notifications.length})</button>
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "unread" ? "border-slate-900 bg-slate-900 text-white" : "sf-btn-secondary"}`} onClick={() => setFilter("unread")}>Unread ({unreadCount})</button>
+        <button className={`rounded-full border px-4 py-2 text-sm font-medium ${filter === "read" ? "border-slate-900 bg-slate-900 text-white" : "sf-btn-secondary"}`} onClick={() => setFilter("read")}>Read ({notifications.length - unreadCount})</button>
       </div>
 
       {loading ? (
-        <div className="sf-card py-10 text-center text-slate-500">Loading notifications...</div>
+        <div className="sf-card py-10 text-center sf-subtitle">Loading notifications...</div>
       ) : filteredNotifications.length === 0 ? (
-        <div className="sf-card border-dashed border-slate-300 bg-white/70 px-5 py-12 text-center text-slate-500">
+        <div className="sf-card border-dashed px-5 py-12 text-center sf-subtitle">
           <p className="text-lg">📭 No {filter !== "all" ? filter : ""} notifications</p>
           <span className="text-sm">You're all caught up!</span>
         </div>
@@ -118,11 +118,11 @@ const Notifications = () => {
                 <div className="text-2xl">{typeIcon(notification.type)}</div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex flex-wrap items-start justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-slate-900">{notification.title}</h3>
+                    <h3 className="text-sm font-semibold" style={{ color: "var(--text-strong)" }}>{notification.title}</h3>
                     <span className="rounded bg-white/70 px-2 py-0.5 text-[11px] font-bold uppercase">{notification.type}</span>
                   </div>
-                  <p className="mb-2 text-sm text-slate-600">{notification.message}</p>
-                  <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+                  <p className="mb-2 text-sm" style={{ color: "var(--text-muted)" }}>{notification.message}</p>
+                  <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
                     {notification.relatedEntity && <span>📎 {notification.relatedEntity}</span>}
                     <span>🕐 {new Date(notification.createdAt).toLocaleDateString()} {new Date(notification.createdAt).toLocaleTimeString()}</span>
                   </div>

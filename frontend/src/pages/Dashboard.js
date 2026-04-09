@@ -91,7 +91,7 @@ const Dashboard = () => {
 
       <div className="relative mb-10 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
         <div className="sf-card p-6 md:p-8">
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Dashboard</p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] sf-subtitle">Dashboard</p>
           <h1 className="sf-title">Welcome, {user?.email}! 👋</h1>
           <p className="sf-subtitle mt-3 max-w-3xl">{roleSummary.description}</p>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -106,36 +106,36 @@ const Dashboard = () => {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           <article className="sf-card p-5">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Role</p>
-            <p className="mt-2 text-lg font-bold text-slate-900">{roleSummary.label}</p>
-            <p className="mt-1 text-sm text-slate-600">Logged in as <strong>{user?.role}</strong></p>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] sf-subtitle">Role</p>
+            <p className="mt-2 text-lg font-bold sf-title">{roleSummary.label}</p>
+            <p className="mt-1 text-sm sf-subtitle">Logged in as <strong>{user?.role}</strong></p>
           </article>
           <article className="sf-card p-5">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Focus</p>
-            <p className="mt-2 text-lg font-bold text-slate-900">{roleSummary.focus}</p>
-            <p className="mt-1 text-sm text-slate-600">Use the quick links below to move faster.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.12em] sf-subtitle">Focus</p>
+            <p className="mt-2 text-lg font-bold sf-title">{roleSummary.focus}</p>
+            <p className="mt-1 text-sm sf-subtitle">Use the quick links below to move faster.</p>
           </article>
         </div>
       </div>
 
       <div className="relative mb-10 grid grid-cols-1 gap-5 md:grid-cols-3">
         <article className="sf-card border-l-4 border-l-teal-700 p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Next step</p>
-          <h3 className="mt-2 text-lg font-bold text-slate-900">{roleSummary.primaryAction.label}</h3>
-          <p className="mt-2 text-sm text-slate-600">The most common action for your role is one tap away.</p>
-          <Link to={roleSummary.primaryAction.link} className="mt-4 inline-block text-sm font-bold text-slate-900 no-underline">Open</Link>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] sf-subtitle">Next step</p>
+          <h3 className="mt-2 text-lg font-bold sf-title">{roleSummary.primaryAction.label}</h3>
+          <p className="mt-2 text-sm sf-subtitle">The most common action for your role is one tap away.</p>
+          <Link to={roleSummary.primaryAction.link} className="mt-4 inline-block text-sm font-bold no-underline" style={{ color: "var(--text-strong)" }}>Open</Link>
         </article>
         <article className="sf-card border-l-4 border-l-slate-900 p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Shared modules</p>
-          <h3 className="mt-2 text-lg font-bold text-slate-900">Bookings, facilities, assets</h3>
-          <p className="mt-2 text-sm text-slate-600">Core campus operations live in the shared modules below.</p>
-          <Link to="/bookings" className="mt-4 inline-block text-sm font-bold text-slate-900 no-underline">Go to bookings</Link>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] sf-subtitle">Shared modules</p>
+          <h3 className="mt-2 text-lg font-bold sf-title">Bookings, facilities, assets</h3>
+          <p className="mt-2 text-sm sf-subtitle">Core campus operations live in the shared modules below.</p>
+          <Link to="/bookings" className="mt-4 inline-block text-sm font-bold no-underline" style={{ color: "var(--text-strong)" }}>Go to bookings</Link>
         </article>
         <article className="sf-card border-l-4 border-l-blue-700 p-6">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Account</p>
-          <h3 className="mt-2 text-lg font-bold text-slate-900">Profile and support</h3>
-          <p className="mt-2 text-sm text-slate-600">Update your account context and access help links from one place.</p>
-          <Link to="/profile" className="mt-4 inline-block text-sm font-bold text-slate-900 no-underline">Open profile</Link>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] sf-subtitle">Account</p>
+          <h3 className="mt-2 text-lg font-bold sf-title">Profile and support</h3>
+          <p className="mt-2 text-sm sf-subtitle">Update your account context and access help links from one place.</p>
+          <Link to="/profile" className="mt-4 inline-block text-sm font-bold no-underline" style={{ color: "var(--text-strong)" }}>Open profile</Link>
         </article>
       </div>
 
@@ -144,9 +144,9 @@ const Dashboard = () => {
           <Link key={idx} to={card.link} className="no-underline">
             <article className={`sf-card border-l-4 p-6 transition hover:-translate-y-1 ${card.border}`}>
               <div className="mb-3 text-4xl">{card.icon}</div>
-              <h3 className="mb-2 text-lg font-bold text-slate-900">{card.title}</h3>
-              <p className="mb-3 text-sm text-slate-600">{card.description}</p>
-              <div className="text-lg text-slate-500">→</div>
+              <h3 className="mb-2 text-lg font-bold sf-title">{card.title}</h3>
+              <p className="mb-3 text-sm sf-subtitle">{card.description}</p>
+              <div className="text-lg sf-subtitle">→</div>
             </article>
           </Link>
         ))}
@@ -168,16 +168,16 @@ const Dashboard = () => {
       )}
 
       {user?.role === "STAFF" && (
-        <div className="relative rounded-2xl border border-slate-300/70 bg-white/80 p-8 shadow-shell backdrop-blur-md">
-          <h3 className="text-xl font-bold text-slate-900">Operations snapshot</h3>
-          <p className="mt-2 text-sm text-slate-600">Use bookings, facilities, and assets to keep campus operations moving smoothly.</p>
+        <div className="sf-card relative p-8">
+          <h3 className="text-xl font-bold sf-title">Operations snapshot</h3>
+          <p className="mt-2 text-sm sf-subtitle">Use bookings, facilities, and assets to keep campus operations moving smoothly.</p>
         </div>
       )}
 
       {user?.role === "ADMIN" && (
-        <div className="relative rounded-2xl border border-slate-300/70 bg-white/80 p-8 shadow-shell backdrop-blur-md">
-          <h3 className="text-xl font-bold text-slate-900">Administration snapshot</h3>
-          <p className="mt-2 text-sm text-slate-600">Manage users, review bookings, and monitor notifications from the admin area.</p>
+        <div className="sf-card relative p-8">
+          <h3 className="text-xl font-bold sf-title">Administration snapshot</h3>
+          <p className="mt-2 text-sm sf-subtitle">Manage users, review bookings, and monitor notifications from the admin area.</p>
         </div>
       )}
     </section>

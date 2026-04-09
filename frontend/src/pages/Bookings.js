@@ -93,7 +93,7 @@ const Bookings = () => {
     }
   };
 
-  if (loading) return <p className="py-5 text-center text-slate-700">Loading bookings...</p>;
+  if (loading) return <p className="py-5 text-center sf-subtitle">Loading bookings...</p>;
 
   return (
     <section className="sf-page">
@@ -107,33 +107,33 @@ const Bookings = () => {
       {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-center text-sm text-rose-800">Error: {error}</p>}
 
       {bookings.length === 0 ? (
-        <div className="sf-card border-dashed border-slate-300 bg-white/70 px-5 py-10 text-center text-slate-600">
-          <p className="text-lg font-semibold text-slate-700">No bookings yet</p>
-          <p className="mt-1 text-sm text-slate-500">Create a new booking to get started.</p>
+        <div className="sf-card border-dashed px-5 py-10 text-center sf-subtitle">
+          <p className="text-lg font-semibold sf-title">No bookings yet</p>
+          <p className="mt-1 text-sm sf-subtitle">Create a new booking to get started.</p>
           {user?.role === "STUDENT" && <Link to="/create-booking" className="mt-4 inline-block sf-btn-primary no-underline">Create one now</Link>}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-900/15 bg-white/85">
-          <table className="w-full border-separate border-spacing-0 bg-white/90">
+        <div className="sf-table-wrap overflow-x-auto">
+          <table className="sf-table">
             <thead>
-              <tr className="bg-indigo-50">
-                <th className="border-b border-slate-300/50 px-4 py-3 text-left text-sm font-bold text-slate-700">Facility</th>
-                <th className="border-b border-slate-300/50 px-4 py-3 text-left text-sm font-bold text-slate-700">Start Time</th>
-                <th className="border-b border-slate-300/50 px-4 py-3 text-left text-sm font-bold text-slate-700">End Time</th>
-                <th className="border-b border-slate-300/50 px-4 py-3 text-left text-sm font-bold text-slate-700">Status</th>
-                <th className="border-b border-slate-300/50 px-4 py-3 text-left text-sm font-bold text-slate-700">Actions</th>
+              <tr>
+                <th className="sf-th">Facility</th>
+                <th className="sf-th">Start Time</th>
+                <th className="sf-th">End Time</th>
+                <th className="sf-th">Status</th>
+                <th className="sf-th">Actions</th>
               </tr>
             </thead>
             <tbody>
               {bookings.map((booking) => (
-                <tr key={booking.id} className="bg-white/85">
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{booking.facilityName}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{new Date(booking.startTime).toLocaleString()}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{new Date(booking.endTime).toLocaleString()}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                <tr key={booking.id}>
+                  <td className="sf-td">{booking.facilityName}</td>
+                  <td className="sf-td">{new Date(booking.startTime).toLocaleString()}</td>
+                  <td className="sf-td">{new Date(booking.endTime).toLocaleString()}</td>
+                  <td className="sf-td">
                     <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold text-white ${getStatusClass(booking.status)}`}>{booking.status}</span>
                   </td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                  <td className="sf-td">
                     {user?.role === "ADMIN" && booking.status === "PENDING" ? (
                       <>
                         <button
@@ -157,7 +157,7 @@ const Bookings = () => {
                         Cancel
                       </button>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="sf-subtitle">-</span>
                     )}
                   </td>
                 </tr>
