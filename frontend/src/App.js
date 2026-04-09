@@ -16,6 +16,7 @@ import IncidentTickets from "./pages/IncidentTickets";
 import Notifications from "./pages/Notifications";
 import OAuth2Callback from "./pages/OAuth2Callback";
 import Profile from "./pages/Profile";
+import AIChat from "./pages/AIChat";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -117,6 +118,15 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/ai-chat"
+                element={
+                  <ProtectedRoute allowedRoles={["STUDENT", "STAFF", "ADMIN"]}>
+                    <AIChat />
                   </ProtectedRoute>
                 }
               />
