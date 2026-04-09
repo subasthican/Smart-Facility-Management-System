@@ -75,21 +75,9 @@ const roleContent = {
   },
 };
 
-const ThemeToggleIcon = ({ isDark }) => (
-  isDark ? (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 4.5V2.5M12 21.5V19.5M4.5 12H2.5M21.5 12H19.5M6.34 6.34L4.93 4.93M19.07 19.07L17.66 17.66M17.66 6.34L19.07 4.93M4.93 19.07L6.34 17.66M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ) : (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M20.354 15.354C19.3267 15.7788 18.2257 15.9979 17.114 16C12.326 16 8.5 12.174 8.5 7.386C8.5021 6.27433 8.72116 5.17334 9.146 4.146C7.67344 4.75884 6.41491 5.79281 5.52926 7.11895C4.64361 8.44508 4.17031 10.0041 4.16992 11.599C4.16992 16.015 7.75492 19.6 12.1709 19.6C13.7659 19.5996 15.3249 19.1263 16.6511 18.2407C17.9772 17.355 19.0112 16.0965 19.624 14.624C19.849 15.1688 20.0951 15.4112 20.354 15.354Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-);
-
 const Home = () => {
   const { user } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
 
   const selectedRole = roleContent[user?.role] || null;
 
@@ -130,26 +118,7 @@ const Home = () => {
             />
           )}
 
-          <div className="relative z-10 mx-auto w-full max-w-[1200px] px-6 pb-16 sm:px-8 sm:pb-20">
-            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-              <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
-                <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={toggleTheme}
-                    className={isDark ? "inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white" : "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-900/15 bg-white/85 text-slate-700"}
-                    aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                    title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                  >
-                    <ThemeToggleIcon isDark={isDark} />
-                  </button>
-                  <Link to="/" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Home</Link>
-                  <Link to="/login" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Sign in</Link>
-                </div>
-              </div>
-            </div>
-
+          <div className="relative z-10 mx-auto w-full max-w-[1200px] px-6 pb-16 pt-6 sm:px-8 sm:pb-20 sm:pt-8">
             <section className="mx-auto flex min-h-[calc(100vh-180px)] max-w-5xl flex-col items-center justify-center text-center">
               <h1 className={`text-5xl font-black tracking-tight sm:text-6xl ${isDark ? "text-white" : "text-slate-900"}`}>Welcome</h1>
               <p className={`mx-auto mt-4 max-w-2xl text-base leading-relaxed sm:text-lg ${isDark ? "text-slate-200" : "text-slate-700"}`}>
