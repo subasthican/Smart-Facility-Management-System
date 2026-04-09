@@ -221,101 +221,79 @@ const Home = () => {
       );
     }
 
-  return (
-      <section className={`relative min-h-[calc(100vh-180px)] overflow-hidden rounded-3xl p-7 shadow-shell backdrop-blur-md ${isDark ? "border border-white/10 bg-[#020202]" : "border border-slate-300/60 bg-slate-300/55"}`}>
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={
-          isDark
-            ? undefined
-            : {
-                opacity: 0.32,
-                filter: "grayscale(1) contrast(1.24) brightness(1.1)",
-                mixBlendMode: "normal",
-              }
-        }
-      >
-        <Beams
-          beamWidth={3}
-          beamHeight={30}
-          beamNumber={20}
-          lightColor="#ffffff"
-          speed={2}
-          noiseIntensity={1.55}
-          scale={0.2}
-          rotation={30}
-        />
-      </div>
-      <div className={`pointer-events-none absolute inset-0 ${isDark ? "bg-gradient-to-b from-black/30 via-black/55 to-black/80" : "bg-gradient-to-b from-slate-200/35 via-slate-300/45 to-slate-400/35"}`} />
-      <div className={`pointer-events-none absolute -right-24 -top-40 h-[440px] w-[440px] rounded-full blur-3xl ${isDark ? "bg-white/10" : "bg-slate-200/45"}`} />
-      <div className={`pointer-events-none absolute -bottom-52 -left-28 h-[460px] w-[460px] rounded-full blur-3xl ${isDark ? "bg-cyan-300/10" : "bg-slate-300/35"}`} />
+    return (
+      <section className="relative min-h-screen overflow-hidden">
 
-      <div className={`relative z-10 mb-8 mx-auto max-w-5xl rounded-[2rem] px-6 py-8 text-center shadow-2xl backdrop-blur-2xl sm:px-8 sm:py-10 ${isDark ? "border border-white/10 bg-black/35 shadow-black/40" : "border border-slate-300/60 bg-slate-100/70 shadow-slate-700/10"}`}>
-        <p className={`mb-4 inline-block rounded-full px-3 py-2 text-xs uppercase tracking-[0.14em] shadow-inner ${isDark ? "border border-white/15 bg-white/8 text-white/80 shadow-black/20" : "border border-slate-300/70 bg-slate-200/70 text-slate-600 shadow-slate-400/20"}`}>
-          Smart Facility Management
-        </p>
-        <h1 className={`text-4xl font-bold tracking-tight md:text-5xl ${isDark ? "text-white" : "text-slate-900"}`}>{selectedRole?.title || "Welcome"}</h1>
-        <p className={`mx-auto mt-3 max-w-2xl text-base leading-relaxed ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-          {selectedRole?.subtitle || "A clean and comfortable workspace to manage bookings, facilities, and assets with clear role-based actions."}
-        </p>
+      <section className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 text-center sm:px-8">
+        <div className="w-full py-8 sm:py-10">
+          <p className={`mb-4 inline-block rounded-full px-3 py-2 text-xs uppercase tracking-[0.14em] shadow-inner ${isDark ? "border border-white/15 bg-white/8 text-white/80 shadow-black/20" : "border border-slate-300/70 bg-slate-200/70 text-slate-600 shadow-slate-400/20"}`}>
+            Smart Facility Management
+          </p>
+          <h1 className={`text-4xl font-bold tracking-tight md:text-5xl ${isDark ? "text-white" : "text-slate-900"}`}>{selectedRole?.title || "Welcome"}</h1>
+          <p className={`mx-auto mt-3 max-w-2xl text-base leading-relaxed ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+            {selectedRole?.subtitle || "A clean and comfortable workspace to manage bookings, facilities, and assets with clear role-based actions."}
+          </p>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          {selectedRole?.quickActions?.map((action) => (
-            <Link
-              key={action.label}
-              to={action.link}
-              className={isDark ? "rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow backdrop-blur-sm" : "rounded-full border border-slate-300/70 bg-slate-100/80 px-5 py-2.5 text-sm font-semibold text-slate-700 no-underline shadow"}
-            >
-              {action.label}
-            </Link>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {selectedRole?.quickActions?.map((action) => (
+              <Link
+                key={action.label}
+                to={action.link}
+                className={isDark ? "rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow backdrop-blur-sm" : "rounded-full border border-slate-300/70 bg-slate-100/80 px-5 py-2.5 text-sm font-semibold text-slate-700 no-underline shadow"}
+              >
+                {action.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 mx-auto mt-2 max-w-5xl space-y-8 pb-6 sm:mt-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="Today Bookings" value="126" hint="+12 from yesterday" isDark={isDark} />
+          <StatCard label="Open Facilities" value="34" hint="2 under maintenance" isDark={isDark} />
+          <StatCard label="Assets In Use" value="218" hint="78% utilization" isDark={isDark} />
+          <StatCard label="Avg. Response" value="1.8m" hint="Support requests" isDark={isDark} />
+        </div>
+
+        <div className={`rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
+          <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>How to finish tasks faster</h2>
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+              <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>1. Check availability</p>
+              <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Open facilities and verify room status before creating requests.</p>
+            </article>
+            <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+              <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>2. Create booking</p>
+              <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Submit booking details with date, time, and required assets.</p>
+            </article>
+            <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+              <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>3. Track and update</p>
+              <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Monitor approval and update plans quickly from your dashboard.</p>
+            </article>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {selectedRole?.cards?.map((item) => (
+            <Card key={item.title} title={item.title} text={item.text} link={item.link} isDark={isDark} />
           ))}
         </div>
-      </div>
 
-      <div className="relative z-10 mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Today Bookings" value="126" hint="+12 from yesterday" isDark={isDark} />
-        <StatCard label="Open Facilities" value="34" hint="2 under maintenance" isDark={isDark} />
-        <StatCard label="Assets In Use" value="218" hint="78% utilization" isDark={isDark} />
-        <StatCard label="Avg. Response" value="1.8m" hint="Support requests" isDark={isDark} />
-      </div>
-
-      <div className={`relative z-10 mb-8 rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
-        <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>How to finish tasks faster</h2>
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
-            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>1. Check availability</p>
-            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Open facilities and verify room status before creating requests.</p>
-          </article>
-          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
-            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>2. Create booking</p>
-            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Submit booking details with date, time, and required assets.</p>
-          </article>
-          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
-            <p className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>3. Track and update</p>
-            <p className={`mt-1 text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>Monitor approval and update plans quickly from your dashboard.</p>
-          </article>
+        <div className={`rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
+          <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Announcements</h2>
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+              <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Lab A upgraded with new systems</p>
+              <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>New machines are available for project classes from Monday.</p>
+            </article>
+            <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
+              <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Weekend maintenance schedule</p>
+              <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>Main auditorium and Seminar Hall 2 will be unavailable on Saturday.</p>
+            </article>
+          </div>
         </div>
-      </div>
-
-      <div className="relative z-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {selectedRole?.cards?.map((item) => (
-          <Card key={item.title} title={item.title} text={item.text} link={item.link} isDark={isDark} />
-        ))}
-      </div>
-
-      <div className={`relative z-10 mt-8 rounded-3xl p-5 shadow-2xl backdrop-blur-xl sm:p-6 ${isDark ? "border border-white/10 bg-black/35 shadow-black/30" : "border border-slate-300/60 bg-slate-200/55 shadow-slate-700/10"}`}>
-        <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Announcements</h2>
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
-            <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Lab A upgraded with new systems</p>
-            <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>New machines are available for project classes from Monday.</p>
-          </article>
-          <article className={isDark ? "rounded-2xl border border-white/10 bg-white/5 p-4" : "rounded-2xl border border-slate-300/70 bg-slate-100/60 p-4"}>
-            <p className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Weekend maintenance schedule</p>
-            <p className={`mt-1 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>Main auditorium and Seminar Hall 2 will be unavailable on Saturday.</p>
-          </article>
-        </div>
-      </div>
+      </section>
     </section>
   );
 };

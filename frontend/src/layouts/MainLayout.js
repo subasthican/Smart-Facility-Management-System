@@ -25,6 +25,9 @@ const MainLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isGuestHome = !user && location.pathname === "/";
+  const isAuthRoute = !user && ["/login", "/register", "/oauth2/callback"].includes(location.pathname);
+  const isAuthenticated = !!user;
+  const isAuthenticatedHome = !!user && location.pathname === "/";
 
   const handleLogout = () => {
     logout();
@@ -71,9 +74,53 @@ const MainLayout = ({ children }) => {
         </>
       )}
 
-      {!isGuestHome && (
-      <header className={`sticky top-0 z-20 border-b shadow-lg backdrop-blur-md backdrop-saturate-150 ${isDark ? "border-white/10 bg-black/35" : "border-slate-900/10 bg-white/55"}`}>
-        <div className={`mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 ${user ? "py-4" : "py-3"}`}>
+      {isGuestHome && (
+        <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+          <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
+            <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={isDark ? "inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white" : "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-900/15 bg-white/85 text-slate-700"}
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <ThemeToggleIcon isDark={isDark} />
+              </button>
+              <Link to="/" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Home</Link>
+              <Link to="/login" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Sign in</Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAuthRoute && (
+        <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+          <div className={`mx-auto flex w-full max-w-[760px] items-center justify-between rounded-full border px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6 ${isDark ? "border-white/15 bg-black/45 shadow-black/40" : "border-slate-900/10 bg-white/75 shadow-slate-900/15"}`}>
+            <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isDark ? "text-white/90" : "text-slate-800"}`}>SMART FACILITY</p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={isDark ? "inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white" : "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-900/15 bg-white/85 text-slate-700"}
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <ThemeToggleIcon isDark={isDark} />
+              </button>
+              <Link to="/" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Home</Link>
+              <Link to={location.pathname === "/login" ? "/register" : "/login"} className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>
+                {location.pathname === "/login" ? "Register" : "Sign in"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!isGuestHome && !isAuthRoute && (
+      <header className={isAuthenticated ? "absolute left-0 right-0 top-0 z-20 pt-6" : `sticky top-0 z-20 border-b shadow-lg backdrop-blur-md backdrop-saturate-150 ${isDark ? "border-white/10 bg-black/35" : "border-slate-900/10 bg-white/55"}`}>
+        <div className={`mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 ${user ? "rounded-full border px-5 py-3 shadow-2xl backdrop-blur-xl " + (isDark ? "border-white/15 bg-black/45 shadow-black/30" : "border-slate-900/10 bg-white/75 shadow-slate-900/10") : "py-3"}`}>
           <div className={user ? "" : isDark ? "flex flex-wrap items-center gap-4 rounded-full border border-white/10 bg-black/55 px-5 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl" : "flex flex-wrap items-center gap-4 rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl"}>
             <div className="text-xs font-bold tracking-[0.12em]">
               <ShinyText
@@ -90,7 +137,7 @@ const MainLayout = ({ children }) => {
               />
             </div>
           </div>
-          <nav className={`flex flex-wrap items-center gap-3 rounded-full px-3 py-2 shadow-2xl backdrop-blur-xl ${isDark ? "border border-white/10 bg-black/55 shadow-black/30" : "border border-slate-900/10 bg-white/70 shadow-slate-900/10"}`}>
+          <nav className={`flex flex-wrap items-center gap-3 ${user ? "" : `rounded-full px-3 py-2 shadow-2xl backdrop-blur-xl ${isDark ? "border border-white/10 bg-black/55 shadow-black/30" : "border border-slate-900/10 bg-white/70 shadow-slate-900/10"}`}`}>
             <Link
               to="/"
               className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}
@@ -132,34 +179,42 @@ const MainLayout = ({ children }) => {
       </header>
       )}
 
-      <main className={isGuestHome ? "w-full flex-1" : "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 py-6"}>
+      <main className={
+        isGuestHome
+          ? "w-full flex-1"
+          : isAuthenticatedHome
+            ? "w-full flex-1"
+            : isAuthenticated
+              ? "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 pb-6 pt-28"
+              : "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 py-6"
+      }>
         {children}
       </main>
 
       {!isGuestHome && (
-      <footer className={`relative z-10 mt-4 border-t backdrop-blur-md ${isDark ? "border-white/10 bg-black/45" : "border-slate-900/10 bg-white/70"}`}>
-        <div className="mx-auto grid w-full max-w-[1200px] gap-6 px-6 py-6 md:grid-cols-3">
-          <div className="max-w-sm">
+      <footer className="relative z-10 mt-8 pb-6">
+        <div className="mx-auto grid w-full max-w-[1200px] gap-4 px-6 py-5 md:grid-cols-3">
+          <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-slate-900/10 bg-white/70"}`}>
             <p className={`mb-2 text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Smart Facility Management System</p>
             <p className={`text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>
               A student management platform for bookings, facilities, assets, incidents, and role-based access.
             </p>
           </div>
 
-          <div>
-            <p className={`mb-2 text-xs font-bold uppercase tracking-[0.12em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Quick Links</p>
+          <div className={`rounded-2xl border p-4 ${isDark ? "border-white/10 bg-white/5" : "border-slate-900/10 bg-white/70"}`}>
+            <p className={`mb-3 text-xs font-bold uppercase tracking-[0.12em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Quick Links</p>
             <div className="flex flex-wrap gap-2">
-              <Link to="/" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Home</Link>
-              <Link to="/dashboard" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Dashboard</Link>
-              <Link to="/profile" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Profile</Link>
-              <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Bookings</Link>
-              <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Facilities</Link>
-              <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Assets</Link>
+              <Link to="/" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Home</Link>
+              <Link to="/dashboard" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Dashboard</Link>
+              <Link to="/profile" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Profile</Link>
+              <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Bookings</Link>
+              <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Facilities</Link>
+              <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Assets</Link>
             </div>
           </div>
 
-          <div className="md:text-right">
-            <p className={`mb-2 text-xs font-bold uppercase tracking-[0.12em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Support</p>
+          <div className={`rounded-2xl border p-4 md:text-right ${isDark ? "border-white/10 bg-white/5" : "border-slate-900/10 bg-white/70"}`}>
+            <p className={`mb-3 text-xs font-bold uppercase tracking-[0.12em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Support</p>
             <p className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>Help desk: support@smartfacility.local</p>
             <p className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>Version: Campus release</p>
             <p className={`mt-2 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>2026 Smart Facility</p>
