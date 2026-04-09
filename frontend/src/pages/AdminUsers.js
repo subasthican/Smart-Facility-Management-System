@@ -218,38 +218,38 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
       {message && <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{message}</div>}
       {error && <div className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
-      <div className="overflow-hidden rounded-2xl border border-slate-900/15 bg-white shadow-sm">
-        <table className="w-full border-separate border-spacing-0">
+      <div className="sf-table-wrap">
+        <table className="sf-table">
           <thead>
             <tr>
-              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Name</th>
-              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Email</th>
-              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Status</th>
-              <th className="border-b border-slate-300/50 bg-slate-100 px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Actions</th>
+              <th className="sf-th">Name</th>
+              <th className="sf-th">Email</th>
+              <th className="sf-th">Status</th>
+              <th className="sf-th">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loadingUsers ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold text-slate-500">Loading {roleLabel.toLowerCase()} data...</td>
+                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">Loading {roleLabel.toLowerCase()} data...</td>
               </tr>
             ) : managedUsers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold text-slate-500">No {roleLabel.toLowerCase()} users found.</td>
+                <td colSpan={4} className="px-4 py-6 text-center text-sm font-semibold sf-subtitle">No {roleLabel.toLowerCase()} users found.</td>
               </tr>
             ) : (
               managedUsers.map((user) => (
-                <tr key={user.id} className="bg-white/90">
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{user.fullName}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">{user.email}</td>
-                  <td className="border-b border-slate-300/30 px-4 py-3 text-sm text-slate-700">
+                <tr key={user.id}>
+                  <td className="sf-td">{user.fullName}</td>
+                  <td className="sf-td">{user.email}</td>
+                  <td className="sf-td">
                     <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${user.active ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
                       {user.active ? "ACTIVE" : "INACTIVE"}
                     </span>
                   </td>
-                  <td className="border-b border-slate-300/30 px-4 py-3">
+                  <td className="sf-td">
                     <div className="flex flex-wrap gap-2">
-                      <button className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700" type="button" onClick={() => openEditModal(user)}>
+                      <button className="sf-btn-secondary px-3 py-1.5 text-xs" type="button" onClick={() => openEditModal(user)}>
                         Update
                       </button>
                       {user.active ? (
@@ -282,21 +282,21 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
       {isModalOpen && (
         <AppModal onClose={resetModal}>
-          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-7 shadow-2xl">
-            <h2 className="mb-5 text-2xl font-bold text-slate-900">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
+          <div className="sf-modal-card">
+            <h2 className="mb-5 text-2xl font-bold sf-title">{modalMode === "create" ? `Add ${roleLabel}` : `Update ${roleLabel}`}</h2>
             <form onSubmit={submitModal} className="grid gap-3">
-              <label className="text-sm font-semibold text-slate-700">Full Name</label>
+              <label className="sf-label">Full Name</label>
               <input
-                className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
+                className="sf-input text-base"
                 value={form.fullName}
                 onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
                 placeholder={`${roleLabel} full name`}
                 required
               />
 
-              <label className="text-sm font-semibold text-slate-700">Email</label>
+              <label className="sf-label">Email</label>
               <input
-                className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
+                className="sf-input text-base"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
@@ -306,18 +306,18 @@ const AdminUsers = ({ managedRole = "STAFF" }) => {
 
               {modalMode === "create" && (
                 <>
-                  <label className="text-sm font-semibold text-slate-700">Password</label>
+                  <label className="sf-label">Password</label>
                   <input
-                    className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
+                    className="sf-input text-base"
                     type="password"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                     required
                   />
 
-                  <label className="text-sm font-semibold text-slate-700">Confirm Password</label>
+                  <label className="sf-label">Confirm Password</label>
                   <input
-                    className="rounded-xl border border-slate-300 bg-white px-4 py-3 text-base"
+                    className="sf-input text-base"
                     type="password"
                     value={form.confirmPassword}
                     onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}

@@ -62,17 +62,17 @@ const CreateBooking = () => {
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-5 py-8">
-      <div className="sf-card w-full max-w-xl border border-slate-900/10 bg-gradient-to-b from-white/95 to-slate-100/85 p-10">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900">Create New Booking</h2>
-        <p className="mb-4 mt-1 text-center text-sm text-slate-500">Reserve facilities with precision scheduling.</p>
+      <div className="sf-auth-card w-full max-w-xl p-10">
+        <h2 className="text-center text-3xl font-bold tracking-tight sf-title">Create New Booking</h2>
+        <p className="mb-4 mt-1 text-center text-sm sf-subtitle">Reserve facilities with precision scheduling.</p>
         {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-center text-sm text-rose-800">{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">Facility Name *</label>
+          <label className="sf-label">Facility Name *</label>
           <select
             value={facilityName}
             onChange={(e) => setFacilityName(e.target.value)}
-            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
+            className="sf-input mb-4"
             required
           >
             <option value="">Select a facility</option>
@@ -85,29 +85,29 @@ const CreateBooking = () => {
             <option value="Sports Field">Sports Field</option>
           </select>
 
-          <label className="mb-2 block text-sm font-semibold text-slate-700">Start Time *</label>
+          <label className="sf-label">Start Time *</label>
           <input
             type="datetime-local"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
+            className="sf-input mb-4"
             required
           />
 
-          <label className="mb-2 block text-sm font-semibold text-slate-700">End Time *</label>
+          <label className="sf-label">End Time *</label>
           <input
             type="datetime-local"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            className="mb-4 w-full rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
+            className="sf-input mb-4"
             required
           />
 
-          <label className="mb-2 block text-sm font-semibold text-slate-700">Notes (Optional)</label>
+          <label className="sf-label">Notes (Optional)</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="mb-4 min-h-[100px] w-full resize-y rounded-xl border border-slate-300 bg-white/95 px-4 py-3 text-sm"
+            className="sf-input mb-4 min-h-[100px] resize-y"
             placeholder="Any special requests or notes..."
           />
 

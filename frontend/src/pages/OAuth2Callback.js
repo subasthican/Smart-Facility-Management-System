@@ -26,17 +26,17 @@ const OAuth2Callback = () => {
 
   return (
     <div className="flex min-h-[75vh] items-center justify-center px-5 py-8">
-      <div className="sf-card w-full max-w-md border border-slate-900/10 bg-gradient-to-b from-white/95 to-slate-100/85 p-10 text-center">
+      <div className="sf-auth-card w-full max-w-md p-10 text-center">
         {error ? (
           <>
-            <h2 className="mb-3 text-2xl font-bold text-slate-900">OAuth Login Error</h2>
+            <h2 className="mb-3 text-2xl font-bold sf-title">OAuth Login Error</h2>
             <p className="mb-4 text-sm text-rose-700">{error}</p>
             <button className="sf-btn-primary w-full py-3" onClick={() => navigate("/login")}>Back to Login</button>
           </>
         ) : (
           <>
-            <h2 className="mb-3 text-2xl font-bold text-slate-900">Signing you in...</h2>
-            <p className="text-sm text-slate-600">Completing OAuth login, please wait.</p>
+            <h2 className="mb-3 text-2xl font-bold sf-title">Signing you in...</h2>
+            <p className="text-sm sf-subtitle">Completing OAuth login, please wait.</p>
           </>
         )}
       </div>
