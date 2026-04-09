@@ -4,6 +4,7 @@ import com.smartfacility.model.Facility;
 import com.smartfacility.service.FacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,27 +32,27 @@ public class FacilityController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createFacility(@RequestBody Facility facility) {
+    public ResponseEntity<?> createFacility(@RequestBody Facility facility, Authentication auth) {
         try {
-            return ResponseEntity.ok(facilityService.createFacility(facility));
+            return ResponseEntity.ok(facilityService.createFacility(facility, auth.getName()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFacility(@PathVariable Long id, @RequestBody Facility facility) {
+    public ResponseEntity<?> updateFacility(@PathVariable Long id, @RequestBody Facility facility, Authentication auth) {
         try {
-            return ResponseEntity.ok(facilityService.updateFacility(id, facility));
+            return ResponseEntity.ok(facilityService.updateFacility(id, facility, auth.getName()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFacility(@PathVariable Long id) {
+    public ResponseEntity<?> deleteFacility(@PathVariable Long id, Authentication auth) {
         try {
-            facilityService.deleteFacility(id);
+            facilityService.deleteFacility(id, auth.getName());
             return ResponseEntity.ok(success("Facility deleted successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(error(e.getMessage()));

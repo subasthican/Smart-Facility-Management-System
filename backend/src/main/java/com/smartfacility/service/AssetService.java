@@ -18,6 +18,9 @@ public class AssetService {
     @Autowired
     private FacilityRepository facilityRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<Asset> getAllAssets() {
         return assetRepository.findAll();
     }
@@ -30,17 +33,36 @@ public class AssetService {
         return assetRepository.findById(id);
     }
 
-    public Asset createAsset(Asset asset) {
+    public Asset createAsset(Asset asset, String actorEmail) {
         if (!facilityRepository.existsById(asset.getFacilityId())) {
             throw new RuntimeException("Facility not found for this asset");
         }
         if (assetRepository.existsBySerialNumberIgnoreCase(asset.getSerialNumber())) {
             throw new RuntimeException("Asset with this serial number already exists");
         }
-        return assetRepository.save(asset);
+        Asset saved = assetRepository.save(asset);
+
+        notificationService.notifyUser(
+                actorEmail,
+                "Asset Created",
+                "Asset '" + saved.getAssetName() + "' was created successfully.",
+                "SUCCESS",
+                "ASSET",
+                saved.getId()
+        );
+        notificationService.notifyAdmins(
+                "Asset Created",
+                "Asset '" + saved.getAssetName() + "' was created by " + actorEmail + ".",
+                "INFO",
+                "ASSET",
+                saved.getId(),
+                actorEmail
+        );
+
+        return saved;
     }
 
-    public Asset updateAsset(Long id, Asset updatedAsset) {
+    public Asset updateAsset(Long id, Asset updatedAsset, String actorEmail) {
         Asset asset = assetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
@@ -54,13 +76,50 @@ public class AssetService {
         asset.setCondition(updatedAsset.getCondition());
         asset.setFacilityId(updatedAsset.getFacilityId());
 
-        return assetRepository.save(asset);
+        Asset saved = assetRepository.save(asset);
+
+        notificationService.notifyUser(
+            actorEmail,
+            "Asset Updated",
+            "Asset '" + saved.getAssetName() + "' was updated successfully.",
+            "SUCCESS",
+            "ASSET",
+            saved.getId()
+        );
+        notificationService.notifyAdmins(
+            "Asset Updated",
+            "Asset '" + saved.getAssetName() + "' was updated by " + actorEmail + ".",
+            "INFO",
+            "ASSET",
+            saved.getId(),
+            actorEmail
+        );
+
+        return saved;
     }
 
-    public void deleteAsset(Long id) {
+        public void deleteAsset(Long id, String actorEmail) {
         if (!assetRepository.existsById(id)) {
             throw new RuntimeException("Asset not found");
         }
+
+        notificationService.notifyUser(
+            actorEmail,
+            "Asset Deleted",
+            "Asset #" + id + " was deleted.",
+            "WARNING",
+            "ASSET",
+            id
+        );
+        notificationService.notifyAdmins(
+            "Asset Deleted",
+            "Asset #" + id + " was deleted by " + actorEmail + ".",
+            "INFO",
+            "ASSET",
+            id,
+            actorEmail
+        );
+
         assetRepository.deleteById(id);
     }
 }

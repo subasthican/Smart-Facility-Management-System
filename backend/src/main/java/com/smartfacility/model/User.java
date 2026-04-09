@@ -1,6 +1,7 @@
 package com.smartfacility.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +30,19 @@ public class User {
     @Column(columnDefinition = "boolean default true")
     private Boolean active = true;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean mustResetPassword = false;
+
+    @Column(length = 255)
+    private String temporaryPassword;
+
+    @Column(length = 12)
+    private String passwordResetCode;
+
+    private LocalDateTime passwordResetCodeExpiresAt;
+
+    private LocalDateTime lastPasswordChangedAt;
+
     public User() {
     }
 
@@ -39,6 +53,11 @@ public class User {
         this.password = password;
         this.role = role;
         this.active = true;
+        this.mustResetPassword = false;
+        this.temporaryPassword = null;
+        this.passwordResetCode = null;
+        this.passwordResetCodeExpiresAt = null;
+        this.lastPasswordChangedAt = null;
     }
 
     public Long getId() {
@@ -95,6 +114,46 @@ public class User {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Boolean getMustResetPassword() {
+        return mustResetPassword;
+    }
+
+    public void setMustResetPassword(Boolean mustResetPassword) {
+        this.mustResetPassword = mustResetPassword;
+    }
+
+    public String getTemporaryPassword() {
+        return temporaryPassword;
+    }
+
+    public void setTemporaryPassword(String temporaryPassword) {
+        this.temporaryPassword = temporaryPassword;
+    }
+
+    public String getPasswordResetCode() {
+        return passwordResetCode;
+    }
+
+    public void setPasswordResetCode(String passwordResetCode) {
+        this.passwordResetCode = passwordResetCode;
+    }
+
+    public LocalDateTime getPasswordResetCodeExpiresAt() {
+        return passwordResetCodeExpiresAt;
+    }
+
+    public void setPasswordResetCodeExpiresAt(LocalDateTime passwordResetCodeExpiresAt) {
+        this.passwordResetCodeExpiresAt = passwordResetCodeExpiresAt;
+    }
+
+    public LocalDateTime getLastPasswordChangedAt() {
+        return lastPasswordChangedAt;
+    }
+
+    public void setLastPasswordChangedAt(LocalDateTime lastPasswordChangedAt) {
+        this.lastPasswordChangedAt = lastPasswordChangedAt;
     }
 
     public enum Role {

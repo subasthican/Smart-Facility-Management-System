@@ -4,6 +4,7 @@ import com.smartfacility.model.IncidentTicket;
 import com.smartfacility.service.IncidentTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,19 +29,19 @@ public class IncidentTicketController {
     }
 
     @PostMapping
-    public IncidentTicket createTicket(@RequestBody IncidentTicket ticket) {
-        return ticketService.createTicket(ticket);
+    public IncidentTicket createTicket(@RequestBody IncidentTicket ticket, Authentication auth) {
+        return ticketService.createTicket(ticket, auth.getName());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IncidentTicket> updateTicket(@PathVariable Long id, @RequestBody IncidentTicket ticketDetails) {
-        IncidentTicket updatedTicket = ticketService.updateTicket(id, ticketDetails);
+    public ResponseEntity<IncidentTicket> updateTicket(@PathVariable Long id, @RequestBody IncidentTicket ticketDetails, Authentication auth) {
+        IncidentTicket updatedTicket = ticketService.updateTicket(id, ticketDetails, auth.getName());
         return updatedTicket != null ? ResponseEntity.ok(updatedTicket) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
-        ticketService.deleteTicket(id);
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id, Authentication auth) {
+        ticketService.deleteTicket(id, auth.getName());
         return ResponseEntity.noContent().build();
     }
 

@@ -29,7 +29,7 @@ const MainLayout = ({ children }) => {
     location.pathname === "/ai-chat" &&
     new URLSearchParams(location.search).get("embed") === "1";
   const isGuestHome = !user && location.pathname === "/";
-  const isAuthRoute = !user && ["/login", "/register", "/oauth2/callback"].includes(location.pathname);
+  const isAuthRoute = ["/login", "/register", "/oauth2/callback", "/forgot-password", "/reset-password"].includes(location.pathname);
   const isAuthenticated = !!user;
   const isAuthenticatedHome = !!user && location.pathname === "/";
 
@@ -114,9 +114,19 @@ const MainLayout = ({ children }) => {
                 <ThemeToggleIcon isDark={isDark} />
               </button>
               <Link to="/" className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>Home</Link>
-              <Link to={location.pathname === "/login" ? "/register" : "/login"} className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>
-                {location.pathname === "/login" ? "Register" : "Sign in"}
-              </Link>
+              {user ? (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700"}
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link to={location.pathname === "/login" ? "/register" : "/login"} className={isDark ? "rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white no-underline" : "rounded-full border border-slate-900/15 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 no-underline"}>
+                  {location.pathname === "/login" ? "Register" : "Sign in"}
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -153,6 +163,8 @@ const MainLayout = ({ children }) => {
                 <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Facilities</Link>
                 <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Assets</Link>
                 <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Bookings</Link>
+                <Link to="/quizzes" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Quizzes</Link>
+                <Link to="/notebooks" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Notebook</Link>
               </>
             ) : null}
           </nav>
@@ -190,12 +202,31 @@ const MainLayout = ({ children }) => {
           ? "w-full flex-1"
           : isAuthenticatedHome
             ? "w-full flex-1"
+            : isAuthRoute
+              ? "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 py-6"
             : isAuthenticated
               ? "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 pb-6 pt-28"
               : "relative z-10 mx-auto w-full max-w-[1200px] flex-1 px-6 py-6"
       }>
         {children}
       </main>
+
+      {isAuthenticated && !isAiEmbed && (
+        <Link
+          to="/quizzes"
+          aria-label="Open Quiz Management"
+          title="Open Quiz Management"
+          className={`group z-[9999] inline-flex h-14 w-14 items-center justify-center rounded-full border no-underline shadow-2xl backdrop-blur-xl transition hover:-translate-y-0.5 ${isDark ? "border-emerald-300/45 bg-slate-900/90 text-emerald-200 shadow-emerald-500/30" : "border-emerald-400/55 bg-white/90 text-emerald-700 shadow-emerald-500/30"}`}
+          style={{ position: "fixed", right: "24px", bottom: "92px", left: "auto", top: "auto" }}
+        >
+          <span className={`pointer-events-none absolute inset-0 rounded-full blur-md ${isDark ? "bg-emerald-400/25" : "bg-emerald-400/25"}`} />
+          <span className={`pointer-events-none absolute -inset-1 rounded-full border ${isDark ? "border-emerald-300/30" : "border-emerald-400/35"} opacity-70 group-hover:opacity-100`} />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="relative z-10">
+            <path d="M9 4H15M7 6H17C18.1046 6 19 6.89543 19 8V20L16 18L13 20L10 18L7 20V8C7 6.89543 7.89543 6 9 6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M10 10H14M10 13H16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
+      )}
 
       {isAuthenticated && !isAiEmbed && (
         <button
@@ -269,6 +300,8 @@ const MainLayout = ({ children }) => {
               <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Bookings</Link>
               <Link to="/facilities" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Facilities</Link>
               <Link to="/assets" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Assets</Link>
+              <Link to="/quizzes" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Quizzes</Link>
+              <Link to="/notebooks" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>Notebook</Link>
               <Link to="/ai-chat" className={isDark ? "rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-white/90 no-underline shadow" : "rounded-full border border-slate-900/10 bg-white/85 px-3 py-1.5 text-xs text-slate-700 no-underline shadow"}>AI Chat</Link>
             </div>
           </div>

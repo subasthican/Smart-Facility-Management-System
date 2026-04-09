@@ -49,6 +49,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             created.setRole(User.Role.STUDENT);
             // OAuth users don't use password login, but DB column is non-null.
             created.setPassword("OAUTH2_USER");
+            created.setMustResetPassword(false);
             return userRepository.save(created);
         });
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());

@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/register", "/auth/login", "/auth/oauth/google/enabled").permitAll()
+                    .requestMatchers("/auth/register", "/auth/login", "/auth/oauth/google/enabled", "/auth/forgot-password/**").permitAll()
                     .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
@@ -56,6 +56,24 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.PUT, "/bookings/*/confirm").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/bookings/*/cancel").hasAnyRole("STUDENT", "ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/bookings/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/quizzes/admin").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/quizzes/*/submit").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/quizzes/my-attempts").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/quizzes/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/quizzes/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/quizzes/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/quizzes/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/notebooks/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/notebooks/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/notebooks/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/notebooks/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/notifications/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/notifications/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/notifications/**").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/notifications/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
