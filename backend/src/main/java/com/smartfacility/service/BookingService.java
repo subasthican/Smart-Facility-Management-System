@@ -1,13 +1,18 @@
 package com.smartfacility.service;
 
 import com.smartfacility.model.Booking;
+import com.smartfacility.model.User;
 import com.smartfacility.repository.BookingRepository;
+import com.smartfacility.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -17,6 +22,9 @@ public class BookingService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Create a new booking
     public Booking createBooking(String facilityName, LocalDateTime startTime, LocalDateTime endTime,
@@ -30,8 +38,14 @@ public class BookingService {
             throw new RuntimeException("End time must be after start time");
         }
 
-        // Check for conflicts
-        if (bookingRepository.existsByFacilityNameAndStartTimeAndEndTime(facilityName, startTime, endTime)) {
+        // Check for conflicts against active bookings only.
+        // Cancelled bookings should not block new reservations.
+        List<Booking> facilityBookings = bookingRepository.findByFacilityName(facilityName);
+        boolean hasConflict = facilityBookings.stream()
+                .filter(existing -> existing.getStatus() != Booking.BookingStatus.CANCELLED)
+                .anyMatch(existing -> startTime.isBefore(existing.getEndTime()) && endTime.isAfter(existing.getStartTime()));
+
+        if (hasConflict) {
             throw new RuntimeException("Facility is already booked for this time slot");
         }
 
@@ -76,8 +90,42 @@ public class BookingService {
 
     // Get all bookings
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        List<Booking> bookings = bookingRepository.findAll();
+
+        Map<String, User.Role> roleByEmail = userRepository.findAll().stream()
+            .collect(Collectors.toMap(
+                user -> user.getEmail().toLowerCase(),
+                User::getRole,
+                (left, right) -> left
+            ));
+
+        for (Booking booking : bookings) {
+            User.Role role = roleByEmail.getOrDefault(
+                booking.getUserEmail() == null ? "" : booking.getUserEmail().toLowerCase(),
+                null
+            );
+            booking.setRequesterRole(mapRequesterRole(role));
+        }
+
+        return bookings.stream()
+            .sorted(Comparator
+                .comparingInt((Booking booking) -> requesterPriority(booking.getRequesterRole()))
+                .thenComparing(Booking::getStartTime))
+            .toList();
     }
+
+        private String mapRequesterRole(User.Role role) {
+        if (role == User.Role.STAFF) return "LECTURER";
+        if (role == User.Role.STUDENT) return "STUDENT";
+        if (role == User.Role.ADMIN) return "ADMIN";
+            return "STUDENT";
+        }
+
+        private int requesterPriority(String requesterRole) {
+        if ("LECTURER".equalsIgnoreCase(requesterRole)) return 0;
+        if ("STUDENT".equalsIgnoreCase(requesterRole)) return 1;
+        return 2;
+        }
 
     // Get booking by ID
     public Optional<Booking> getBookingById(Long id) {

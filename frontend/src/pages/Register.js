@@ -44,6 +44,16 @@ const Register = () => {
     setError("");
     setSuccess("");
 
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (!/^[A-Z]/.test(password)) {
+      setError("Password must start with a capital letter.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Password and Confirm Password do not match.");
       return;
@@ -130,6 +140,7 @@ const Register = () => {
                   )}
                 </button>
               </div>
+              <p className="mt-2 text-xs sf-subtitle">Must be at least 8 characters and start with a capital letter.</p>
             </div>
 
             <div className="mb-5">

@@ -10,6 +10,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/ap
 const IncidentTickets = () => {
   const { user, token } = useAuth();
   const { isDark } = useTheme();
+  const isAdmin = user?.role === "ADMIN";
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -86,7 +87,16 @@ const IncidentTickets = () => {
   const handleUpdateTicket = async (id, updatedTicket) => {
     try {
       setError("");
-      await axios.put(`${API_BASE}/incident-tickets/${id}`, updatedTicket, { headers: authHeaders });
+      const originalTicket = tickets.find((ticket) => ticket.id === id) || updatedTicket;
+      const payload = isAdmin
+        ? {
+            ...originalTicket,
+            status: updatedTicket.status,
+            assignedTo: updatedTicket.assignedTo,
+          }
+        : updatedTicket;
+
+      await axios.put(`${API_BASE}/incident-tickets/${id}`, payload, { headers: authHeaders });
       setEditingTicket(null);
       fetchTickets();
     } catch (err) {
@@ -132,22 +142,24 @@ const IncidentTickets = () => {
 
       {error && <p className={isDark ? "mb-4 rounded-xl border border-rose-400/35 bg-rose-400/15 px-4 py-3 text-sm text-rose-100" : "mb-4 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-sm text-rose-800"}>{error}</p>}
 
-      <div className="mb-4 sf-card p-4">
-        <h2 className="mb-3 text-xl font-bold sf-title">Create New Ticket</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <input className="sf-input px-3 py-2" type="text" placeholder="Title" value={newTicket.title} onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })} />
-          <input className="sf-input px-3 py-2" type="text" placeholder="Location" value={newTicket.location} onChange={(e) => setNewTicket({ ...newTicket, location: e.target.value })} />
+      {!isAdmin && (
+        <div className="mb-4 sf-card p-4">
+          <h2 className="mb-3 text-xl font-bold sf-title">Create New Ticket</h2>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <input className="sf-input px-3 py-2" type="text" placeholder="Title" value={newTicket.title} onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })} />
+            <input className="sf-input px-3 py-2" type="text" placeholder="Location" value={newTicket.location} onChange={(e) => setNewTicket({ ...newTicket, location: e.target.value })} />
+          </div>
+          <textarea className="sf-input mt-3 min-h-24 w-full px-3 py-2" placeholder="Description" value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })} />
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <select className="sf-input w-auto px-3 py-2" value={newTicket.priority} onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+            </select>
+            <button className="sf-btn-primary" onClick={handleCreateTicket}>Create Ticket</button>
+          </div>
         </div>
-        <textarea className="sf-input mt-3 min-h-24 w-full px-3 py-2" placeholder="Description" value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })} />
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <select className="sf-input w-auto px-3 py-2" value={newTicket.priority} onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}>
-            <option value="LOW">Low</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HIGH">High</option>
-          </select>
-          <button className="sf-btn-primary" onClick={handleCreateTicket}>Create Ticket</button>
-        </div>
-      </div>
+      )}
 
       <div>
         <h2 className="mb-3 text-xl font-bold sf-title">All Tickets</h2>
@@ -181,7 +193,9 @@ const IncidentTickets = () => {
 
                 <div className="mt-3 flex gap-2">
                   <button onClick={() => setEditingTicket(ticket)} className="sf-btn-secondary px-3 py-1.5 text-xs">Edit</button>
-                  <button onClick={() => handleDeleteTicket(ticket.id)} className={isDark ? "rounded-xl border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-100" : "rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"}>Delete</button>
+                  {!isAdmin && (
+                    <button onClick={() => handleDeleteTicket(ticket.id)} className={isDark ? "rounded-xl border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-100" : "rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"}>Delete</button>
+                  )}
                 </div>
               </article>
             ))}
@@ -193,32 +207,61 @@ const IncidentTickets = () => {
         <AppModal onClose={() => setEditingTicket(null)}>
           <div className="sf-modal-card">
             <h2 className="mb-5 text-2xl font-bold sf-title">Edit Ticket</h2>
-            <div className="grid gap-3">
-              <input className="sf-input text-base" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
-              <textarea className="sf-input min-h-24 text-base" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
-              <input className="sf-input text-base" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <select className="sf-input text-base" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                </select>
-                <select className="sf-input text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
-                  <option value="OPEN">Open</option>
-                  <option value="ASSIGNED">Assigned</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="CLOSED">Closed</option>
-                  <option value="REJECTED">Rejected</option>
-                </select>
+            {isAdmin ? (
+              <div className="grid gap-3">
+                <div className="rounded-lg border px-3 py-2 text-sm sf-subtitle" style={!isDark ? { borderColor: "var(--sf-card-border)", background: "var(--surface)" } : undefined}>
+                  <p><strong>Title:</strong> {editingTicket.title}</p>
+                  <p><strong>Description:</strong> {editingTicket.description}</p>
+                  <p><strong>Location:</strong> {editingTicket.location || "-"}</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <select className="sf-input text-base" value={editingTicket.priority} disabled>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                  <select className="sf-input text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
+                    <option value="OPEN">Open</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </div>
+                <input className="sf-input text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
+                <div className="mt-1 flex justify-end gap-2">
+                  <button className="sf-btn-primary" onClick={() => handleUpdateTicket(editingTicket.id, editingTicket)}>Update</button>
+                  <button className="sf-btn-secondary" onClick={() => setEditingTicket(null)}>Cancel</button>
+                </div>
               </div>
-              <input className="sf-input text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
-              <textarea className="sf-input min-h-20 text-base" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
-              <input className="sf-input text-base" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
-              <div className="mt-1 flex justify-end gap-2">
-                <button className="sf-btn-primary" onClick={() => handleUpdateTicket(editingTicket.id, editingTicket)}>Update</button>
-                <button className="sf-btn-secondary" onClick={() => setEditingTicket(null)}>Cancel</button>
+            ) : (
+              <div className="grid gap-3">
+                <input className="sf-input text-base" type="text" value={editingTicket.title} onChange={(e) => setEditingTicket({ ...editingTicket, title: e.target.value })} />
+                <textarea className="sf-input min-h-24 text-base" value={editingTicket.description} onChange={(e) => setEditingTicket({ ...editingTicket, description: e.target.value })} />
+                <input className="sf-input text-base" type="text" value={editingTicket.location || ""} onChange={(e) => setEditingTicket({ ...editingTicket, location: e.target.value })} />
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <select className="sf-input text-base" value={editingTicket.priority} onChange={(e) => setEditingTicket({ ...editingTicket, priority: e.target.value })}>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                  <select className="sf-input text-base" value={editingTicket.status} onChange={(e) => setEditingTicket({ ...editingTicket, status: e.target.value })}>
+                    <option value="OPEN">Open</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </div>
+                <input className="sf-input text-base" type="text" placeholder="Assigned To (email)" value={editingTicket.assignedTo || ""} onChange={(e) => setEditingTicket({ ...editingTicket, assignedTo: e.target.value })} />
+                <textarea className="sf-input min-h-20 text-base" placeholder="Technician Notes" value={editingTicket.technicianNotes || ""} onChange={(e) => setEditingTicket({ ...editingTicket, technicianNotes: e.target.value })} />
+                <input className="sf-input text-base" type="text" placeholder="Image URL" value={editingTicket.imageUrl || ""} onChange={(e) => setEditingTicket({ ...editingTicket, imageUrl: e.target.value })} />
+                <div className="mt-1 flex justify-end gap-2">
+                  <button className="sf-btn-primary" onClick={() => handleUpdateTicket(editingTicket.id, editingTicket)}>Update</button>
+                  <button className="sf-btn-secondary" onClick={() => setEditingTicket(null)}>Cancel</button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </AppModal>
       )}

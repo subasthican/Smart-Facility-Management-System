@@ -50,11 +50,11 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/facilities/**", "/assets/**")
                     .hasRole("ADMIN")
 
-                    .requestMatchers(HttpMethod.POST, "/bookings").hasRole("STUDENT")
-                    .requestMatchers(HttpMethod.GET, "/bookings").hasAnyRole("STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/bookings").hasAnyRole("STUDENT", "STAFF", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/bookings").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/bookings/my").hasAnyRole("STUDENT", "STAFF", "ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/bookings/*/confirm").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/bookings/*/cancel").hasAnyRole("STUDENT", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/bookings/*/cancel").hasAnyRole("STUDENT", "STAFF", "ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/bookings/**").hasRole("ADMIN")
 
                     .requestMatchers(HttpMethod.GET, "/quizzes/admin").hasRole("ADMIN")
