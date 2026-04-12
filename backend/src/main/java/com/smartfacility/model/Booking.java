@@ -36,6 +36,9 @@ public class Booking {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Transient
+    private String requesterRole;
+
     public Booking() {
     }
 
@@ -123,6 +126,14 @@ public class Booking {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getRequesterRole() {
+        return requesterRole;
+    }
+
+    public void setRequesterRole(String requesterRole) {
+        this.requesterRole = requesterRole;
     }
 
     @PrePersist

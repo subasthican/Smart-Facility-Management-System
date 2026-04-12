@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -6,6 +6,8 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import ShinyText from "../components/ShinyText";
 import Beams from "../components/Beams";
+
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const ThemeToggleIcon = ({ isDark }) => (
   isDark ? (
@@ -23,6 +25,7 @@ const MainLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [isAiDockOpen, setIsAiDockOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isAiEmbed =
@@ -33,8 +36,51 @@ const MainLayout = ({ children }) => {
   const isAuthenticated = !!user;
   const isAuthenticatedHome = !!user && location.pathname === "/";
 
+  const loadUnreadCount = useCallback(async () => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const response = await fetch(`${API_BASE}/notifications/unread`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const data = await response.json();
+      setUnreadCount(Array.isArray(data) ? data.length : 0);
+    } catch {
+      setUnreadCount(0);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadUnreadCount();
+  }, [loadUnreadCount]);
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      loadUnreadCount();
+    };
+
+    window.addEventListener("notifications-updated", handleNotificationsUpdated);
+    return () => window.removeEventListener("notifications-updated", handleNotificationsUpdated);
+  }, [loadUnreadCount]);
+
   const handleLogout = () => {
     logout();
+    setUnreadCount(0);
     navigate("/login");
   };
 
@@ -134,8 +180,8 @@ const MainLayout = ({ children }) => {
 
       {!isGuestHome && !isAuthRoute && !isAiEmbed && (
       <header className={isAuthenticated ? "absolute left-0 right-0 top-0 z-20 pt-6" : `sticky top-0 z-20 border-b shadow-lg backdrop-blur-md backdrop-saturate-150 ${isDark ? "border-white/10 bg-black/35" : "border-slate-900/10 bg-white/55"}`}>
-        <div className={`mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 ${user ? "rounded-full border px-5 py-3 shadow-2xl backdrop-blur-xl " + (isDark ? "border-white/15 bg-black/45 shadow-black/30" : "border-slate-900/10 bg-white/75 shadow-slate-900/10") : "py-3"}`}>
-          <div className={user ? "" : isDark ? "flex flex-wrap items-center gap-4 rounded-full border border-white/10 bg-black/55 px-5 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl" : "flex flex-wrap items-center gap-4 rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl"}>
+          <div className={`mx-auto flex w-full max-w-[1200px] flex-nowrap items-center justify-between gap-4 overflow-x-auto px-6 ${user ? "rounded-full border px-5 py-3 shadow-2xl backdrop-blur-xl " + (isDark ? "border-white/15 bg-black/45 shadow-black/30" : "border-slate-900/10 bg-white/75 shadow-slate-900/10") : "py-3"}`}>
+          <div className={user ? "shrink-0" : isDark ? "flex shrink-0 flex-nowrap items-center gap-4 rounded-full border border-white/10 bg-black/55 px-5 py-3 shadow-2xl shadow-black/30 backdrop-blur-xl" : "flex shrink-0 flex-nowrap items-center gap-4 rounded-full border border-slate-900/10 bg-white/70 px-5 py-3 shadow-2xl shadow-slate-900/10 backdrop-blur-xl"}>
             <div className="text-xs font-bold tracking-[0.12em]">
               <ShinyText
                 text="SMART FACILITY"
@@ -151,7 +197,7 @@ const MainLayout = ({ children }) => {
               />
             </div>
           </div>
-          <nav className={`flex flex-wrap items-center gap-3 ${user ? "" : `rounded-full px-3 py-2 shadow-2xl backdrop-blur-xl ${isDark ? "border border-white/10 bg-black/55 shadow-black/30" : "border border-slate-900/10 bg-white/70 shadow-slate-900/10"}`}`}>
+          <nav className={`flex flex-nowrap items-center gap-2 whitespace-nowrap ${user ? "shrink-0" : `rounded-full px-3 py-2 shadow-2xl backdrop-blur-xl ${isDark ? "border border-white/10 bg-black/55 shadow-black/30" : "border border-slate-900/10 bg-white/70 shadow-slate-900/10"}`}`}>
             <Link
               to="/"
               className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}
@@ -165,6 +211,10 @@ const MainLayout = ({ children }) => {
                 <Link to="/bookings" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Bookings</Link>
                 <Link to="/quizzes" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Quizzes</Link>
                 <Link to="/notebooks" className={isDark ? "rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>Notebook</Link>
+                <Link to="/notifications" aria-label="Notifications" title="Notifications" className={isDark ? "inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/90 shadow-inner no-underline" : "inline-flex items-center gap-1 rounded-full border border-slate-900/10 bg-white/80 px-3 py-2 text-sm text-slate-700 shadow-inner no-underline"}>
+                  <span aria-hidden="true" className="leading-none">🔔</span>
+                  <span className="text-xs font-semibold leading-none">{unreadCount}</span>
+                </Link>
               </>
             ) : null}
           </nav>

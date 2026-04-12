@@ -12,17 +12,29 @@ const getStatusClass = (status) => {
   return "bg-sky-600";
 };
 
+const getRequesterClass = (role) => {
+  if (role === "LECTURER") return "bg-indigo-600";
+  if (role === "STUDENT") return "bg-slate-600";
+  return "bg-sky-600";
+};
+
+const normalizeRequesterRole = (role) => {
+  if (!role || role === "UNKNOWN") return "STUDENT";
+  return role;
+};
+
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { token, user } = useAuth();
+  const isAdminView = user?.role === "ADMIN";
+  const canCreateBooking = user?.role === "STUDENT" || user?.role === "STAFF" || user?.role === "ADMIN";
+  const showRequesterDetails = user?.role === "ADMIN";
 
   const fetchUserBookings = useCallback(async () => {
     try {
-      const endpoint = user?.role === "STUDENT"
-        ? `${API_BASE}/bookings/my`
-        : `${API_BASE}/bookings`;
+      const endpoint = isAdminView ? `${API_BASE}/bookings` : `${API_BASE}/bookings/my`;
 
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
@@ -39,7 +51,7 @@ const Bookings = () => {
     } finally {
       setLoading(false);
     }
-  }, [token, user?.role]);
+  }, [token, isAdminView]);
 
   useEffect(() => {
     fetchUserBookings();
@@ -97,11 +109,19 @@ const Bookings = () => {
 
   return (
     <section className="sf-page">
+      {/* Previous behavior kept for reference:
       <PageHeader
         breadcrumb="Operations / Bookings"
-        title={user?.role === "STUDENT" ? "My Bookings" : "All Bookings"}
+        title={isAdminView ? "All Bookings" : "My Bookings"}
         subtitle="Track reservations with real-time status and clear action controls."
-        actions={user?.role === "STUDENT" ? <Link to="/create-booking" className="sf-btn-primary no-underline">+ New Booking</Link> : null}
+        actions={canCreateBooking ? <Link to="/create-booking" className="sf-btn-primary no-underline">+ New Booking</Link> : null}
+      />
+      */}
+      <PageHeader
+        breadcrumb="Operations / Bookings"
+        title={isAdminView ? "All Bookings" : "My Bookings"}
+        subtitle="Track reservations with real-time status and clear action controls."
+        actions={canCreateBooking && !isAdminView ? <Link to="/create-booking" className="sf-btn-primary no-underline">+ New Booking</Link> : null}
       />
 
       {error && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-100 px-4 py-3 text-center text-sm text-rose-800">Error: {error}</p>}
@@ -110,7 +130,10 @@ const Bookings = () => {
         <div className="sf-card border-dashed px-5 py-10 text-center sf-subtitle">
           <p className="text-lg font-semibold sf-title">No bookings yet</p>
           <p className="mt-1 text-sm sf-subtitle">Create a new booking to get started.</p>
-          {user?.role === "STUDENT" && <Link to="/create-booking" className="mt-4 inline-block sf-btn-primary no-underline">Create one now</Link>}
+          {canCreateBooking && !isAdminView && <Link to="/create-booking" className="mt-4 inline-block sf-btn-primary no-underline">Create one now</Link>}
+          {/* Previous behavior kept for reference:
+          {canCreateBooking && <Link to="/create-booking" className="mt-4 inline-block sf-btn-primary no-underline">Create one now</Link>}
+          */}
         </div>
       ) : (
         <div className="sf-table-wrap overflow-x-auto">
@@ -118,6 +141,8 @@ const Bookings = () => {
             <thead>
               <tr>
                 <th className="sf-th">Facility</th>
+                {showRequesterDetails && <th className="sf-th">Requested By</th>}
+                <th className="sf-th">Description</th>
                 <th className="sf-th">Start Time</th>
                 <th className="sf-th">End Time</th>
                 <th className="sf-th">Status</th>
@@ -128,20 +153,38 @@ const Bookings = () => {
               {bookings.map((booking) => (
                 <tr key={booking.id}>
                   <td className="sf-td">{booking.facilityName}</td>
+                  {showRequesterDetails && (
+                    <td className="sf-td">
+                      {(() => {
+                        const requesterRole = normalizeRequesterRole(booking.requesterRole);
+                        return (
+                      <div className="flex flex-col gap-1">
+                        <span className={`inline-block w-fit rounded-full px-2 py-1 text-[10px] font-bold text-white ${getRequesterClass(requesterRole)}`}>
+                          {requesterRole}
+                        </span>
+                        <span className="text-xs sf-subtitle">{booking.userEmail || "-"}</span>
+                      </div>
+                        );
+                      })()}
+                    </td>
+                  )}
+                  <td className="sf-td">{booking.description || booking.notes || "-"}</td>
                   <td className="sf-td">{new Date(booking.startTime).toLocaleString()}</td>
                   <td className="sf-td">{new Date(booking.endTime).toLocaleString()}</td>
                   <td className="sf-td">
                     <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold text-white ${getStatusClass(booking.status)}`}>{booking.status}</span>
                   </td>
                   <td className="sf-td">
-                    {user?.role === "ADMIN" && booking.status === "PENDING" ? (
+                    {user?.role === "ADMIN" && (booking.status === "PENDING" || booking.status === "CONFIRMED") ? (
                       <>
-                        <button
-                          onClick={() => handleConfirm(booking.id)}
-                          className="mr-2 rounded-xl bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white"
-                        >
-                          Confirm
-                        </button>
+                        {booking.status === "PENDING" && (
+                          <button
+                            onClick={() => handleConfirm(booking.id)}
+                            className="mr-2 rounded-xl bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white"
+                          >
+                            Confirm
+                          </button>
+                        )}
                         <button
                           onClick={() => handleCancel(booking.id)}
                           className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"
@@ -149,7 +192,7 @@ const Bookings = () => {
                           Cancel
                         </button>
                       </>
-                    ) : user?.role === "STUDENT" && (booking.status === "PENDING" || booking.status === "CONFIRMED") ? (
+                    ) : canCreateBooking && (booking.status === "PENDING" || booking.status === "CONFIRMED") ? (
                       <button
                         onClick={() => handleCancel(booking.id)}
                         className="rounded-xl bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white"

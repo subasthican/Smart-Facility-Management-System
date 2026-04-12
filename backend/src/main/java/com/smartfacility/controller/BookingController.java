@@ -66,12 +66,7 @@ public class BookingController {
     // GET /api/bookings/my - Get current user's bookings
     @GetMapping("/my")
     public ResponseEntity<?> getUserBookings(Authentication auth) {
-        List<Booking> bookings;
-        if (hasRole(auth, "ROLE_STAFF") || hasRole(auth, "ROLE_ADMIN")) {
-            bookings = bookingService.getAllBookings();
-        } else {
-            bookings = bookingService.getUserBookings(auth.getName());
-        }
+        List<Booking> bookings = bookingService.getUserBookings(auth.getName());
         return ResponseEntity.ok(bookings);
     }
 

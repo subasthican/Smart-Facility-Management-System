@@ -1,13 +1,44 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const loadUnreadCount = useCallback(async () => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/notifications/unread`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
+      });
+
+      if (!response.ok) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const data = await response.json();
+      setUnreadCount(Array.isArray(data) ? data.length : 0);
+    } catch {
+      setUnreadCount(0);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadUnreadCount();
+  }, [loadUnreadCount]);
 
   const handleLogout = () => {
     logout();
+    setUnreadCount(0);
     navigate("/login");
   };
 
@@ -21,7 +52,13 @@ const Navbar = () => {
         {user && <Link to="/facilities" style={styles.link}>Facilities</Link>}
         {user && <Link to="/assets" style={styles.link}>Assets</Link>}
         {user && <Link to="/tickets" style={styles.link}>🎫 Tickets</Link>}
-        {user && <Link to="/notifications" style={styles.link}>🔔 Notifications</Link>}
+        {user && (
+          <Link to="/notifications" style={styles.notificationLink}>
+            <span style={styles.bellIcon}>🔔</span>
+            <span>Notifications</span>
+            {unreadCount > 0 && <span style={styles.badge}>{unreadCount}</span>}
+          </Link>
+        )}
         {user?.role === "ADMIN" && <Link to="/admin/students" style={styles.link}>Students</Link>}
         {user?.role === "ADMIN" && <Link to="/admin/staff" style={styles.link}>Staff</Link>}
         {user ? (
@@ -78,6 +115,38 @@ const styles = {
     transition: "all 0.28s ease",
     border: "1px solid rgba(255,255,255,0.08)",
     background: "rgba(255,255,255,0.04)"
+  },
+  notificationLink: {
+    color: "#fff",
+    textDecoration: "none",
+    fontSize: "13px",
+    fontWeight: "600",
+    opacity: 0.95,
+    padding: "8px 11px",
+    borderRadius: "999px",
+    transition: "all 0.28s ease",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.04)",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  bellIcon: {
+    fontSize: "14px",
+    lineHeight: 1,
+  },
+  badge: {
+    minWidth: "18px",
+    height: "18px",
+    padding: "0 5px",
+    borderRadius: "999px",
+    background: "#ef4444",
+    color: "#fff",
+    fontSize: "11px",
+    fontWeight: 700,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   role: { 
     color: "#dbe5ff", 

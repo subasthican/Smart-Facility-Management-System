@@ -25,7 +25,14 @@ public class FacilityService {
         return facilityRepository.findById(id);
     }
 
+    private void validateFacility(Facility facility) {
+        if (facility.getCapacity() == null || facility.getCapacity() <= 0) {
+            throw new RuntimeException("Capacity must be a positive number");
+        }
+    }
+
     public Facility createFacility(Facility facility, String actorEmail) {
+        validateFacility(facility);
         if (facilityRepository.existsByNameIgnoreCase(facility.getName())) {
             throw new RuntimeException("Facility with this name already exists");
         }
@@ -52,6 +59,7 @@ public class FacilityService {
     }
 
     public Facility updateFacility(Long id, Facility updatedFacility, String actorEmail) {
+        validateFacility(updatedFacility);
         Facility facility = facilityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facility not found"));
 

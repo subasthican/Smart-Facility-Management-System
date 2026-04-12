@@ -110,12 +110,17 @@ const Facilities = () => {
         throw new Error("Name, location, and capacity are required");
       }
 
+      const capacityValue = Number(form.capacity);
+      if (!Number.isInteger(capacityValue) || capacityValue <= 0) {
+        throw new Error("Capacity must be a positive whole number");
+      }
+
       const payload = {
         ...form,
         name: form.name.trim(),
         location: form.location.trim(),
         description: form.description.trim(),
-        capacity: Number(form.capacity),
+        capacity: capacityValue,
       };
 
       const url = modalMode === "create" ? `${API_BASE}/facilities` : `${API_BASE}/facilities/${selectedId}`;
@@ -229,7 +234,7 @@ const Facilities = () => {
             <form onSubmit={submitModal} className="grid grid-cols-1 gap-3">
               <input className="sf-input text-base" placeholder="Facility Name" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required />
               <input className="sf-input text-base" placeholder="Location" value={form.location} onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))} required />
-              <input className="sf-input text-base" type="number" placeholder="Capacity" value={form.capacity} onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))} required />
+              <input className="sf-input text-base" type="number" min="1" step="1" placeholder="Capacity" value={form.capacity} onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))} required />
               <select className="sf-input text-base" value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}>
                 <option value="LAB">LAB</option>
                 <option value="HALL">HALL</option>

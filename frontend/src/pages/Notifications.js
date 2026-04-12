@@ -28,6 +28,10 @@ const Notifications = () => {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
+  const emitUnreadCountChanged = () => {
+    window.dispatchEvent(new Event("notifications-updated"));
+  };
+
   const loadNotifications = useCallback(async () => {
     if (!user) return;
     try {
@@ -54,7 +58,10 @@ const Notifications = () => {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) loadNotifications();
+      if (res.ok) {
+        loadNotifications();
+        emitUnreadCountChanged();
+      }
     } catch (err) {
       console.error("Error marking as read:", err);
     }
@@ -67,7 +74,10 @@ const Notifications = () => {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) loadNotifications();
+      if (res.ok) {
+        loadNotifications();
+        emitUnreadCountChanged();
+      }
     } catch (err) {
       console.error("Error marking all as read:", err);
     }
@@ -79,7 +89,10 @@ const Notifications = () => {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) loadNotifications();
+      if (res.ok) {
+        loadNotifications();
+        emitUnreadCountChanged();
+      }
     } catch (err) {
       console.error("Error deleting notification:", err);
     }
